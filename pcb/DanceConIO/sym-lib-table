@@ -1,0 +1,6 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "CustomLogos")(type "KiCad")(uri "${KIPRJMOD}/CustomLogos.kicad_sym")(options "")(descr ""))
+  (lib (name "RP2040-Zero")(type "KiCad")(uri "${KIPRJMOD}/3rdparty/RP2040-Zero-KiCAD-main/RP2040-Zero.kicad_sym")(options "")(descr ""))
+  (lib (name "2025-05-12_17-56-08")(type "KiCad")(uri "${KIPRJMOD}/3rdparty/ADS124S06/KiCADv6/2025-05-12_17-56-08.kicad_sym")(options "")(descr ""))
+)
