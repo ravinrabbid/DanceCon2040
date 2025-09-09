@@ -8,7 +8,7 @@
 
 namespace Dancecon::Utils {
 
-class SettingsStore {
+template <typename TThresholds> class SettingsStore {
   private:
     const static uint32_t m_flash_size = FLASH_SECTOR_SIZE;
     const static uint32_t m_flash_offset = PICO_FLASH_SIZE_BYTES - m_flash_size;
@@ -19,14 +19,13 @@ class SettingsStore {
     struct __attribute((packed, aligned(1))) Storecache {
         uint8_t in_use;
         usb_mode_t usb_mode;
-        Peripherals::Pad::Config::Thresholds trigger_thresholds;
+        TThresholds trigger_thresholds;
         uint16_t debounce_delay;
         uint8_t led_brightness;
         bool led_enable_player_color;
 
-        uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) -
-                         sizeof(Peripherals::Pad::Config::Thresholds) - sizeof(uint8_t) - sizeof(bool) -
-                         sizeof(uint16_t)];
+        uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(TThresholds) - sizeof(uint8_t) -
+                         sizeof(bool) - sizeof(uint16_t)];
     };
     static_assert(sizeof(Storecache) == m_store_size);
 
@@ -50,8 +49,8 @@ class SettingsStore {
     void setUsbMode(const usb_mode_t mode);
     usb_mode_t getUsbMode();
 
-    void setTriggerThresholds(const Peripherals::Pad::Config::Thresholds &thresholds);
-    Peripherals::Pad::Config::Thresholds getTriggerThresholds();
+    void setTriggerThresholds(const TThresholds &thresholds);
+    TThresholds getTriggerThresholds();
 
     void setLedBrightness(const uint8_t brightness);
     uint8_t getLedBrightness();

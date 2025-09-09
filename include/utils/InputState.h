@@ -22,7 +22,7 @@ struct InputState {
             uint16_t raw;
         };
 
-        Panel up, down, left, right;
+        Panel up_left, up, up_right, left, center, right, down_left, down, down_right;
         bool start, select;
     };
 

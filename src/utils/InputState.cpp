@@ -6,7 +6,17 @@
 namespace Dancecon::Utils {
 
 InputState::InputState()
-    : pad({{false, 0}, {false, 0}, {false, 0}, {false, 0}, false, false}),
+    : pad({{false, 0},
+           {false, 0},
+           {false, 0},
+           {false, 0},
+           {false, 0},
+           {false, 0},
+           {false, 0},
+           {false, 0},
+           {false, 0},
+           false,
+           false}),
       controller(
           {{false, false, false, false}, {false, false, false, false, false, false, false, false, false, false}}),
       m_switch_report({}), m_ps3_report({}), m_ps4_report({}), m_keyboard_report({}),
@@ -312,29 +322,39 @@ usb_report_t InputState::getMidiReport() {
 }
 
 usb_report_t InputState::getDebugReport() {
-    // std::stringstream out;
+    std::stringstream out;
 
-    // auto bar = [](uint16_t val) { return std::string(val / 511, '#'); };
+    out                                                             //
+        << (pad.up_left.triggered ? "[\\]" : "[ ]")                 //
+        << (pad.up.triggered ? "[^]" : "[ ]")                       //
+        << (pad.up_right.triggered ? "[/]" : "[ ]")                 //
+        << "   ::   [" << std::setw(5) << pad.up_left.raw << "] "   //
+        << "[" << std::setw(5) << pad.up.raw << "] "                //
+        << "[" << std::setw(5) << pad.up_right.raw << "] "          //
+        << "\n"                                                     //
+        << (pad.left.triggered ? "[<]" : "[ ]")                     //
+        << (pad.center.triggered ? "[o]" : "[ ]")                   //
+        << (pad.right.triggered ? "[>]" : "[ ]")                    //
+        << "   ::   [" << std::setw(5) << pad.left.raw << "] "      //
+        << "[" << std::setw(5) << pad.center.raw << "] "            //
+        << "[" << std::setw(5) << pad.right.raw << "] "             //
+        << "\n"                                                     //
+        << (pad.down_left.triggered ? "[/]" : "[ ]")                //
+        << (pad.down.triggered ? "[v]" : "[ ]")                     //
+        << (pad.down_right.triggered ? "[\\]" : "[ ]")              //
+        << "   ::   [" << std::setw(5) << pad.down_left.raw << "] " //
+        << "[" << std::setw(5) << pad.down.raw << "] "              //
+        << "[" << std::setw(5) << pad.down_right.raw << "] "        //
+        << "\033[0;0H";
 
-    // if (mat.don_left.triggered || mat.ka_left.triggered || mat.don_right.triggered || mat.ka_right.triggered) {
-    //     out << "(" << (mat.ka_left.triggered ? "*" : " ") << "( "                                         //
-    //         << std::setw(4) << mat.ka_left.raw << "[" << std::setw(8) << bar(mat.ka_left.raw) << "]"     //
-    //         << "(" << (mat.don_left.triggered ? "*" : " ") << "| "                                        //
-    //         << std::setw(4) << mat.don_left.raw << "[" << std::setw(8) << bar(mat.don_left.raw) << "]"   //
-    //         << "|" << (mat.don_right.triggered ? "*" : " ") << ") "                                       //
-    //         << std::setw(4) << mat.don_right.raw << "[" << std::setw(8) << bar(mat.don_right.raw) << "]" //
-    //         << ")" << (mat.ka_right.triggered ? "*" : " ") << ") "                                        //
-    //         << std::setw(4) << mat.ka_right.raw << "[" << std::setw(8) << bar(mat.ka_right.raw) << "]"   //
-    //         << "\n";
-    // }
-
-    // m_debug_report = out.str();
+    m_debug_report = out.str();
 
     return {(uint8_t *)m_debug_report.c_str(), static_cast<uint16_t>(m_debug_report.size() + 1)};
 }
 
 void InputState::releaseAll() {
-    pad = {{false, 0}, {false, 0}, {false, 0}, {false, 0}, false, false};
+    pad = {{false, 0}, {false, 0}, {false, 0}, {false, 0}, {false, 0}, {false, 0},
+           {false, 0}, {false, 0}, {false, 0}, false,      false};
     controller = {{false, false, false, false}, {false, false, false, false, false, false, false, false, false, false}};
 }
 

@@ -6,7 +6,7 @@ if((NOT DEFINED ENV{PICO_SDK_PATH}) AND (NOT PICO_SDK_PATH))
 endif()
 
 if((NOT DEFINED ENV{PICO_BOARD}) AND (NOT PICO_BOARD))
-  set(PICO_BOARD "pico")
+  set(PICO_BOARD "waveshare_rp2040_zero")
 endif()
 
 include(pico_sdk_import.cmake)
@@ -18,7 +18,7 @@ set(PICO_USE_FASTEST_SUPPORTED_CLOCK 1)
 pico_sdk_init()
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 add_compile_options(-Wall -Wextra -Werror)
 
@@ -46,12 +46,15 @@ target_link_libraries(
          tinyusb_board
          pico_stdlib
          hardware_i2c
+         hardware_spi
          pico_multicore
          pico_rand
          pico_mbedtls
          pio_ws2812
          pico_ssd1306
-         mcp23017)
+         mcp23017
+         ads124s0x
+         )
 
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 0)

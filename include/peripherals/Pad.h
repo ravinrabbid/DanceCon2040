@@ -3,6 +3,10 @@
 
 #include "utils/InputState.h"
 
+#include "hardware/spi.h"
+
+#include <ads124s0x/Ads124S0x.h>
+
 #include <array>
 #include <map>
 #include <memory>
@@ -11,60 +15,228 @@
 
 namespace Dancecon::Peripherals {
 
-class Pad {
-  public:
-    struct Config {
-        struct Thresholds {
-            uint16_t up;
-            uint16_t down;
-            uint16_t left;
-            uint16_t right;
+template <size_t TPanelCount>
+    requires(TPanelCount == 4 || TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9)
+struct PadConfig {
+    static constexpr auto PANEL_COUNT = TPanelCount;
+
+    struct ThresholdsFourPanel {
+        uint16_t up;
+        uint16_t left;
+        uint16_t right;
+        uint16_t down;
+    };
+    struct ThresholdsFivePanel {
+        uint16_t up_left;
+        uint16_t up_right;
+        uint16_t center;
+        uint16_t down_left;
+        uint16_t down_right;
+    };
+    struct ThresholdsSixPanel {
+        uint16_t up_left;
+        uint16_t up;
+        uint16_t up_right;
+        uint16_t left;
+        uint16_t right;
+        uint16_t down;
+    };
+    struct ThresholdsEightPanel {
+        uint16_t up_left;
+        uint16_t up;
+        uint16_t up_right;
+        uint16_t left;
+        uint16_t right;
+        uint16_t down_left;
+        uint16_t down;
+        uint16_t down_right;
+    };
+    struct ThresholdsNinePanel {
+        uint16_t up_left;
+        uint16_t up;
+        uint16_t up_right;
+        uint16_t left;
+        uint16_t center;
+        uint16_t right;
+        uint16_t down_left;
+        uint16_t down;
+        uint16_t down_right;
+    };
+    using Thresholds =                             //
+        std::conditional<                          //
+            TPanelCount == 4,                      //
+            ThresholdsFourPanel,                   //
+            typename std::conditional<             //
+                TPanelCount == 5,                  //
+                ThresholdsFivePanel,               //
+                typename std::conditional<         //
+                    TPanelCount == 6,              //
+                    ThresholdsSixPanel,            //
+                    typename std::conditional<     //
+                        TPanelCount == 8,          //
+                        ThresholdsEightPanel,      //
+                        typename std::conditional< //
+                            TPanelCount == 9,      //
+                            ThresholdsNinePanel,   //
+                            std::monostate         //
+                            >::type>::type>::type>::type>::type;
+
+    struct AdcChannelsFourPanel {
+        uint8_t up;
+        uint8_t left;
+        uint8_t right;
+        uint8_t down;
+    };
+    struct AdcChannelsFivePanel {
+        uint8_t up_left;
+        uint8_t up_right;
+        uint8_t center;
+        uint8_t down_left;
+        uint8_t down_right;
+    };
+    struct AdcChannelsSixPanel {
+        uint8_t up_left;
+        uint8_t up;
+        uint8_t up_right;
+        uint8_t left;
+        uint8_t right;
+        uint8_t down;
+    };
+    struct AdcChannelsEightPanel {
+        uint8_t up_left;
+        uint8_t up;
+        uint8_t up_right;
+        uint8_t left;
+        uint8_t right;
+        uint8_t down_left;
+        uint8_t down;
+        uint8_t down_right;
+    };
+    struct AdcChannelsNinePanel {
+        uint8_t up_left;
+        uint8_t up;
+        uint8_t up_right;
+        uint8_t left;
+        uint8_t center;
+        uint8_t right;
+        uint8_t down_left;
+        uint8_t down;
+        uint8_t down_right;
+    };
+    using AdcChannels =                            //
+        std::conditional<                          //
+            TPanelCount == 4,                      //
+            AdcChannelsFourPanel,                  //
+            typename std::conditional<             //
+                TPanelCount == 5,                  //
+                AdcChannelsFivePanel,              //
+                typename std::conditional<         //
+                    TPanelCount == 6,              //
+                    AdcChannelsSixPanel,           //
+                    typename std::conditional<     //
+                        TPanelCount == 8,          //
+                        AdcChannelsEightPanel,     //
+                        typename std::conditional< //
+                            TPanelCount == 9,      //
+                            AdcChannelsNinePanel,  //
+                            std::monostate         //
+                            >::type>::type>::type>::type>::type;
+
+    template <size_t TAdcCount> struct ExternalAdc {
+        static constexpr auto ADC_COUNT = TAdcCount;
+
+        struct Spi {
+            uint8_t mosi_pin;
+            uint8_t miso_pin;
+            uint8_t sclk_pin;
+            spi_inst_t *block;
+            uint speed_hz;
+        };
+        struct Ads124s06 {
+            uint8_t scsn_pin;
+            uint8_t drdy_pin;
         };
 
-        Thresholds trigger_thresholds;
-        bool invert_raw;
+        Spi spi;
+        std::array<Ads124s06, TAdcCount> adcs;
+    };
 
-        struct {
-            uint8_t start;
-            uint8_t select;
-        } button_pins;
+    using AdcConfig =                                         //
+        std::conditional<                                     //
+            TPanelCount == 4,                                 //
+            std::variant<ExternalAdc<2>>,                     //
+            typename std::conditional<                        //
+                TPanelCount == 5 || TPanelCount == 6,         //
+                std::variant<ExternalAdc<2>, ExternalAdc<3>>, //
+                typename std::conditional<                    //
+                    TPanelCount == 8 || TPanelCount == 9,     //
+                    std::variant<ExternalAdc<3>>,             //
+                    std::monostate                            //
+                    >::type>::type>::type;
 
-        uint16_t debounce_delay_ms;
+    Thresholds thresholds;
+    uint16_t debounce_delay_ms;
+
+    AdcChannels adc_channels;
+    AdcConfig adc_config;
+};
+
+template <size_t TPanelCount> class Pad {
+  public:
+    using Config = PadConfig<TPanelCount>;
+
+    enum class Id {
+        UP_LEFT,
+        UP,
+        UP_RIGHT,
+        LEFT,
+        CENTER,
+        RIGHT,
+        DOWN_LEFT,
+        DOWN,
+        DOWN_RIGHT,
     };
 
   private:
-    enum class Id {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-        START,
-        SELECT,
-    };
-
-    class Input {
+    class Panel {
       private:
         uint8_t channel;
         uint32_t last_change;
         bool active;
 
       public:
-        Input(const uint8_t channel);
+        Panel(const uint8_t channel);
 
         uint8_t getChannel() const { return channel; };
         bool getState() const { return active; };
         void setState(const bool state, const uint16_t debounce_delay);
     };
 
+    class AdcInterface {
+      public:
+        virtual std::array<uint16_t, TPanelCount> read() = 0;
+    };
+
+    template <size_t TAdcCount> class ExternalAdc : public AdcInterface {
+      private:
+        std::array<std::unique_ptr<Ads124S0x>, TAdcCount> m_ads124s06;
+
+      public:
+        ExternalAdc(const typename Config::ExternalAdc<TAdcCount> &config);
+        virtual std::array<uint16_t, TPanelCount> read() final;
+    };
+
     Config m_config;
-    std::map<Id, Input> m_inputs;
+    std::unique_ptr<AdcInterface> m_adc;
+    std::map<Id, Panel> m_panels;
 
   private:
-    std::map<Id, uint16_t> readPanels();
-    std::map<Id, uint16_t> readButtons();
+    std::map<Id, uint32_t> readPanels();
 
   public:
     Pad(const Config &config);
+
+    // TODO calibrate
 
     void updateInputState(Utils::InputState &input_state);
 

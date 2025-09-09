@@ -5,15 +5,19 @@
 #include "hardware/watchdog.h"
 #include "pico/bootrom.h"
 #include "pico/multicore.h"
+#include "pico/stdio_usb.h"
 
 namespace Dancecon::Utils {
 
+template class SettingsStore<decltype(Config::Default::pad_config)::Thresholds>;
+
 static uint8_t read_byte(uint32_t offset) { return *(reinterpret_cast<uint8_t *>(XIP_BASE + offset)); }
 
-SettingsStore::SettingsStore()
+template <typename TThresholds>
+SettingsStore<TThresholds>::SettingsStore()
     : m_store_cache({m_magic_byte,
                      Config::Default::usb_mode,
-                     Config::Default::pad_config.trigger_thresholds,
+                     Config::Default::pad_config.thresholds,
                      Config::Default::pad_config.debounce_delay_ms,
                      Config::Default::led_config.brightness,
                      Config::Default::led_config.enable_player_color,
@@ -36,7 +40,7 @@ SettingsStore::SettingsStore()
     }
 }
 
-void SettingsStore::setUsbMode(const usb_mode_t mode) {
+template <typename TThresholds> void SettingsStore<TThresholds>::setUsbMode(const usb_mode_t mode) {
     if (mode != m_store_cache.usb_mode) {
         m_store_cache.usb_mode = mode;
         m_dirty = true;
@@ -45,45 +49,54 @@ void SettingsStore::setUsbMode(const usb_mode_t mode) {
     }
 }
 
-usb_mode_t SettingsStore::getUsbMode() { return m_store_cache.usb_mode; }
+template <typename TThresholds> usb_mode_t SettingsStore<TThresholds>::getUsbMode() { return m_store_cache.usb_mode; }
 
-void SettingsStore::setTriggerThresholds(const Peripherals::Pad::Config::Thresholds &thresholds) {
-    if (m_store_cache.trigger_thresholds.up != thresholds.up ||
-        m_store_cache.trigger_thresholds.down != thresholds.down ||
-        m_store_cache.trigger_thresholds.left != thresholds.left ||
-        m_store_cache.trigger_thresholds.right != thresholds.right) {
+template <typename TThresholds> void SettingsStore<TThresholds>::setTriggerThresholds(const TThresholds &thresholds) {
+    (void)thresholds;
+    // if (m_store_cache.trigger_thresholds.up != thresholds.up ||
+    //     m_store_cache.trigger_thresholds.down != thresholds.down ||
+    //     m_store_cache.trigger_thresholds.left != thresholds.left ||
+    //     m_store_cache.trigger_thresholds.right != thresholds.right) {
 
-        m_store_cache.trigger_thresholds = thresholds;
-        m_dirty = true;
-    }
+    //     m_store_cache.trigger_thresholds = thresholds;
+    //     m_dirty = true;
+    // }
 }
-Peripherals::Pad::Config::Thresholds SettingsStore::getTriggerThresholds() { return m_store_cache.trigger_thresholds; }
+template <typename TThresholds> TThresholds SettingsStore<TThresholds>::getTriggerThresholds() {
+    return m_store_cache.trigger_thresholds;
+}
 
-void SettingsStore::setLedBrightness(const uint8_t brightness) {
+template <typename TThresholds> void SettingsStore<TThresholds>::setLedBrightness(const uint8_t brightness) {
     if (m_store_cache.led_brightness != brightness) {
         m_store_cache.led_brightness = brightness;
         m_dirty = true;
     }
 }
-uint8_t SettingsStore::getLedBrightness() { return m_store_cache.led_brightness; }
+template <typename TThresholds> uint8_t SettingsStore<TThresholds>::getLedBrightness() {
+    return m_store_cache.led_brightness;
+}
 
-void SettingsStore::setLedEnablePlayerColor(const bool do_enable) {
+template <typename TThresholds> void SettingsStore<TThresholds>::setLedEnablePlayerColor(const bool do_enable) {
     if (m_store_cache.led_enable_player_color != do_enable) {
         m_store_cache.led_enable_player_color = do_enable;
         m_dirty = true;
     }
 }
-bool SettingsStore::getLedEnablePlayerColor() { return m_store_cache.led_enable_player_color; }
+template <typename TThresholds> bool SettingsStore<TThresholds>::getLedEnablePlayerColor() {
+    return m_store_cache.led_enable_player_color;
+}
 
-void SettingsStore::setDebounceDelay(const uint16_t delay) {
+template <typename TThresholds> void SettingsStore<TThresholds>::setDebounceDelay(const uint16_t delay) {
     if (m_store_cache.debounce_delay != delay) {
         m_store_cache.debounce_delay = delay;
         m_dirty = true;
     }
 }
-uint16_t SettingsStore::getDebounceDelay() { return m_store_cache.debounce_delay; }
+template <typename TThresholds> uint16_t SettingsStore<TThresholds>::getDebounceDelay() {
+    return m_store_cache.debounce_delay;
+}
 
-void SettingsStore::store() {
+template <typename TThresholds> void SettingsStore<TThresholds>::store() {
     if (m_dirty) {
         multicore_lockout_start_blocking();
         uint32_t interrupts = save_and_disable_interrupts();
@@ -125,7 +138,7 @@ void SettingsStore::store() {
     }
 }
 
-void SettingsStore::reset() {
+template <typename TThresholds> void SettingsStore<TThresholds>::reset() {
     multicore_lockout_start_blocking();
     uint32_t interrupts = save_and_disable_interrupts();
 
@@ -140,7 +153,7 @@ void SettingsStore::reset() {
     store();
 }
 
-void SettingsStore::scheduleReboot(const bool bootsel) {
+template <typename TThresholds> void SettingsStore<TThresholds>::scheduleReboot(const bool bootsel) {
     if (m_scheduled_reboot != RebootType::Bootsel) {
         m_scheduled_reboot = (bootsel ? RebootType::Bootsel : RebootType::Normal);
     }
