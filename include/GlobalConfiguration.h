@@ -2,9 +2,9 @@
 #define _GLOBALCONFIGURATION_H_
 
 #include "peripherals/Controller.h"
-// #include "peripherals/Display.h"
+#include "peripherals/Display.h"
 #include "peripherals/Pad.h"
-#include "peripherals/PadLeds.h"
+#include "peripherals/PanelLeds.h"
 
 #include "hardware/i2c.h"
 
@@ -28,41 +28,37 @@ const I2c i2c_config = {
     1000000, // Speed
 };
 
-const Peripherals::PadConfig<9> pad_config = {
+const Peripherals::Pad<9>::Config pad_config = {
     // Thresholds
     {
+        500, // UP_LEFT
         500, // UP
+        500, // UP_RIGHT
         500, // LEFT
+        500, // CENTER
         500, // RIGHT
+        500, // DOWN_LEFT
         500, // DOWN
-
-        500, // UP
-        500, // LEFT
-        500, // RIGHT
-        500, // DOWN
-
-        500, // UP
+        500, // DOWN_RIGHT
     },
 
     25, // Debounce delay in milliseconds
 
     //  ADC Channels
     {
-        0, // UP
-        1, // LEFT
-        2, // RIGHT
-        3, // DOWN
-
-        4, // UP
-        5, // LEFT
-        6, // RIGHT
+        0, // UP_LEFT
+        1, // UP
+        2, // UP_RIGHT
+        3, // LEFT
+        4, // CENTER
+        5, // RIGHT
+        6, // DOWN_LEFT
         7, // DOWN
-
-        8, // UP
+        8, // DOWN_RIGHT
     },
 
     // ADC Config
-    Peripherals::PadConfig<9>::ExternalAdc<3>{
+    Peripherals::Pad<pad_config.PANEL_COUNT>::Config::ExternalAdc<3>{
         // SPI Config
         {
             11,       // MOSI
@@ -73,7 +69,7 @@ const Peripherals::PadConfig<9> pad_config = {
                       // 2000000, // Speed in Hz
         },
 
-        // ADCs (2 or 3)
+        // ADCs
         {{
             {
                 14, // SCSN Pin
@@ -91,7 +87,7 @@ const Peripherals::PadConfig<9> pad_config = {
     },
 };
 
-const Peripherals::PadLeds::Config led_config = {
+const Peripherals::PanelLeds::Config led_config = {
     {128, 128, 128}, // Idle Color
     {255, 0, 0},     // UP Color
     {0, 0, 255},     // DOWN Color
@@ -143,10 +139,10 @@ const Peripherals::Controller::Config controller_config = {
     },
 };
 
-// const Peripherals::Display::Config display_config = {
-//     i2c_config.block, // Block
-//     0x3C,             // Address
-// };
+const Peripherals::Display::Config display_config = {
+    i2c_config.block, // Block
+    0x3C,             // Address
+};
 
 } // namespace Default
 } // namespace Dancecon::Config

@@ -1,5 +1,5 @@
-#ifndef _PERIPHERALS_PADLEDS_H_
-#define _PERIPHERALS_PADLEDS_H_
+#ifndef _PERIPHERALS_PANELLEDS_H_
+#define _PERIPHERALS_PANELLEDS_H_
 
 #include "utils/InputState.h"
 
@@ -8,7 +8,7 @@
 
 namespace Dancecon::Peripherals {
 
-class PadLeds {
+class PanelLeds {
   public:
     struct Config {
         struct Color {
@@ -22,6 +22,10 @@ class PadLeds {
         Color down_color;
         Color left_color;
         Color right_color;
+        // TODO missing directions
+
+        // TODO LEDs per pad
+        // TODO LED index
 
         uint8_t led_pin;
         bool is_rgbw;
@@ -37,17 +41,17 @@ class PadLeds {
     std::optional<Config::Color> m_player_color;
 
   public:
-    PadLeds(const Config &config);
+    PanelLeds(const Config &config);
 
     void setBrightness(const uint8_t brightness);
     void setEnablePlayerColor(const bool do_enable);
 
-    void setInputState(const Utils::InputState input_state);
-    void setPlayerColor(const Config::Color color);
+    void setInputState(const Utils::InputState &input_state);
+    void setPlayerColor(const Config::Color &color);
 
     void update();
 };
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_PADLEDS_H_
+#endif // _PERIPHERALS_PANELLEDS_H_

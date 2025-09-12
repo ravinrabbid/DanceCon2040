@@ -1,116 +1,217 @@
 #include "utils/Menu.h"
 
+#include "GlobalConfiguration.h"
+#include "peripherals/Pad.h"
+
 namespace Dancecon::Utils {
 
-const std::map<Menu::Page, const Menu::Descriptor> Menu::descriptors = {
-    {Menu::Page::Main,                                            //
-     {Menu::Descriptor::Type::Menu,                               //
-      "Settings",                                                 //
-      {{"Mode", Menu::Descriptor::Action::GotoPageDeviceMode},    //
-       {"Pad", Menu::Descriptor::Action::GotoPagePad},            //
-       {"Led", Menu::Descriptor::Action::GotoPageLed},            //
-       {"Reset", Menu::Descriptor::Action::GotoPageReset},        //
-       {"USB Flash", Menu::Descriptor::Action::GotoPageBootsel}}, //
-      0}},                                                        //
+using config_t = decltype(Config::Default::pad_config);
 
-    {Menu::Page::DeviceMode,                                 //
-     {Menu::Descriptor::Type::Selection,                     //
-      "Mode",                                                //
-      {{"Swtch Pro", Menu::Descriptor::Action::SetUsbMode},  //
-       {"Dualshock3", Menu::Descriptor::Action::SetUsbMode}, //
-       {"Dualshock4", Menu::Descriptor::Action::SetUsbMode}, //
-       {"PS4 Compat", Menu::Descriptor::Action::SetUsbMode}, //
-       {"Keybrd P1", Menu::Descriptor::Action::SetUsbMode},  //
-       {"Keybrd P2", Menu::Descriptor::Action::SetUsbMode},  //
-       {"Xbox 360", Menu::Descriptor::Action::SetUsbMode},   //
-       {"MIDI", Menu::Descriptor::Action::SetUsbMode},       //
-       {"Debug", Menu::Descriptor::Action::SetUsbMode}},     //
-      0}},                                                   //
+template class Menu<config_t::Thresholds>;
 
-    {Menu::Page::Pad,                                                              //
-     {Menu::Descriptor::Type::Menu,                                                //
-      "Pad Settings",                                                              //
-      {{"Hold Time", Menu::Descriptor::Action::GotoPagePadDebounceDelay},          //
-       {"UP Pad", Menu::Descriptor::Action::GotoPagePadTriggerThresholdUp},        //
-       {"DOWN Pad", Menu::Descriptor::Action::GotoPagePadTriggerThresholdDown},    //
-       {"LEFT Pad", Menu::Descriptor::Action::GotoPagePadTriggerThresholdLeft},    //
-       {"RIGHT Pad", Menu::Descriptor::Action::GotoPagePadTriggerThresholdRight}}, //
-      0}},                                                                         //
+template <>
+const MenuDescriptor Menu<config_t::ThresholdsFourPanel>::thresholds_descriptor = {
+    MenuDescriptor::Type::Menu,
+    "Thresholds",
+    {{"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},       //
+     {"Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdLeft},   //
+     {"Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdRight}, //
+     {"Down", MenuDescriptor::Action::GotoPagePadTriggerThresholdDown}},  //
+    0};
 
-    {Menu::Page::PadDebounceDelay,                           //
-     {Menu::Descriptor::Type::Value,                         //
-      "Step Hold Time (ms)",                                 //
-      {{"", Menu::Descriptor::Action::SetPadDebounceDelay}}, //
-      UINT8_MAX}},
+template <>
+const MenuDescriptor Menu<config_t::ThresholdsFivePanel>::thresholds_descriptor = {
+    MenuDescriptor::Type::Menu,
+    "Thresholds",
+    {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},       //
+     {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight},     //
+     {"Center", MenuDescriptor::Action::GotoPagePadTriggerThresholdCenter},        //
+     {"Down Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownRight},  //
+     {"Down Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownLeft}}, //
+    0};
 
-    {Menu::Page::PadTriggerThresholdUp,                           //
-     {Menu::Descriptor::Type::Value,                              //
-      "Trigger Level UP",                                         //
-      {{"", Menu::Descriptor::Action::SetPadTriggerThresholdUp}}, //
-      4095}},
+template <>
+const MenuDescriptor Menu<config_t::ThresholdsSixPanel>::thresholds_descriptor = {
+    MenuDescriptor::Type::Menu,
+    "Thresholds",
+    {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},   //
+     {"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},            //
+     {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight}, //
+     {"Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdLeft},        //
+     {"Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdRight},      //
+     {"Down", MenuDescriptor::Action::GotoPagePadTriggerThresholdDown}},       //
+    0};
 
-    {Menu::Page::PadTriggerThresholDown,                            //
-     {Menu::Descriptor::Type::Value,                                //
-      "Trrigger Level DOWN",                                        //
-      {{"", Menu::Descriptor::Action::SetPadTriggerThresholdDown}}, //
-      4095}},
+template <>
+const MenuDescriptor Menu<config_t::ThresholdsEightPanel>::thresholds_descriptor = {
+    MenuDescriptor::Type::Menu,
+    "Thresholds",
+    {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},       //
+     {"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},                //
+     {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight},     //
+     {"Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdLeft},            //
+     {"Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdRight},          //
+     {"Down Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownRight},  //
+     {"Down", MenuDescriptor::Action::GotoPagePadTriggerThresholdDown},            //
+     {"Down Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownLeft}}, //
+    0};
 
-    {Menu::Page::PadTriggerThresholdLeft,                           //
-     {Menu::Descriptor::Type::Value,                                //
-      "Trigger Level LEFT",                                         //
-      {{"", Menu::Descriptor::Action::SetPadTriggerThresholdLeft}}, //
-      4095}},
+template <>
+const MenuDescriptor Menu<config_t::ThresholdsNinePanel>::thresholds_descriptor = {
+    MenuDescriptor::Type::Menu,
+    "Thresholds",
+    {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},       //
+     {"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},                //
+     {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight},     //
+     {"Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdLeft},            //
+     {"Center", MenuDescriptor::Action::GotoPagePadTriggerThresholdCenter},        //
+     {"Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdRight},          //
+     {"Down Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownRight},  //
+     {"Down", MenuDescriptor::Action::GotoPagePadTriggerThresholdDown},            //
+     {"Down Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownLeft}}, //
+    0};
 
-    {Menu::Page::PadTriggerThresholdRight,                           //
-     {Menu::Descriptor::Type::Value,                                 //
-      "Trigger Level RIGHT",                                         //
-      {{"", Menu::Descriptor::Action::SetPadTriggerThresholdRight}}, //
-      4095}},
+template <typename TThresholds>
+const std::map<MenuPage, const MenuDescriptor> Menu<TThresholds>::descriptors = {
+    {MenuPage::Main,
+     {MenuDescriptor::Type::Menu,                               //
+      "Settings",                                               //
+      {{"Mode", MenuDescriptor::Action::GotoPageDeviceMode},    //
+       {"Pad", MenuDescriptor::Action::GotoPagePad},            //
+       {"Led", MenuDescriptor::Action::GotoPageLed},            //
+       {"Reset", MenuDescriptor::Action::GotoPageReset},        //
+       {"USB Flash", MenuDescriptor::Action::GotoPageBootsel}}, //
+      0}},                                                      //
 
-    {Menu::Page::Led,                                                           //
-     {Menu::Descriptor::Type::Menu,                                             //
-      "LED Settings",                                                           //
-      {{"Brightness", Menu::Descriptor::Action::GotoPageLedBrightness},         //
-       {"Plyr Color", Menu::Descriptor::Action::GotoPageLedEnablePlayerColor}}, //
-      0}},                                                                      //
+    {MenuPage::DeviceMode,
+     {MenuDescriptor::Type::Selection,                     //
+      "Mode",                                              //
+      {{"Swtch Pro", MenuDescriptor::Action::SetUsbMode},  //
+       {"Dualshock3", MenuDescriptor::Action::SetUsbMode}, //
+       {"Dualshock4", MenuDescriptor::Action::SetUsbMode}, //
+       {"PS4 Compat", MenuDescriptor::Action::SetUsbMode}, //
+       {"Keybrd P1", MenuDescriptor::Action::SetUsbMode},  //
+       {"Keybrd P2", MenuDescriptor::Action::SetUsbMode},  //
+       {"Xbox 360", MenuDescriptor::Action::SetUsbMode},   //
+       {"MIDI", MenuDescriptor::Action::SetUsbMode},       //
+       {"Debug", MenuDescriptor::Action::SetUsbMode}},     //
+      0}},                                                 //
 
-    {Menu::Page::LedBrightness,                           //
-     {Menu::Descriptor::Type::Value,                      //
-      "LED Brightness",                                   //
-      {{"", Menu::Descriptor::Action::SetLedBrightness}}, //
-      UINT8_MAX}},                                        //
+    {MenuPage::Pad,                                                        //
+     {MenuDescriptor::Type::Menu,                                          //
+      "Pad Settings",                                                      //
+      {{"Calibrate", MenuDescriptor::Action::DoCalibrate},                 //
+       {"Hold Time", MenuDescriptor::Action::GotoPagePadDebounceDelay},    //
+       {"Thresholds", MenuDescriptor::Action::GotoPageTriggerThresholds}}, //
+      0}},                                                                 //
 
-    {Menu::Page::LedEnablePlayerColor,                           //
-     {Menu::Descriptor::Type::Toggle,                            //
-      "Player Color (PS4)",                                      //
-      {{"", Menu::Descriptor::Action::SetLedEnablePlayerColor}}, //
-      0}},                                                       //
+    {MenuPage::PadDebounceDelay,
+     {MenuDescriptor::Type::Value,                         //
+      "Step Hold Time (ms)",                               //
+      {{"", MenuDescriptor::Action::SetPadDebounceDelay}}, //
+      UINT8_MAX}},                                         //
 
-    {Menu::Page::Reset,                              //
-     {Menu::Descriptor::Type::Menu,                  //
-      "Reset all Settings?",                         //
-      {{"No", Menu::Descriptor::Action::GotoParent}, //
-       {"Yes", Menu::Descriptor::Action::DoReset}},  //
-      0}},                                           //
+    {MenuPage::PadTriggerThresholds, thresholds_descriptor},
 
-    {Menu::Page::Bootsel,                                         //
-     {Menu::Descriptor::Type::Menu,                               //
-      "Reboot to Flash Mode",                                     //
-      {{"Reboot?", Menu::Descriptor::Action::DoRebootToBootsel}}, //
-      0}},                                                        //
+    {MenuPage::PadTriggerThresholdUpLeft,                           //
+     {MenuDescriptor::Type::Value,                                  //
+      "Threshold Up Left",                                          //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdUpLeft}}, //
+      UINT16_MAX}},
 
-    {Menu::Page::BootselMsg,                         //
-     {Menu::Descriptor::Type::RebootInfo,            //
-      "Ready to Flash...",                           //
-      {{"BOOTSEL", Menu::Descriptor::Action::None}}, //
-      0}},                                           //
+    {MenuPage::PadTriggerThresholdUp,                           //
+     {MenuDescriptor::Type::Value,                              //
+      "Threshold Up",                                           //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdUp}}, //
+      UINT16_MAX}},
+
+    {MenuPage::PadTriggerThresholdUpRight,                           //
+     {MenuDescriptor::Type::Value,                                   //
+      "Threshold Up Right",                                          //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdUpRight}}, //
+      UINT16_MAX}},
+
+    {MenuPage::PadTriggerThresholdLeft,                           //
+     {MenuDescriptor::Type::Value,                                //
+      "Threshold Left",                                           //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdLeft}}, //
+      UINT16_MAX}},
+
+    {MenuPage::PadTriggerThresholdCenter,                           //
+     {MenuDescriptor::Type::Value,                                  //
+      "Threshold Center",                                           //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdCenter}}, //
+      UINT16_MAX}},
+
+    {MenuPage::PadTriggerThresholdRight,                           //
+     {MenuDescriptor::Type::Value,                                 //
+      "Threshold Right",                                           //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdRight}}, //
+      UINT16_MAX}},
+
+    {MenuPage::PadTriggerThresholdDownLeft,                           //
+     {MenuDescriptor::Type::Value,                                    //
+      "Threshold Down Left",                                          //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdDownLeft}}, //
+      UINT16_MAX}},
+
+    {MenuPage::PadTriggerThresholdDown,                           //
+     {MenuDescriptor::Type::Value,                                //
+      "Threshold Down",                                           //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdDown}}, //
+      UINT16_MAX}},
+
+    {MenuPage::PadTriggerThresholdDownRight,                           //
+     {MenuDescriptor::Type::Value,                                     //
+      "Threshold Down Right",                                          //
+      {{"", MenuDescriptor::Action::SetPadTriggerThresholdDownRight}}, //
+      UINT16_MAX}},
+
+    {MenuPage::Led,                                                           //
+     {MenuDescriptor::Type::Menu,                                             //
+      "LED Settings",                                                         //
+      {{"Brightness", MenuDescriptor::Action::GotoPageLedBrightness},         //
+       {"Plyr Color", MenuDescriptor::Action::GotoPageLedEnablePlayerColor}}, //
+      0}},                                                                    //
+
+    {MenuPage::LedBrightness,                           //
+     {MenuDescriptor::Type::Value,                      //
+      "LED Brightness",                                 //
+      {{"", MenuDescriptor::Action::SetLedBrightness}}, //
+      UINT8_MAX}},                                      //
+
+    {MenuPage::LedEnablePlayerColor,                           //
+     {MenuDescriptor::Type::Toggle,                            //
+      "Player Color (PS4)",                                    //
+      {{"", MenuDescriptor::Action::SetLedEnablePlayerColor}}, //
+      0}},                                                     //
+
+    {MenuPage::Reset,                              //
+     {MenuDescriptor::Type::Menu,                  //
+      "Reset all Settings?",                       //
+      {{"No", MenuDescriptor::Action::GotoParent}, //
+       {"Yes", MenuDescriptor::Action::DoReset}},  //
+      0}},                                         //
+
+    {MenuPage::Bootsel,                                         //
+     {MenuDescriptor::Type::Menu,                               //
+      "Reboot to Flash Mode",                                   //
+      {{"Reboot?", MenuDescriptor::Action::DoRebootToBootsel}}, //
+      0}},                                                      //
+
+    {MenuPage::BootselMsg,                         //
+     {MenuDescriptor::Type::RebootInfo,            //
+      "Ready to Flash...",                         //
+      {{"BOOTSEL", MenuDescriptor::Action::None}}, //
+      0}},                                         //
 };
 
-Menu::Menu(std::shared_ptr<SettingsStore> settings_store)
-    : m_store(settings_store), m_active(false), m_state_stack({{Page::Main, 0, 0}}) {};
+template <typename TThresholds>
+Menu<TThresholds>::Menu(std::shared_ptr<SettingsStore<TThresholds>> settings_store)
+    : m_store(settings_store), m_active(false), m_state_stack({{MenuPage::Main, 0, 0}}){};
 
-void Menu::activate() {
-    m_state_stack = std::stack<State>({{Page::Main, 0, 0}});
+template <typename TThresholds> void Menu<TThresholds>::activate() {
+    m_state_stack = std::stack<MenuState>({{MenuPage::Main, 0, 0}});
     m_active = true;
 }
 
@@ -120,6 +221,7 @@ static InputState::Controller checkPressed(const InputState::Controller &control
             Idle,
             RepeatDelay,
             Repeat,
+            FastRepeat,
         };
         State state;
         uint32_t pressed_since;
@@ -128,6 +230,8 @@ static InputState::Controller checkPressed(const InputState::Controller &control
 
     static const uint32_t repeat_delay = 1000;
     static const uint32_t repeat_interval = 20;
+    static const uint32_t fast_repeat_delay = 5000;
+    static const uint32_t fast_repeat_interval = 2;
 
     static ButtonState state_north = {ButtonState::State::Idle, 0, 0};
     static ButtonState state_east = {ButtonState::State::Idle, 0, 0};
@@ -162,7 +266,19 @@ static InputState::Controller checkPressed(const InputState::Controller &control
                 }
                 break;
             case ButtonState::State::Repeat:
-                if ((now - button_state.last_repeat) > repeat_interval) {
+                if ((now - button_state.pressed_since) > fast_repeat_delay) {
+                    result = true;
+                    button_state.state = ButtonState::State::FastRepeat;
+                    button_state.last_repeat = now;
+                } else if ((now - button_state.last_repeat) > repeat_interval) {
+                    result = true;
+                    button_state.last_repeat = now;
+                } else {
+                    result = false;
+                }
+                break;
+            case ButtonState::State::FastRepeat:
+                if ((now - button_state.last_repeat) > fast_repeat_interval) {
                     result = true;
                     button_state.last_repeat = now;
                 } else {
@@ -191,93 +307,341 @@ static InputState::Controller checkPressed(const InputState::Controller &control
     return result;
 }
 
-uint16_t Menu::getCurrentValue(Menu::Page page) {
+template <> uint16_t Menu<config_t::ThresholdsFourPanel>::getCurrentThresholdValue(MenuPage page) {
     switch (page) {
-    case Page::DeviceMode:
-        return static_cast<uint16_t>(m_store->getUsbMode());
-    case Page::PadDebounceDelay:
-        return m_store->getDebounceDelay();
-    case Page::PadTriggerThresholdUp:
+    case MenuPage::PadTriggerThresholdUp:
         return m_store->getTriggerThresholds().up;
-    case Page::PadTriggerThresholDown:
-        return m_store->getTriggerThresholds().down;
-    case Page::PadTriggerThresholdLeft:
+    case MenuPage::PadTriggerThresholdLeft:
         return m_store->getTriggerThresholds().left;
-    case Page::PadTriggerThresholdRight:
+    case MenuPage::PadTriggerThresholdRight:
         return m_store->getTriggerThresholds().right;
-    case Page::LedBrightness:
+    case MenuPage::PadTriggerThresholdDown:
+        return m_store->getTriggerThresholds().down;
+    default:
+        return 0;
+    }
+}
+
+template <> uint16_t Menu<config_t::ThresholdsFivePanel>::getCurrentThresholdValue(MenuPage page) {
+    switch (page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        return m_store->getTriggerThresholds().up_left;
+    case MenuPage::PadTriggerThresholdUpRight:
+        return m_store->getTriggerThresholds().up_right;
+    case MenuPage::PadTriggerThresholdCenter:
+        return m_store->getTriggerThresholds().center;
+    case MenuPage::PadTriggerThresholdDownLeft:
+        return m_store->getTriggerThresholds().down_left;
+    case MenuPage::PadTriggerThresholdDownRight:
+        return m_store->getTriggerThresholds().down_right;
+    default:
+        return 0;
+    }
+}
+
+template <> uint16_t Menu<config_t::ThresholdsSixPanel>::getCurrentThresholdValue(MenuPage page) {
+    switch (page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        return m_store->getTriggerThresholds().up_left;
+    case MenuPage::PadTriggerThresholdUp:
+        return m_store->getTriggerThresholds().up;
+    case MenuPage::PadTriggerThresholdUpRight:
+        return m_store->getTriggerThresholds().up_right;
+    case MenuPage::PadTriggerThresholdLeft:
+        return m_store->getTriggerThresholds().left;
+    case MenuPage::PadTriggerThresholdRight:
+        return m_store->getTriggerThresholds().right;
+    case MenuPage::PadTriggerThresholdDown:
+        return m_store->getTriggerThresholds().down;
+    default:
+        return 0;
+    }
+}
+
+template <> uint16_t Menu<config_t::ThresholdsEightPanel>::getCurrentThresholdValue(MenuPage page) {
+    switch (page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        return m_store->getTriggerThresholds().up_left;
+    case MenuPage::PadTriggerThresholdUp:
+        return m_store->getTriggerThresholds().up;
+    case MenuPage::PadTriggerThresholdUpRight:
+        return m_store->getTriggerThresholds().up_right;
+    case MenuPage::PadTriggerThresholdLeft:
+        return m_store->getTriggerThresholds().left;
+    case MenuPage::PadTriggerThresholdRight:
+        return m_store->getTriggerThresholds().right;
+    case MenuPage::PadTriggerThresholdDownLeft:
+        return m_store->getTriggerThresholds().down_left;
+    case MenuPage::PadTriggerThresholdDown:
+        return m_store->getTriggerThresholds().down;
+    case MenuPage::PadTriggerThresholdDownRight:
+        return m_store->getTriggerThresholds().down_right;
+    default:
+        return 0;
+    }
+}
+
+template <> uint16_t Menu<config_t::ThresholdsNinePanel>::getCurrentThresholdValue(MenuPage page) {
+    switch (page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        return m_store->getTriggerThresholds().up_left;
+    case MenuPage::PadTriggerThresholdUp:
+        return m_store->getTriggerThresholds().up;
+    case MenuPage::PadTriggerThresholdUpRight:
+        return m_store->getTriggerThresholds().up_right;
+    case MenuPage::PadTriggerThresholdLeft:
+        return m_store->getTriggerThresholds().left;
+    case MenuPage::PadTriggerThresholdRight:
+        return m_store->getTriggerThresholds().center;
+    case MenuPage::PadTriggerThresholdCenter:
+        return m_store->getTriggerThresholds().right;
+    case MenuPage::PadTriggerThresholdDownLeft:
+        return m_store->getTriggerThresholds().down_left;
+    case MenuPage::PadTriggerThresholdDown:
+        return m_store->getTriggerThresholds().down;
+    case MenuPage::PadTriggerThresholdDownRight:
+        return m_store->getTriggerThresholds().down_right;
+    default:
+        return 0;
+    }
+}
+
+template <typename TThresholds> uint16_t Menu<TThresholds>::getCurrentValue(MenuPage page) {
+    switch (page) {
+    case MenuPage::DeviceMode:
+        return static_cast<uint16_t>(m_store->getUsbMode());
+    case MenuPage::PadDebounceDelay:
+        return m_store->getDebounceDelay();
+    case MenuPage::PadTriggerThresholdUpLeft:
+    case MenuPage::PadTriggerThresholdUp:
+    case MenuPage::PadTriggerThresholdUpRight:
+    case MenuPage::PadTriggerThresholdLeft:
+    case MenuPage::PadTriggerThresholdCenter:
+    case MenuPage::PadTriggerThresholdRight:
+    case MenuPage::PadTriggerThresholdDownLeft:
+    case MenuPage::PadTriggerThresholdDown:
+    case MenuPage::PadTriggerThresholdDownRight:
+        return getCurrentThresholdValue(page);
+    case MenuPage::LedBrightness:
         return m_store->getLedBrightness();
-    case Page::LedEnablePlayerColor:
+    case MenuPage::LedEnablePlayerColor:
         return static_cast<uint16_t>(m_store->getLedEnablePlayerColor());
-    case Page::Main:
-    case Page::Pad:
-    case Page::Led:
-    case Page::Reset:
-    case Page::Bootsel:
-    case Page::BootselMsg:
+    case MenuPage::Main:
+    case MenuPage::Pad:
+    case MenuPage::PadCalibrate:
+    case MenuPage::PadTriggerThresholds:
+    case MenuPage::Led:
+    case MenuPage::Reset:
+    case MenuPage::Bootsel:
+    case MenuPage::BootselMsg:
         break;
     }
 
     return 0;
 }
 
-void Menu::gotoPage(Menu::Page page) {
+template <typename TThresholds> void Menu<TThresholds>::gotoPage(MenuPage page) {
     const auto current_value = getCurrentValue(page);
 
     m_state_stack.push({page, current_value, current_value});
 }
 
-void Menu::gotoParent(bool do_restore) {
+template <> void Menu<config_t::ThresholdsFourPanel>::restoreThresholdValue() {
+    const auto current_state = m_state_stack.top();
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (current_state.page) {
+    case MenuPage::PadTriggerThresholdUp:
+        thresholds.up = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdLeft:
+        thresholds.left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdRight:
+        thresholds.right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDown:
+        thresholds.down = current_state.original_value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <> void Menu<config_t::ThresholdsFivePanel>::restoreThresholdValue() {
+    const auto current_state = m_state_stack.top();
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (current_state.page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        thresholds.up_left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdUpRight:
+        thresholds.up_right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdCenter:
+        thresholds.center = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDownLeft:
+        thresholds.down_left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDownRight:
+        thresholds.down_right = current_state.original_value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <> void Menu<config_t::ThresholdsSixPanel>::restoreThresholdValue() {
+    const auto current_state = m_state_stack.top();
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (current_state.page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        thresholds.up_left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdUp:
+        thresholds.up = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdUpRight:
+        thresholds.up_right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdLeft:
+        thresholds.left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdRight:
+        thresholds.right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDown:
+        thresholds.down = current_state.original_value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <> void Menu<config_t::ThresholdsEightPanel>::restoreThresholdValue() {
+    const auto current_state = m_state_stack.top();
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (current_state.page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        thresholds.up_left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdUp:
+        thresholds.up = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdUpRight:
+        thresholds.up_right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdLeft:
+        thresholds.left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdRight:
+        thresholds.right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDownLeft:
+        thresholds.down_left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDown:
+        thresholds.down = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDownRight:
+        thresholds.down_right = current_state.original_value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <> void Menu<config_t::ThresholdsNinePanel>::restoreThresholdValue() {
+    const auto current_state = m_state_stack.top();
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (current_state.page) {
+    case MenuPage::PadTriggerThresholdUpLeft:
+        thresholds.up_left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdUp:
+        thresholds.up = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdUpRight:
+        thresholds.up_right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdLeft:
+        thresholds.left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdCenter:
+        thresholds.center = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdRight:
+        thresholds.right = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDownLeft:
+        thresholds.down_left = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDown:
+        thresholds.down = current_state.original_value;
+        break;
+    case MenuPage::PadTriggerThresholdDownRight:
+        thresholds.down_right = current_state.original_value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <typename TThresholds> void Menu<TThresholds>::gotoParent(bool do_restore) {
     const auto current_state = m_state_stack.top();
 
-    if (current_state.page == Page::Main) {
+    if (current_state.page == MenuPage::Main) {
         m_active = false;
     }
 
     if (do_restore) {
         switch (current_state.page) {
-        case Page::DeviceMode:
+        case MenuPage::DeviceMode:
             m_store->setUsbMode(static_cast<usb_mode_t>(current_state.original_value));
             break;
-        case Page::PadDebounceDelay:
+        case MenuPage::PadDebounceDelay:
             m_store->setDebounceDelay(current_state.original_value);
             break;
-        case Page::PadTriggerThresholdUp: {
-            auto thresholds = m_store->getTriggerThresholds();
-
-            thresholds.up = current_state.original_value;
-            m_store->setTriggerThresholds(thresholds);
-        } break;
-        case Page::PadTriggerThresholDown: {
-            auto thresholds = m_store->getTriggerThresholds();
-
-            thresholds.down = current_state.original_value;
-            m_store->setTriggerThresholds(thresholds);
-        } break;
-        case Page::PadTriggerThresholdLeft: {
-            auto thresholds = m_store->getTriggerThresholds();
-
-            thresholds.left = current_state.original_value;
-            m_store->setTriggerThresholds(thresholds);
-        } break;
-        case Page::PadTriggerThresholdRight: {
-            auto thresholds = m_store->getTriggerThresholds();
-
-            thresholds.right = current_state.original_value;
-            m_store->setTriggerThresholds(thresholds);
-        } break;
-        case Page::LedBrightness:
+        case MenuPage::PadTriggerThresholdUpLeft:
+        case MenuPage::PadTriggerThresholdUp:
+        case MenuPage::PadTriggerThresholdUpRight:
+        case MenuPage::PadTriggerThresholdLeft:
+        case MenuPage::PadTriggerThresholdCenter:
+        case MenuPage::PadTriggerThresholdRight:
+        case MenuPage::PadTriggerThresholdDownLeft:
+        case MenuPage::PadTriggerThresholdDown:
+        case MenuPage::PadTriggerThresholdDownRight:
+            restoreThresholdValue();
+            break;
+        case MenuPage::LedBrightness:
             m_store->setLedBrightness(current_state.original_value);
             break;
-        case Page::LedEnablePlayerColor:
+        case MenuPage::LedEnablePlayerColor:
             m_store->setLedEnablePlayerColor(static_cast<bool>(current_state.original_value));
             break;
-        case Page::Main:
-        case Page::Pad:
-        case Page::Led:
-        case Page::Reset:
-        case Page::Bootsel:
-        case Page::BootselMsg:
+        case MenuPage::Main:
+        case MenuPage::Pad:
+        case MenuPage::PadCalibrate:
+        case MenuPage::PadTriggerThresholds:
+        case MenuPage::Led:
+        case MenuPage::Reset:
+        case MenuPage::Bootsel:
+        case MenuPage::BootselMsg:
             break;
         }
     }
@@ -285,100 +649,268 @@ void Menu::gotoParent(bool do_restore) {
     m_state_stack.pop();
 }
 
-void Menu::performAction(Descriptor::Action action, uint8_t value) {
+template <>
+void Menu<config_t::ThresholdsFourPanel>::performActionSetThresholdValue(MenuDescriptor::Action action,
+                                                                         uint16_t value) {
+    auto thresholds = m_store->getTriggerThresholds();
+
     switch (action) {
-    case Descriptor::Action::None:
+    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
+        thresholds.up = value;
         break;
-    case Descriptor::Action::GotoParent:
+    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
+        thresholds.left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
+        thresholds.right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
+        thresholds.down = value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <>
+void Menu<config_t::ThresholdsFivePanel>::performActionSetThresholdValue(MenuDescriptor::Action action,
+                                                                         uint16_t value) {
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (action) {
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
+        thresholds.up_left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
+        thresholds.up_right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdCenter:
+        thresholds.center = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
+        thresholds.down_left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
+        thresholds.down_right = value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <>
+void Menu<config_t::ThresholdsSixPanel>::performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value) {
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (action) {
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
+        thresholds.up_left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
+        thresholds.up = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
+        thresholds.up_right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
+        thresholds.left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
+        thresholds.right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
+        thresholds.down = value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <>
+void Menu<config_t::ThresholdsEightPanel>::performActionSetThresholdValue(MenuDescriptor::Action action,
+                                                                          uint16_t value) {
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (action) {
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
+        thresholds.up_left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
+        thresholds.up = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
+        thresholds.up_right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
+        thresholds.left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
+        thresholds.right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
+        thresholds.down_left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
+        thresholds.down = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
+        thresholds.down_right = value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <>
+void Menu<config_t::ThresholdsNinePanel>::performActionSetThresholdValue(MenuDescriptor::Action action,
+                                                                         uint16_t value) {
+    auto thresholds = m_store->getTriggerThresholds();
+
+    switch (action) {
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
+        thresholds.up_left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
+        thresholds.up = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
+        thresholds.up_right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
+        thresholds.left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdCenter:
+        thresholds.center = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
+        thresholds.right = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
+        thresholds.down_left = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
+        thresholds.down = value;
+        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
+        thresholds.down_right = value;
+        break;
+    default:
+        break;
+    }
+
+    m_store->setTriggerThresholds(thresholds);
+}
+
+template <typename TThresholds> void Menu<TThresholds>::performAction(MenuDescriptor::Action action, uint16_t value) {
+    switch (action) {
+    case MenuDescriptor::Action::None:
+        break;
+    case MenuDescriptor::Action::GotoParent:
         gotoParent(false);
         break;
-    case Descriptor::Action::GotoPageDeviceMode:
-        gotoPage(Page::DeviceMode);
+    case MenuDescriptor::Action::GotoPageDeviceMode:
+        gotoPage(MenuPage::DeviceMode);
         break;
-    case Descriptor::Action::GotoPagePad:
-        gotoPage(Page::Pad);
+    case MenuDescriptor::Action::GotoPagePad:
+        gotoPage(MenuPage::Pad);
         break;
-    case Descriptor::Action::GotoPageLed:
-        gotoPage(Page::Led);
+    case MenuDescriptor::Action::GotoPageLed:
+        gotoPage(MenuPage::Led);
         break;
-    case Descriptor::Action::GotoPageReset:
-        gotoPage(Page::Reset);
+    case MenuDescriptor::Action::GotoPageReset:
+        gotoPage(MenuPage::Reset);
         break;
-    case Descriptor::Action::GotoPageBootsel:
-        gotoPage(Page::Bootsel);
+    case MenuDescriptor::Action::GotoPageBootsel:
+        gotoPage(MenuPage::Bootsel);
         break;
-    case Descriptor::Action::GotoPagePadDebounceDelay:
-        gotoPage(Page::PadDebounceDelay);
+    case MenuDescriptor::Action::GotoPagePadDebounceDelay:
+        gotoPage(MenuPage::PadDebounceDelay);
         break;
-    case Descriptor::Action::GotoPagePadTriggerThresholdUp:
-        gotoPage(Page::PadTriggerThresholdUp);
+    case MenuDescriptor::Action::GotoPageTriggerThresholds:
+        gotoPage(MenuPage::PadTriggerThresholds);
         break;
-    case Descriptor::Action::GotoPagePadTriggerThresholdDown:
-        gotoPage(Page::PadTriggerThresholDown);
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft:
+        gotoPage(MenuPage::PadTriggerThresholdUpLeft);
         break;
-    case Descriptor::Action::GotoPagePadTriggerThresholdLeft:
-        gotoPage(Page::PadTriggerThresholdLeft);
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdUp:
+        gotoPage(MenuPage::PadTriggerThresholdUp);
         break;
-    case Descriptor::Action::GotoPagePadTriggerThresholdRight:
-        gotoPage(Page::PadTriggerThresholdRight);
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight:
+        gotoPage(MenuPage::PadTriggerThresholdUpRight);
         break;
-    case Descriptor::Action::GotoPageLedBrightness:
-        gotoPage(Page::LedBrightness);
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdLeft:
+        gotoPage(MenuPage::PadTriggerThresholdLeft);
         break;
-    case Descriptor::Action::GotoPageLedEnablePlayerColor:
-        gotoPage(Page::LedEnablePlayerColor);
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdCenter:
+        gotoPage(MenuPage::PadTriggerThresholdCenter);
         break;
-    case Descriptor::Action::SetUsbMode:
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdRight:
+        gotoPage(MenuPage::PadTriggerThresholdRight);
+        break;
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdDownLeft:
+        gotoPage(MenuPage::PadTriggerThresholdDownLeft);
+        break;
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdDown:
+        gotoPage(MenuPage::PadTriggerThresholdDown);
+        break;
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholdDownRight:
+        gotoPage(MenuPage::PadTriggerThresholdDownRight);
+        break;
+    case MenuDescriptor::Action::GotoPageLedBrightness:
+        gotoPage(MenuPage::LedBrightness);
+        break;
+    case MenuDescriptor::Action::GotoPageLedEnablePlayerColor:
+        gotoPage(MenuPage::LedEnablePlayerColor);
+        break;
+    case MenuDescriptor::Action::SetUsbMode:
         m_store->setUsbMode(static_cast<usb_mode_t>(value));
         break;
-    case Descriptor::Action::SetPadDebounceDelay:
+    case MenuDescriptor::Action::SetPadDebounceDelay:
         m_store->setDebounceDelay(value);
         break;
-    case Descriptor::Action::SetPadTriggerThresholdUp: {
-        auto thresholds = m_store->getTriggerThresholds();
-
-        thresholds.up = value;
-        m_store->setTriggerThresholds(thresholds);
-    } break;
-    case Descriptor::Action::SetPadTriggerThresholdDown: {
-        auto thresholds = m_store->getTriggerThresholds();
-
-        thresholds.down = value;
-        m_store->setTriggerThresholds(thresholds);
-    } break;
-    case Descriptor::Action::SetPadTriggerThresholdLeft: {
-        auto thresholds = m_store->getTriggerThresholds();
-
-        thresholds.left = value;
-        m_store->setTriggerThresholds(thresholds);
-    } break;
-    case Descriptor::Action::SetPadTriggerThresholdRight: {
-        auto thresholds = m_store->getTriggerThresholds();
-
-        thresholds.right = value;
-        m_store->setTriggerThresholds(thresholds);
-    } break;
-    case Descriptor::Action::SetLedBrightness:
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
+    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
+    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
+    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
+    case MenuDescriptor::Action::SetPadTriggerThresholdCenter:
+    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
+    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
+        performActionSetThresholdValue(action, value);
+        break;
+    case MenuDescriptor::Action::SetLedBrightness:
         m_store->setLedBrightness(value);
         break;
-    case Descriptor::Action::SetLedEnablePlayerColor:
+    case MenuDescriptor::Action::SetLedEnablePlayerColor:
         m_store->setLedEnablePlayerColor(static_cast<bool>(value));
         break;
-    case Descriptor::Action::DoReset:
+    case MenuDescriptor::Action::DoCalibrate:
+        // TODO;
+        break;
+    case MenuDescriptor::Action::DoReset:
         m_store->reset();
         break;
-    case Descriptor::Action::DoRebootToBootsel:
+    case MenuDescriptor::Action::DoRebootToBootsel:
         m_store->scheduleReboot(true);
-        gotoPage(Page::BootselMsg);
+        gotoPage(MenuPage::BootselMsg);
         break;
     }
 
     return;
 }
 
-void Menu::update(const InputState::Controller &controller_state) {
+template <typename TThresholds> void Menu<TThresholds>::update(const InputState::Controller &controller_state) {
     InputState::Controller pressed = checkPressed(controller_state);
-    State &current_state = m_state_stack.top();
+    auto &current_state = m_state_stack.top();
 
     auto descriptor_it = descriptors.find(current_state.page);
     if (descriptor_it == descriptors.end()) {
@@ -386,15 +918,15 @@ void Menu::update(const InputState::Controller &controller_state) {
         return;
     }
 
-    if (descriptor_it->second.type == Descriptor::Type::RebootInfo) {
+    if (descriptor_it->second.type == MenuDescriptor::Type::RebootInfo) {
         m_active = false;
     } else if (pressed.dpad.left) {
         switch (descriptor_it->second.type) {
-        case Descriptor::Type::Toggle:
+        case MenuDescriptor::Type::Toggle:
             current_state.selected_value = !current_state.selected_value;
             performAction(descriptor_it->second.items.at(0).second, current_state.selected_value);
             break;
-        case Descriptor::Type::Selection:
+        case MenuDescriptor::Type::Selection:
             if (current_state.selected_value == 0) {
                 current_state.selected_value = descriptor_it->second.items.size() - 1;
             } else {
@@ -403,24 +935,24 @@ void Menu::update(const InputState::Controller &controller_state) {
             performAction(descriptor_it->second.items.at(current_state.selected_value).second,
                           current_state.selected_value);
             break;
-        case Descriptor::Type::Menu:
+        case MenuDescriptor::Type::Menu:
             if (current_state.selected_value == 0) {
                 current_state.selected_value = descriptor_it->second.items.size() - 1;
             } else {
                 current_state.selected_value--;
             }
             break;
-        case Descriptor::Type::Value:
-        case Descriptor::Type::RebootInfo:
+        case MenuDescriptor::Type::Value:
+        case MenuDescriptor::Type::RebootInfo:
             break;
         }
     } else if (pressed.dpad.right) {
         switch (descriptor_it->second.type) {
-        case Descriptor::Type::Toggle:
+        case MenuDescriptor::Type::Toggle:
             current_state.selected_value = !current_state.selected_value;
             performAction(descriptor_it->second.items.at(0).second, current_state.selected_value);
             break;
-        case Descriptor::Type::Selection:
+        case MenuDescriptor::Type::Selection:
             if (current_state.selected_value == descriptor_it->second.items.size() - 1) {
                 current_state.selected_value = 0;
             } else {
@@ -429,77 +961,77 @@ void Menu::update(const InputState::Controller &controller_state) {
             performAction(descriptor_it->second.items.at(current_state.selected_value).second,
                           current_state.selected_value);
             break;
-        case Descriptor::Type::Menu:
+        case MenuDescriptor::Type::Menu:
             if (current_state.selected_value == descriptor_it->second.items.size() - 1) {
                 current_state.selected_value = 0;
             } else {
                 current_state.selected_value++;
             }
             break;
-        case Descriptor::Type::Value:
-        case Descriptor::Type::RebootInfo:
+        case MenuDescriptor::Type::Value:
+        case MenuDescriptor::Type::RebootInfo:
             break;
         }
     } else if (pressed.dpad.up) {
         switch (descriptor_it->second.type) {
-        case Descriptor::Type::Value:
-            if (current_state.selected_value < UINT8_MAX) {
+        case MenuDescriptor::Type::Value:
+            if (current_state.selected_value < descriptor_it->second.max_value) {
                 current_state.selected_value++;
                 performAction(descriptor_it->second.items.at(0).second, current_state.selected_value);
             }
             break;
-        case Descriptor::Type::Toggle:
-        case Descriptor::Type::Selection:
-        case Descriptor::Type::Menu:
-        case Descriptor::Type::RebootInfo:
+        case MenuDescriptor::Type::Toggle:
+        case MenuDescriptor::Type::Selection:
+        case MenuDescriptor::Type::Menu:
+        case MenuDescriptor::Type::RebootInfo:
             break;
         }
     } else if (pressed.dpad.down) {
         switch (descriptor_it->second.type) {
-        case Descriptor::Type::Value:
+        case MenuDescriptor::Type::Value:
             if (current_state.selected_value > 0) {
                 current_state.selected_value--;
                 performAction(descriptor_it->second.items.at(0).second, current_state.selected_value);
             }
             break;
-        case Descriptor::Type::Toggle:
-        case Descriptor::Type::Selection:
-        case Descriptor::Type::Menu:
-        case Descriptor::Type::RebootInfo:
+        case MenuDescriptor::Type::Toggle:
+        case MenuDescriptor::Type::Selection:
+        case MenuDescriptor::Type::Menu:
+        case MenuDescriptor::Type::RebootInfo:
             break;
         }
     } else if (pressed.buttons.south) { // Back/Exit
         switch (descriptor_it->second.type) {
-        case Descriptor::Type::Value:
-        case Descriptor::Type::Toggle:
-        case Descriptor::Type::Selection:
+        case MenuDescriptor::Type::Value:
+        case MenuDescriptor::Type::Toggle:
+        case MenuDescriptor::Type::Selection:
             gotoParent(true);
             break;
-        case Descriptor::Type::Menu:
+        case MenuDescriptor::Type::Menu:
             gotoParent(false);
             break;
-        case Descriptor::Type::RebootInfo:
+        case MenuDescriptor::Type::RebootInfo:
             break;
         }
     } else if (pressed.buttons.east) { // Select
         switch (descriptor_it->second.type) {
-        case Descriptor::Type::Value:
-        case Descriptor::Type::Toggle:
-        case Descriptor::Type::Selection:
+        case MenuDescriptor::Type::Value:
+        case MenuDescriptor::Type::Toggle:
+        case MenuDescriptor::Type::Selection:
             gotoParent(false);
             break;
-        case Descriptor::Type::Menu:
+        case MenuDescriptor::Type::Menu:
             performAction(descriptor_it->second.items.at(current_state.selected_value).second,
                           current_state.selected_value);
             break;
-        case Descriptor::Type::RebootInfo:
+        case MenuDescriptor::Type::RebootInfo:
             break;
         }
     }
 }
 
-bool Menu::active() { return m_active; }
+template <typename TThresholds> bool Menu<TThresholds>::active() { return m_active; }
 
-Menu::State Menu::getState() { return m_state_stack.top(); }
+template <typename TThresholds> MenuState Menu<TThresholds>::getState() { return m_state_stack.top(); }
 
 } // namespace Dancecon::Utils

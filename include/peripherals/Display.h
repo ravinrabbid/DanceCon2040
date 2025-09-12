@@ -34,7 +34,7 @@ class Display {
     usb_mode_t m_usb_mode;
     uint8_t m_player_id;
 
-    Utils::Menu::State m_menu_state;
+    Utils::MenuState m_menu_state;
 
     ssd1306_t m_display;
 
@@ -48,7 +48,7 @@ class Display {
     void setUsbMode(usb_mode_t mode);
     void setPlayerId(uint8_t player_id);
 
-    void setMenuState(const Utils::Menu::State &menu_state);
+    void setMenuState(const Utils::MenuState &menu_state);
 
     void showIdle();
     void showMenu();

@@ -1,8 +1,8 @@
 #include "peripherals/Controller.h"
-// #include "peripherals/Display.h"
+#include "peripherals/Display.h"
 #include "usb/device/hid/ps4_auth.h"
 #include "usb/device_driver.h"
-// #include "utils/Menu.h"
+#include "utils/Menu.h"
 #include "utils/PS4AuthProvider.h"
 #include "utils/SettingsStore.h"
 
@@ -56,14 +56,14 @@ void core1_task() {
     i2c_init(Config::Default::i2c_config.block, Config::Default::i2c_config.speed_hz);
 
     Peripherals::Controller controller(Config::Default::controller_config);
-    Peripherals::PadLeds led(Config::Default::led_config);
-    // Peripherals::Display display(Config::Default::display_config);
+    Peripherals::PanelLeds led(Config::Default::led_config);
+    Peripherals::Display display(Config::Default::display_config);
 
     Utils::PS4AuthProvider ps4authprovider;
     std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge;
 
     Utils::InputState input_state;
-    // Utils::Menu::State menu_display_msg;
+    Utils::MenuState menu_display_msg;
     ControlMessage control_msg;
 
     while (true) {
@@ -75,12 +75,12 @@ void core1_task() {
         if (queue_try_remove(&control_queue, &control_msg)) {
             switch (control_msg.command) {
             case ControlCommand::SetUsbMode:
-                // display.setUsbMode(control_msg.data.usb_mode);
+                display.setUsbMode(control_msg.data.usb_mode);
                 break;
             case ControlCommand::SetPlayerLed:
                 switch (control_msg.data.player_led.type) {
                 case USB_PLAYER_LED_ID:
-                    // display.setPlayerId(control_msg.data.player_led.id);
+                    display.setPlayerId(control_msg.data.player_led.id);
                     break;
                 case USB_PLAYER_LED_COLOR:
                     led.setPlayerColor({control_msg.data.player_led.red, control_msg.data.player_led.green,
@@ -95,16 +95,16 @@ void core1_task() {
                 led.setEnablePlayerColor(control_msg.data.led_enable_player_color);
                 break;
             case ControlCommand::EnterMenu:
-                // display.showMenu();
+                display.showMenu();
                 break;
             case ControlCommand::ExitMenu:
-                // display.showIdle();
+                display.showIdle();
                 break;
             }
         }
-        // if (queue_try_remove(&menu_display_queue, &menu_display_msg)) {
-        //     display.setMenuState(menu_display_msg);
-        // }
+        if (queue_try_remove(&menu_display_queue, &menu_display_msg)) {
+            display.setMenuState(menu_display_msg);
+        }
         if (queue_try_remove(&auth_challenge_queue, auth_challenge.data())) {
             const auto signed_challenge = ps4authprovider.sign(auth_challenge);
             queue_try_remove(&auth_signed_challenge_queue, nullptr); // clear queue first
@@ -112,16 +112,16 @@ void core1_task() {
         }
 
         led.setInputState(input_state);
-        // display.setInputState(input_state);
+        display.setInputState(input_state);
 
         led.update();
-        // display.update();
+        display.update();
     }
 }
 
 int main() {
     queue_init(&control_queue, sizeof(ControlMessage), 1);
-    // queue_init(&menu_display_queue, sizeof(Utils::Menu::State), 1);
+    queue_init(&menu_display_queue, sizeof(Utils::MenuState), 1);
     queue_init(&pad_input_queue, sizeof(Utils::InputState::Pad), 1);
     queue_init(&controller_input_queue, sizeof(Utils::InputState::Controller), 1);
     queue_init(&auth_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
@@ -131,11 +131,11 @@ int main() {
     std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response;
 
     auto settings_store = std::make_shared<Utils::SettingsStore<decltype(Config::Default::pad_config)::Thresholds>>();
-    // Utils::Menu menu(settings_store);
+    Utils::Menu menu(settings_store);
 
     const auto mode = settings_store->getUsbMode();
 
-    Peripherals::Pad pad(Config::Default::pad_config);
+    Peripherals::Pad<Config::Default::pad_config.PANEL_COUNT> pad(Config::Default::pad_config);
 
     multicore_launch_core1(core1_task);
 
@@ -177,27 +177,27 @@ int main() {
 
         const auto pad_message = input_state.pad;
 
-        // if (menu.active()) {
-        //     menu.update(input_state.controller);
-        //     if (menu.active()) {
-        //         const auto display_msg = menu.getState();
-        //         queue_add_blocking(&menu_display_queue, &display_msg);
-        //     } else {
-        //         settings_store->store();
+        if (menu.active()) {
+            menu.update(input_state.controller);
+            if (menu.active()) {
+                const auto display_msg = menu.getState();
+                queue_add_blocking(&menu_display_queue, &display_msg);
+            } else {
+                settings_store->store();
 
-        //         ControlMessage ctrl_message = {ControlCommand::ExitMenu, {}};
-        //         queue_add_blocking(&control_queue, &ctrl_message);
-        //     }
+                ControlMessage ctrl_message = {ControlCommand::ExitMenu, {}};
+                queue_add_blocking(&control_queue, &ctrl_message);
+            }
 
-        //     readSettings();
-        //     input_state.releaseAll();
+            readSettings();
+            input_state.releaseAll();
 
-        // } else if (input_state.checkHotkey()) {
-        //     menu.activate();
+        } else if (input_state.checkHotkey()) {
+            menu.activate();
 
-        //     ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
-        //     queue_add_blocking(&control_queue, &ctrl_message);
-        // }
+            ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
+            queue_add_blocking(&control_queue, &ctrl_message);
+        }
 
         usbd_driver_send_report(input_state.getReport(mode));
         usbd_driver_task();
