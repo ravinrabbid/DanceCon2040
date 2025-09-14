@@ -178,8 +178,7 @@ std::array<uint16_t, TPanelCount> Pad<TPanelCount>::ExternalAdc<TAdcCount>::read
     return result;
 }
 
-template <size_t TPanelCount>
-Pad<TPanelCount>::Panel::Panel(const uint8_t channel) : channel(channel), last_change(0), active(false) {}
+template <size_t TPanelCount> Pad<TPanelCount>::Panel::Panel() : last_change(0), active(false) {}
 
 template <size_t TPanelCount> void Pad<TPanelCount>::Panel::setState(const bool state, const uint16_t debounce_delay) {
     if (active == state) {
@@ -194,7 +193,8 @@ template <size_t TPanelCount> void Pad<TPanelCount>::Panel::setState(const bool 
     }
 }
 
-template <size_t TPanelCount> Pad<TPanelCount>::Pad(const Config &config) : m_config(config) {
+template <size_t TPanelCount>
+Pad<TPanelCount>::Pad(const Config &config) : m_config(config), m_panels({}), m_panel_offsets({}) {
     std::visit(
         [&](auto &&adc_config) {
             using T = std::decay_t<decltype(adc_config)>;
@@ -206,101 +206,51 @@ template <size_t TPanelCount> Pad<TPanelCount>::Pad(const Config &config) : m_co
             }
         },
         m_config.adc_config);
+}
 
-    if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-        m_panels.emplace(Id::UP, config.adc_channels.up);
-        m_panels.emplace(Id::LEFT, config.adc_channels.left);
-        m_panels.emplace(Id::RIGHT, config.adc_channels.right);
-        m_panels.emplace(Id::DOWN, config.adc_channels.down);
+template <size_t TPanelCount> void Pad<TPanelCount>::calibrate() {
+    static const size_t sample_count = 100;
+
+    std::array<uint32_t, TPanelCount> samples = {};
+
+    for (size_t i = 0; i < sample_count; ++i) {
+        const auto adc_values = m_adc->read();
+
+        std::transform(adc_values.cbegin(), adc_values.cend(), samples.cbegin(), samples.begin(),
+                       [](const auto &sample, const auto &sum) { return sum + sample; });
     }
-    if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-        m_panels.emplace(Id::UP_LEFT, config.adc_channels.up_left);
-        m_panels.emplace(Id::UP_RIGHT, config.adc_channels.up_right);
-    }
-    if constexpr (TPanelCount == 8 || TPanelCount == 9) {
-        m_panels.emplace(Id::DOWN_LEFT, config.adc_channels.down_left);
-        m_panels.emplace(Id::DOWN_RIGHT, config.adc_channels.down_right);
-    }
-    if constexpr (TPanelCount == 9) {
-        m_panels.emplace(Id::CENTER, config.adc_channels.center);
-    }
+
+    std::transform(samples.cbegin(), samples.cend(), m_panel_offsets.begin(),
+                   [](const auto &sample) { return sample / 100; });
 }
 
 template <size_t TPanelCount> void Pad<TPanelCount>::updateInputState(Utils::InputState &input_state) {
     const auto adc_values = m_adc->read();
 
-    for (auto &panel : m_panels) {
-        switch (panel.first) {
-        case Id::UP_LEFT:
-            if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.up_left.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.up_left.raw > m_config.thresholds.up_left,
-                                      m_config.debounce_delay_ms);
-                input_state.pad.up_left.triggered = panel.second.getState();
-            }
-            break;
-        case Id::UP:
-            if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.up.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.up.raw > m_config.thresholds.up, m_config.debounce_delay_ms);
-                input_state.pad.up.triggered = panel.second.getState();
-            }
-            break;
-        case Id::UP_RIGHT:
-            if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.up_right.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.up_right.raw > m_config.thresholds.up_right,
-                                      m_config.debounce_delay_ms);
-                input_state.pad.up_right.triggered = panel.second.getState();
-            }
-            break;
-        case Id::LEFT:
-            if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.left.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.left.raw > m_config.thresholds.left, m_config.debounce_delay_ms);
-                input_state.pad.left.triggered = panel.second.getState();
-            }
-            break;
-        case Id::CENTER:
-            if constexpr (TPanelCount == 5 || TPanelCount == 9) {
-                input_state.pad.center.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.center.raw > m_config.thresholds.center,
-                                      m_config.debounce_delay_ms);
-                input_state.pad.center.triggered = panel.second.getState();
-            }
-            break;
-        case Id::RIGHT:
-            if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.right.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.right.raw > m_config.thresholds.right,
-                                      m_config.debounce_delay_ms);
-                input_state.pad.right.triggered = panel.second.getState();
-            }
-            break;
-        case Id::DOWN_LEFT:
-            if constexpr (TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.down_left.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.down_left.raw > m_config.thresholds.down_left,
-                                      m_config.debounce_delay_ms);
-                input_state.pad.down_left.triggered = panel.second.getState();
-            }
-            break;
-        case Id::DOWN:
-            if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.down.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.down.raw > m_config.thresholds.down, m_config.debounce_delay_ms);
-                input_state.pad.down.triggered = panel.second.getState();
-            }
-            break;
-        case Id::DOWN_RIGHT:
-            if constexpr (TPanelCount == 8 || TPanelCount == 9) {
-                input_state.pad.down_right.raw = adc_values[panel.second.getChannel()];
-                panel.second.setState(input_state.pad.down_right.raw > m_config.thresholds.down_right,
-                                      m_config.debounce_delay_ms);
-                input_state.pad.down_right.triggered = panel.second.getState();
-            }
-            break;
-        }
+    auto update_input = [&](auto &input, const auto &channel, const auto &threshold) {
+        const auto value =
+            adc_values[channel] > m_panel_offsets[channel] ? adc_values[channel] - m_panel_offsets[channel] : 0;
+        input.raw = value;
+        m_panels[channel].setState(value > threshold, m_config.debounce_delay_ms);
+        input.triggered = m_panels[channel].getState();
+    };
+
+    if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        update_input(input_state.pad.up, m_config.adc_channels.up, m_config.thresholds.up);
+        update_input(input_state.pad.left, m_config.adc_channels.left, m_config.thresholds.left);
+        update_input(input_state.pad.right, m_config.adc_channels.right, m_config.thresholds.right);
+        update_input(input_state.pad.down, m_config.adc_channels.down, m_config.thresholds.down);
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        update_input(input_state.pad.up_left, m_config.adc_channels.up_left, m_config.thresholds.up_left);
+        update_input(input_state.pad.up_right, m_config.adc_channels.up_right, m_config.thresholds.up_right);
+    }
+    if constexpr (TPanelCount == 8 || TPanelCount == 9) {
+        update_input(input_state.pad.down_left, m_config.adc_channels.down_left, m_config.thresholds.down_left);
+        update_input(input_state.pad.down_right, m_config.adc_channels.down_right, m_config.thresholds.down_right);
+    }
+    if constexpr (TPanelCount == 9) {
+        update_input(input_state.pad.center, m_config.adc_channels.center, m_config.thresholds.center);
     }
 }
 

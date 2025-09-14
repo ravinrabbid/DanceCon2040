@@ -189,29 +189,15 @@ template <size_t TPanelCount> class Pad {
   public:
     using Config = TConfig<TPanelCount>;
 
-    enum class Id {
-        UP_LEFT,
-        UP,
-        UP_RIGHT,
-        LEFT,
-        CENTER,
-        RIGHT,
-        DOWN_LEFT,
-        DOWN,
-        DOWN_RIGHT,
-    };
-
   private:
     class Panel {
       private:
-        uint8_t channel;
         uint32_t last_change;
         bool active;
 
       public:
-        Panel(const uint8_t channel);
+        Panel();
 
-        uint8_t getChannel() const { return channel; };
         bool getState() const { return active; };
         void setState(const bool state, const uint16_t debounce_delay);
     };
@@ -231,16 +217,16 @@ template <size_t TPanelCount> class Pad {
     };
 
     Config m_config;
-    std::unique_ptr<AdcInterface> m_adc;
-    std::map<Id, Panel> m_panels;
 
-  private:
-    std::map<Id, uint32_t> readPanels();
+    std::unique_ptr<AdcInterface> m_adc;
+    std::array<Panel, TPanelCount> m_panels;
+
+    std::array<uint16_t, TPanelCount> m_panel_offsets;
 
   public:
     Pad(const Config &config);
 
-    // TODO calibrate
+    void calibrate();
 
     void updateInputState(Utils::InputState &input_state);
 

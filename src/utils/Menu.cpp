@@ -97,13 +97,19 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TThresholds>::descriptors = 
        {"Debug", MenuDescriptor::Action::SetUsbMode}},     //
       0}},                                                 //
 
-    {MenuPage::Pad,                                                        //
-     {MenuDescriptor::Type::Menu,                                          //
-      "Pad Settings",                                                      //
-      {{"Calibrate", MenuDescriptor::Action::DoCalibrate},                 //
-       {"Hold Time", MenuDescriptor::Action::GotoPagePadDebounceDelay},    //
-       {"Thresholds", MenuDescriptor::Action::GotoPageTriggerThresholds}}, //
-      0}},                                                                 //
+    {MenuPage::Pad,                                                           //
+     {MenuDescriptor::Type::Menu,                                             //
+      "Pad Settings",                                                         //
+      {{"Calibrate", MenuDescriptor::Action::GotoPagePadCalibrate},           //
+       {"Hold Time", MenuDescriptor::Action::GotoPagePadDebounceDelay},       //
+       {"Thresholds", MenuDescriptor::Action::GotoPagePadTriggerThresholds}}, //
+      0}},                                                                    //
+
+    {MenuPage::PadCalibrate,
+     {MenuDescriptor::Type::Menu,                       //
+      "Calibration",                                    //
+      {{"Start", MenuDescriptor::Action::DoCalibrate}}, //
+      0}},                                              //
 
     {MenuPage::PadDebounceDelay,
      {MenuDescriptor::Type::Value,                         //
@@ -207,8 +213,10 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TThresholds>::descriptors = 
 };
 
 template <typename TThresholds>
-Menu<TThresholds>::Menu(std::shared_ptr<SettingsStore<TThresholds>> settings_store)
-    : m_store(settings_store), m_active(false), m_state_stack({{MenuPage::Main, 0, 0}}){};
+Menu<TThresholds>::Menu(const std::shared_ptr<SettingsStore<TThresholds>> settings_store,
+                        const Menu<TThresholds>::calibration_callback_t &calibration_callback)
+    : m_store(settings_store), m_active(false), m_state_stack({{MenuPage::Main, 0, 0}}),
+      m_calibration_callback(calibration_callback){};
 
 template <typename TThresholds> void Menu<TThresholds>::activate() {
     m_state_stack = std::stack<MenuState>({{MenuPage::Main, 0, 0}});
@@ -831,10 +839,13 @@ template <typename TThresholds> void Menu<TThresholds>::performAction(MenuDescri
     case MenuDescriptor::Action::GotoPageBootsel:
         gotoPage(MenuPage::Bootsel);
         break;
+    case MenuDescriptor::Action::GotoPagePadCalibrate:
+        gotoPage(MenuPage::PadCalibrate);
+        break;
     case MenuDescriptor::Action::GotoPagePadDebounceDelay:
         gotoPage(MenuPage::PadDebounceDelay);
         break;
-    case MenuDescriptor::Action::GotoPageTriggerThresholds:
+    case MenuDescriptor::Action::GotoPagePadTriggerThresholds:
         gotoPage(MenuPage::PadTriggerThresholds);
         break;
     case MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft:
@@ -894,7 +905,8 @@ template <typename TThresholds> void Menu<TThresholds>::performAction(MenuDescri
         m_store->setLedEnablePlayerColor(static_cast<bool>(value));
         break;
     case MenuDescriptor::Action::DoCalibrate:
-        // TODO;
+        m_calibration_callback();
+        gotoPage(MenuPage::Pad);
         break;
     case MenuDescriptor::Action::DoReset:
         m_store->reset();

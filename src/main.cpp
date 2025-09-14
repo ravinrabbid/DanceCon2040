@@ -131,11 +131,10 @@ int main() {
     std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response;
 
     auto settings_store = std::make_shared<Utils::SettingsStore<decltype(Config::Default::pad_config)::Thresholds>>();
-    Utils::Menu menu(settings_store);
-
     const auto mode = settings_store->getUsbMode();
 
     Peripherals::Pad<Config::Default::pad_config.PANEL_COUNT> pad(Config::Default::pad_config);
+    Utils::Menu menu(settings_store, [&pad]() { pad.calibrate(); });
 
     multicore_launch_core1(core1_task);
 
@@ -170,6 +169,8 @@ int main() {
     };
 
     readSettings();
+
+    pad.calibrate();
 
     while (true) {
         pad.updateInputState(input_state);

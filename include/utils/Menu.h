@@ -4,6 +4,7 @@
 #include "utils/InputState.h"
 #include "utils/SettingsStore.h"
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <stack>
@@ -66,8 +67,9 @@ struct MenuDescriptor {
         GotoPageReset,
         GotoPageBootsel,
 
+        GotoPagePadCalibrate,
         GotoPagePadDebounceDelay,
-        GotoPageTriggerThresholds,
+        GotoPagePadTriggerThresholds,
 
         GotoPagePadTriggerThresholdUpLeft,
         GotoPagePadTriggerThresholdUp,
@@ -111,6 +113,8 @@ struct MenuDescriptor {
 
 template <typename TThresholds> class Menu {
   public:
+    using calibration_callback_t = std::function<void(void)>;
+
     const static MenuDescriptor thresholds_descriptor;
     const static std::map<MenuPage, const MenuDescriptor> descriptors;
 
@@ -118,6 +122,8 @@ template <typename TThresholds> class Menu {
     std::shared_ptr<SettingsStore<TThresholds>> m_store;
     bool m_active;
     std::stack<MenuState> m_state_stack;
+
+    calibration_callback_t m_calibration_callback;
 
     uint16_t getCurrentValue(MenuPage page);
     uint16_t getCurrentThresholdValue(MenuPage page);
@@ -131,7 +137,8 @@ template <typename TThresholds> class Menu {
     void performAction(MenuDescriptor::Action action, uint16_t value);
 
   public:
-    Menu(std::shared_ptr<SettingsStore<TThresholds>> settings_store);
+    Menu(const std::shared_ptr<SettingsStore<TThresholds>> settings_store,
+         const calibration_callback_t &calibration_callback);
 
     void activate();
     void update(const InputState::Controller &controller_state);
