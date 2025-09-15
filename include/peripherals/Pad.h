@@ -28,6 +28,8 @@ template <size_t TPanelCount> class Pad {
             uint16_t left;
             uint16_t right;
             uint16_t down;
+
+            bool operator==(const ThresholdsFourPanel &) const = default;
         };
         struct ThresholdsFivePanel {
             uint16_t up_left;
@@ -35,6 +37,8 @@ template <size_t TPanelCount> class Pad {
             uint16_t center;
             uint16_t down_left;
             uint16_t down_right;
+
+            bool operator==(const ThresholdsFivePanel &) const = default;
         };
         struct ThresholdsSixPanel {
             uint16_t up_left;
@@ -43,6 +47,8 @@ template <size_t TPanelCount> class Pad {
             uint16_t left;
             uint16_t right;
             uint16_t down;
+
+            bool operator==(const ThresholdsSixPanel &) const = default;
         };
         struct ThresholdsEightPanel {
             uint16_t up_left;
@@ -53,6 +59,8 @@ template <size_t TPanelCount> class Pad {
             uint16_t down_left;
             uint16_t down;
             uint16_t down_right;
+
+            bool operator==(const ThresholdsEightPanel &) const = default;
         };
         struct ThresholdsNinePanel {
             uint16_t up_left;
@@ -64,6 +72,8 @@ template <size_t TPanelCount> class Pad {
             uint16_t down_left;
             uint16_t down;
             uint16_t down_right;
+
+            bool operator==(const ThresholdsNinePanel &) const = default;
         };
 
         using Thresholds =                              //

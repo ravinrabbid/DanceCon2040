@@ -37,7 +37,102 @@ enum class MenuPage {
     PadTriggerThresholdDownRight,
 
     LedBrightness,
+    LedAnimationSpeed,
     LedEnablePlayerColor,
+    LedIdleMode,
+    LedIdleColors,
+    LedActiveMode,
+    LedActiveColors,
+
+    LedIdleColorUpLeft,
+    LedIdleColorUpLeftRed,
+    LedIdleColorUpLeftGreen,
+    LedIdleColorUpLeftBlue,
+
+    LedIdleColorUp,
+    LedIdleColorUpRed,
+    LedIdleColorUpGreen,
+    LedIdleColorUpBlue,
+
+    LedIdleColorUpRight,
+    LedIdleColorUpRightRed,
+    LedIdleColorUpRightGreen,
+    LedIdleColorUpRightBlue,
+
+    LedIdleColorLeft,
+    LedIdleColorLeftRed,
+    LedIdleColorLeftGreen,
+    LedIdleColorLeftBlue,
+
+    LedIdleColorCenter,
+    LedIdleColorCenterRed,
+    LedIdleColorCenterGreen,
+    LedIdleColorCenterBlue,
+
+    LedIdleColorRight,
+    LedIdleColorRightRed,
+    LedIdleColorRightGreen,
+    LedIdleColorRightBlue,
+
+    LedIdleColorDownLeft,
+    LedIdleColorDownLeftRed,
+    LedIdleColorDownLeftGreen,
+    LedIdleColorDownLeftBlue,
+
+    LedIdleColorDown,
+    LedIdleColorDownRed,
+    LedIdleColorDownGreen,
+    LedIdleColorDownBlue,
+
+    LedIdleColorDownRight,
+    LedIdleColorDownRightRed,
+    LedIdleColorDownRightGreen,
+    LedIdleColorDownRightBlue,
+
+    LedActiveColorUpLeft,
+    LedActiveColorUpLeftRed,
+    LedActiveColorUpLeftGreen,
+    LedActiveColorUpLeftBlue,
+
+    LedActiveColorUp,
+    LedActiveColorUpRed,
+    LedActiveColorUpGreen,
+    LedActiveColorUpBlue,
+
+    LedActiveColorUpRight,
+    LedActiveColorUpRightRed,
+    LedActiveColorUpRightGreen,
+    LedActiveColorUpRightBlue,
+
+    LedActiveColorLeft,
+    LedActiveColorLeftRed,
+    LedActiveColorLeftGreen,
+    LedActiveColorLeftBlue,
+
+    LedActiveColorCenter,
+    LedActiveColorCenterRed,
+    LedActiveColorCenterGreen,
+    LedActiveColorCenterBlue,
+
+    LedActiveColorRight,
+    LedActiveColorRightRed,
+    LedActiveColorRightGreen,
+    LedActiveColorRightBlue,
+
+    LedActiveColorDownLeft,
+    LedActiveColorDownLeftRed,
+    LedActiveColorDownLeftGreen,
+    LedActiveColorDownLeftBlue,
+
+    LedActiveColorDown,
+    LedActiveColorDownRed,
+    LedActiveColorDownGreen,
+    LedActiveColorDownBlue,
+
+    LedActiveColorDownRight,
+    LedActiveColorDownRightRed,
+    LedActiveColorDownRightGreen,
+    LedActiveColorDownRightBlue,
 
     BootselMsg,
 };
@@ -82,7 +177,102 @@ struct MenuDescriptor {
         GotoPagePadTriggerThresholdDownLeft,
 
         GotoPageLedBrightness,
+        GotoPageLedAnimationSpeed,
+        GotoPageLedIdleMode,
+        GotoPageLedIdleColors,
+        GotoPageLedActiveMode,
+        GotoPageLedActiveColors,
         GotoPageLedEnablePlayerColor,
+
+        GotoPageLedIdleColorUpLeft,
+        GotoPageLedIdleColorUpLeftRed,
+        GotoPageLedIdleColorUpLeftGreen,
+        GotoPageLedIdleColorUpLeftBlue,
+
+        GotoPageLedIdleColorUp,
+        GotoPageLedIdleColorUpRed,
+        GotoPageLedIdleColorUpGreen,
+        GotoPageLedIdleColorUpBlue,
+
+        GotoPageLedIdleColorUpRight,
+        GotoPageLedIdleColorUpRightRed,
+        GotoPageLedIdleColorUpRightGreen,
+        GotoPageLedIdleColorUpRightBlue,
+
+        GotoPageLedIdleColorLeft,
+        GotoPageLedIdleColorLeftRed,
+        GotoPageLedIdleColorLeftGreen,
+        GotoPageLedIdleColorLeftBlue,
+
+        GotoPageLedIdleColorCenter,
+        GotoPageLedIdleColorCenterRed,
+        GotoPageLedIdleColorCenterGreen,
+        GotoPageLedIdleColorCenterBlue,
+
+        GotoPageLedIdleColorRight,
+        GotoPageLedIdleColorRightRed,
+        GotoPageLedIdleColorRightGreen,
+        GotoPageLedIdleColorRightBlue,
+
+        GotoPageLedIdleColorDownLeft,
+        GotoPageLedIdleColorDownLeftRed,
+        GotoPageLedIdleColorDownLeftGreen,
+        GotoPageLedIdleColorDownLeftBlue,
+
+        GotoPageLedIdleColorDown,
+        GotoPageLedIdleColorDownRed,
+        GotoPageLedIdleColorDownGreen,
+        GotoPageLedIdleColorDownBlue,
+
+        GotoPageLedIdleColorDownRight,
+        GotoPageLedIdleColorDownRightRed,
+        GotoPageLedIdleColorDownRightGreen,
+        GotoPageLedIdleColorDownRightBlue,
+
+        GotoPageLedActiveColorUpLeft,
+        GotoPageLedActiveColorUpLeftRed,
+        GotoPageLedActiveColorUpLeftGreen,
+        GotoPageLedActiveColorUpLeftBlue,
+
+        GotoPageLedActiveColorUp,
+        GotoPageLedActiveColorUpRed,
+        GotoPageLedActiveColorUpGreen,
+        GotoPageLedActiveColorUpBlue,
+
+        GotoPageLedActiveColorUpRight,
+        GotoPageLedActiveColorUpRightRed,
+        GotoPageLedActiveColorUpRightGreen,
+        GotoPageLedActiveColorUpRightBlue,
+
+        GotoPageLedActiveColorLeft,
+        GotoPageLedActiveColorLeftRed,
+        GotoPageLedActiveColorLeftGreen,
+        GotoPageLedActiveColorLeftBlue,
+
+        GotoPageLedActiveColorCenter,
+        GotoPageLedActiveColorCenterRed,
+        GotoPageLedActiveColorCenterGreen,
+        GotoPageLedActiveColorCenterBlue,
+
+        GotoPageLedActiveColorRight,
+        GotoPageLedActiveColorRightRed,
+        GotoPageLedActiveColorRightGreen,
+        GotoPageLedActiveColorRightBlue,
+
+        GotoPageLedActiveColorDownLeft,
+        GotoPageLedActiveColorDownLeftRed,
+        GotoPageLedActiveColorDownLeftGreen,
+        GotoPageLedActiveColorDownLeftBlue,
+
+        GotoPageLedActiveColorDown,
+        GotoPageLedActiveColorDownRed,
+        GotoPageLedActiveColorDownGreen,
+        GotoPageLedActiveColorDownBlue,
+
+        GotoPageLedActiveColorDownRight,
+        GotoPageLedActiveColorDownRightRed,
+        GotoPageLedActiveColorDownRightGreen,
+        GotoPageLedActiveColorDownRightBlue,
 
         SetUsbMode,
 
@@ -98,7 +288,82 @@ struct MenuDescriptor {
         SetPadTriggerThresholdDownRight,
 
         SetLedBrightness,
+        SetLedAnimationSpeed,
+        SetLedIdleMode,
+        SetLedActiveMode,
         SetLedEnablePlayerColor,
+
+        SetLedIdleColorUpLeftRed,
+        SetLedIdleColorUpLeftGreen,
+        SetLedIdleColorUpLeftBlue,
+
+        SetLedIdleColorUpRed,
+        SetLedIdleColorUpGreen,
+        SetLedIdleColorUpBlue,
+
+        SetLedIdleColorUpRightRed,
+        SetLedIdleColorUpRightGreen,
+        SetLedIdleColorUpRightBlue,
+
+        SetLedIdleColorLeftRed,
+        SetLedIdleColorLeftGreen,
+        SetLedIdleColorLeftBlue,
+
+        SetLedIdleColorCenterRed,
+        SetLedIdleColorCenterGreen,
+        SetLedIdleColorCenterBlue,
+
+        SetLedIdleColorRightRed,
+        SetLedIdleColorRightGreen,
+        SetLedIdleColorRightBlue,
+
+        SetLedIdleColorDownLeftRed,
+        SetLedIdleColorDownLeftGreen,
+        SetLedIdleColorDownLeftBlue,
+
+        SetLedIdleColorDownRed,
+        SetLedIdleColorDownGreen,
+        SetLedIdleColorDownBlue,
+
+        SetLedIdleColorDownRightRed,
+        SetLedIdleColorDownRightGreen,
+        SetLedIdleColorDownRightBlue,
+
+        SetLedActiveColorUpLeftRed,
+        SetLedActiveColorUpLeftGreen,
+        SetLedActiveColorUpLeftBlue,
+
+        SetLedActiveColorUpRed,
+        SetLedActiveColorUpGreen,
+        SetLedActiveColorUpBlue,
+
+        SetLedActiveColorUpRightRed,
+        SetLedActiveColorUpRightGreen,
+        SetLedActiveColorUpRightBlue,
+
+        SetLedActiveColorLeftRed,
+        SetLedActiveColorLeftGreen,
+        SetLedActiveColorLeftBlue,
+
+        SetLedActiveColorCenterRed,
+        SetLedActiveColorCenterGreen,
+        SetLedActiveColorCenterBlue,
+
+        SetLedActiveColorRightRed,
+        SetLedActiveColorRightGreen,
+        SetLedActiveColorRightBlue,
+
+        SetLedActiveColorDownLeftRed,
+        SetLedActiveColorDownLeftGreen,
+        SetLedActiveColorDownLeftBlue,
+
+        SetLedActiveColorDownRed,
+        SetLedActiveColorDownGreen,
+        SetLedActiveColorDownBlue,
+
+        SetLedActiveColorDownRightRed,
+        SetLedActiveColorDownRightGreen,
+        SetLedActiveColorDownRightBlue,
 
         DoCalibrate,
         DoReset,
@@ -111,33 +376,41 @@ struct MenuDescriptor {
     uint16_t max_value;
 };
 
-template <typename TThresholds> class Menu {
+template <size_t TPanelCount> class Menu {
   public:
     using calibration_callback_t = std::function<void(void)>;
 
     const static MenuDescriptor thresholds_descriptor;
+    const static MenuDescriptor idle_colors_descriptor;
+    const static MenuDescriptor active_colors_descriptor;
     const static std::map<MenuPage, const MenuDescriptor> descriptors;
 
   private:
-    std::shared_ptr<SettingsStore<TThresholds>> m_store;
+    std::shared_ptr<SettingsStore<TPanelCount>> m_store;
     bool m_active;
     std::stack<MenuState> m_state_stack;
 
     calibration_callback_t m_calibration_callback;
 
-    uint16_t getCurrentValue(MenuPage page);
     uint16_t getCurrentThresholdValue(MenuPage page);
+    uint16_t getCurrentLedIdleColorValue(MenuPage page);
+    uint16_t getCurrentLedActiveColorValue(MenuPage page);
+    uint16_t getCurrentValue(MenuPage page);
 
     void gotoPage(MenuPage page);
 
     void restoreThresholdValue();
+    void restoreLedIdleColorValue();
+    void restoreLedActiveColorValue();
     void gotoParent(bool do_restore);
 
     void performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value);
+    void performActionSetLedIdleColorValue(MenuDescriptor::Action action, uint16_t value);
+    void performActionSetLedActiveColorValue(MenuDescriptor::Action action, uint16_t value);
     void performAction(MenuDescriptor::Action action, uint16_t value);
 
   public:
-    Menu(const std::shared_ptr<SettingsStore<TThresholds>> settings_store,
+    Menu(const std::shared_ptr<SettingsStore<TPanelCount>> settings_store,
          const calibration_callback_t &calibration_callback);
 
     void activate();

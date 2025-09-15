@@ -29,6 +29,11 @@ enum class ControlCommand {
     SetUsbMode,
     SetPlayerLed,
     SetLedBrightness,
+    SetLedAnimationSpeed,
+    SetLedIdleMode,
+    SetLedIdleColors,
+    SetLedActiveMode,
+    SetLedActiveColors,
     SetLedEnablePlayerColor,
     EnterMenu,
     ExitMenu,
@@ -40,6 +45,11 @@ struct ControlMessage {
         usb_mode_t usb_mode;
         usb_player_led_t player_led;
         uint8_t led_brightness;
+        uint8_t led_animation_speed;
+        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::IdleMode led_idle_mode;
+        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::PanelColors led_idle_colors;
+        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::ActiveMode led_active_mode;
+        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::PanelColors led_active_colors;
         bool led_enable_player_color;
     } data;
 };
@@ -56,7 +66,7 @@ void core1_task() {
     i2c_init(Config::Default::i2c_config.block, Config::Default::i2c_config.speed_hz);
 
     Peripherals::Controller controller(Config::Default::controller_config);
-    Peripherals::PanelLeds led(Config::Default::led_config);
+    Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT> led(Config::Default::led_config);
     Peripherals::Display display(Config::Default::display_config);
 
     Utils::PS4AuthProvider ps4authprovider;
@@ -90,6 +100,21 @@ void core1_task() {
                 break;
             case ControlCommand::SetLedBrightness:
                 led.setBrightness(control_msg.data.led_brightness);
+                break;
+            case ControlCommand::SetLedAnimationSpeed:
+                led.setAnimationSpeed(control_msg.data.led_animation_speed);
+                break;
+            case ControlCommand::SetLedIdleMode:
+                led.setIdleMode(control_msg.data.led_idle_mode);
+                break;
+            case ControlCommand::SetLedIdleColors:
+                led.setIdleColors(control_msg.data.led_idle_colors);
+                break;
+            case ControlCommand::SetLedActiveMode:
+                led.setActiveMode(control_msg.data.led_active_mode);
+                break;
+            case ControlCommand::SetLedActiveColors:
+                led.setActiveColors(control_msg.data.led_active_colors);
                 break;
             case ControlCommand::SetLedEnablePlayerColor:
                 led.setEnablePlayerColor(control_msg.data.led_enable_player_color);
@@ -130,7 +155,7 @@ int main() {
     Utils::InputState input_state;
     std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response;
 
-    auto settings_store = std::make_shared<Utils::SettingsStore<decltype(Config::Default::pad_config)::Thresholds>>();
+    auto settings_store = std::make_shared<Utils::SettingsStore<Config::Default::pad_config.PANEL_COUNT>>();
     const auto mode = settings_store->getUsbMode();
 
     Peripherals::Pad<Config::Default::pad_config.PANEL_COUNT> pad(Config::Default::pad_config);
@@ -153,16 +178,19 @@ int main() {
     stdio_init_all();
 
     const auto readSettings = [&]() {
-        ControlMessage ctrl_message;
+        const auto sendCtrlMessage = [&](const ControlMessage &msg) { queue_add_blocking(&control_queue, &msg); };
 
-        ctrl_message = {ControlCommand::SetUsbMode, {.usb_mode = mode}};
-        queue_add_blocking(&control_queue, &ctrl_message);
-
-        ctrl_message = {ControlCommand::SetLedBrightness, {.led_brightness = settings_store->getLedBrightness()}};
-        queue_add_blocking(&control_queue, &ctrl_message);
-        ctrl_message = {ControlCommand::SetLedEnablePlayerColor,
-                        {.led_enable_player_color = settings_store->getLedEnablePlayerColor()}};
-        queue_add_blocking(&control_queue, &ctrl_message);
+        sendCtrlMessage({ControlCommand::SetUsbMode, {.usb_mode = mode}});
+        sendCtrlMessage({ControlCommand::SetLedBrightness, {.led_brightness = settings_store->getLedBrightness()}});
+        sendCtrlMessage(
+            {ControlCommand::SetLedAnimationSpeed, {.led_animation_speed = settings_store->getLedAnimationSpeed()}});
+        sendCtrlMessage({ControlCommand::SetLedIdleMode, {.led_idle_mode = settings_store->getLedIdleMode()}});
+        sendCtrlMessage({ControlCommand::SetLedIdleColors, {.led_idle_colors = settings_store->getLedIdleColors()}});
+        sendCtrlMessage({ControlCommand::SetLedActiveMode, {.led_active_mode = settings_store->getLedActiveMode()}});
+        sendCtrlMessage(
+            {ControlCommand::SetLedActiveColors, {.led_active_colors = settings_store->getLedActiveColors()}});
+        sendCtrlMessage({ControlCommand::SetLedEnablePlayerColor,
+                         {.led_enable_player_color = settings_store->getLedEnablePlayerColor()}});
 
         pad.setDebounceDelay(settings_store->getDebounceDelay());
         pad.setThresholds(settings_store->getTriggerThresholds());

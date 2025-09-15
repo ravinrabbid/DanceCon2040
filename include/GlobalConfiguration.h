@@ -22,126 +22,159 @@ namespace Default {
 const usb_mode_t usb_mode = USB_MODE_DEBUG;
 
 const I2c i2c_config = {
-    26,      // SDA Pin
-    27,      // SCL Pin
-    i2c1,    // Block
-    1000000, // Speed
+    .sda_pin = 26,
+    .scl_pin = 27,
+    .block = i2c1,
+    .speed_hz = 1000000,
 };
 
 const Peripherals::Pad<9>::Config pad_config = {
-    // Thresholds
-    {
-        500, // UP_LEFT
-        500, // UP
-        500, // UP_RIGHT
-        500, // LEFT
-        500, // CENTER
-        500, // RIGHT
-        500, // DOWN_LEFT
-        500, // DOWN
-        500, // DOWN_RIGHT
-    },
-
-    25, // Debounce delay in milliseconds
-
-    //  ADC Channels
-    {
-        0, // UP_LEFT
-        1, // UP
-        2, // UP_RIGHT
-        3, // LEFT
-        4, // CENTER
-        5, // RIGHT
-        6, // DOWN_LEFT
-        7, // DOWN
-        8, // DOWN_RIGHT
-    },
-
-    // ADC Config
-    Peripherals::Pad<pad_config.PANEL_COUNT>::Config::ExternalAdc<3>{
-        // SPI Config
+    .thresholds =
         {
-            11,       // MOSI
-            12,       // MISO
-            10,       // SCLK
-            spi1,     // SPI Block
-            10000000, // Speed in Hz
-                      // 2000000, // Speed in Hz
+            .up_left = 100,
+            .up = 100,
+            .up_right = 100,
+            .left = 100,
+            .center = 100,
+            .right = 100,
+            .down_left = 100,
+            .down = 100,
+            .down_right = 100,
         },
 
-        // ADCs
-        {{
-            {
-                14, // SCSN Pin
-                15, // DRDY Pin
-            },
-            {
-                7, // SCSN Pin
-                8, // DRDY Pin
-            },
-            {
-                5, // SCSN Pin
-                6, // DRDY Pin
-            },
-        }},
-    },
+    .debounce_delay_ms = 25,
+
+    .adc_channels =
+        {
+            .up_left = 0,
+            .up = 1,
+            .up_right = 2,
+            .left = 3,
+            .center = 4,
+            .right = 5,
+            .down_left = 6,
+            .down = 7,
+            .down_right = 8,
+        },
+
+    .adc_config =
+        Peripherals::Pad<pad_config.PANEL_COUNT>::Config::ExternalAdc<3>{
+            .spi =
+                {
+                    .mosi_pin = 11,
+                    .miso_pin = 12,
+                    .sclk_pin = 10,
+                    .block = spi1,
+                    .speed_hz = 10000000,
+                },
+
+            .adcs = {{
+                {
+                    .scsn_pin = 14,
+                    .drdy_pin = 15,
+                },
+                {
+                    .scsn_pin = 7,
+                    .drdy_pin = 8,
+                },
+                {
+                    .scsn_pin = 5,
+                    .drdy_pin = 6,
+                },
+            }},
+        },
 };
 
-const Peripherals::PanelLeds::Config led_config = {
-    {128, 128, 128}, // Idle Color
-    {255, 0, 0},     // UP Color
-    {0, 0, 255},     // DOWN Color
-    {255, 255, 0},   // LEFT Color
-    {0, 255, 255},   // RIGHT Color
+const Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config led_config =
+    {
+        .idle_colors =
+            {
+                .up_left = {.r = 80, .g = 80, .b = 0},
+                .up = {.r = 0, .g = 80, .b = 0},
+                .up_right = {.r = 0, .g = 80, .b = 80},
+                .left = {.r = 80, .g = 0, .b = 0},
+                .center = {.r = 0, .g = 80, .b = 0},
+                .right = {.r = 0, .g = 80, .b = 80},
+                .down_left = {.r = 0, .g = 80, .b = 80},
+                .down = {.r = 80, .g = 80, .b = 80},
+                .down_right = {.r = 0, .g = 80, .b = 80},
+            },
+        .active_colors =
+            {
+                .up_left = {.r = 255, .g = 255, .b = 0},
+                .up = {.r = 0, .g = 255, .b = 0},
+                .up_right = {.r = 0, .g = 255, .b = 255},
+                .left = {.r = 255, .g = 0, .b = 0},
+                .center = {.r = 0, .g = 255, .b = 0},
+                .right = {.r = 0, .g = 255, .b = 255},
+                .down_left = {.r = 0, .g = 255, .b = 255},
+                .down = {.r = 255, .g = 255, .b = 255},
+                .down_right = {.r = 0, .g = 255, .b = 255},
+            },
 
-    29,    // LED Pin
-    false, // Is RGBW
+        .brightness = 64,
+        .animation_speed = 128,
+        .idle_mode = Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config::IdleMode::Static,
+        .active_mode = Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config::ActiveMode::ActiveFade,
 
-    255,  // Brightness
-    true, // Idle Color is DS4 light bar color
+        .enable_player_color = true,
+
+        .led_pin = 29,
+        .is_rgbw = false,
+        .leds_per_panel = 2,
+        .panel_order =
+            {
+                .up_left = 0,
+                .up = 1,
+                .up_right = 2,
+                .left = 3,
+                .center = 4,
+                .right = 5,
+                .down_left = 6,
+                .down = 7,
+                .down_right = 8,
+
+            },
 };
 
 const Peripherals::Controller::Config controller_config = {
+    .pins = {.dpad =
+                 {
+                     .up = 8,
+                     .down = 9,
+                     .left = 10,
+                     .right = 11,
+                 },
+             .buttons =
+                 {
+                     .north = 0,
+                     .east = 3,
+                     .south = 1,
+                     .west = 2,
 
-    // Pins
-    {{
-         8,  // Up
-         9,  // Down
-         10, // Left
-         11, // Right
-     },
-     {
-         0, // North
-         3, // East
-         1, // South
-         2, // West
+                     .l = 12,
+                     .r = 4,
 
-         12, // L
-         4,  // R
+                     .start = 5,
+                     .select = 13,
+                     .home = 6,
+                     .share = 14,
+                 }},
 
-         5,  // Start
-         13, // Select
-         6,  // Home
-         14, // Share
-     }},
+    .debounce_delay_ms = 25,
 
-    25, // Debounce delay in milliseconds
-
-    // GPIO Config, either InternalGpio or ExternalGpio
-    //
-    // Peripherals::Controller::Config::InternalGpio{},
-
-    Peripherals::Controller::Config::ExternalGpio{
-        {
-            i2c_config.block, // Block
-            0x20,             // Address
+    .gpio_config =
+        Peripherals::Controller::Config::ExternalGpio{
+            {
+                .block = i2c_config.block,
+                .address = 0x20,
+            },
         },
-    },
 };
 
 const Peripherals::Display::Config display_config = {
-    i2c_config.block, // Block
-    0x3C,             // Address
+    .i2c_block = i2c_config.block,
+    .i2c_address = 0x3C,
 };
 
 } // namespace Default

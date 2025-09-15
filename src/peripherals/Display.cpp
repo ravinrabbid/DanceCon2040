@@ -78,10 +78,9 @@ void Display::drawIdleScreen() {
 }
 
 void Display::drawMenuScreen() {
-    using thresholds_t = decltype(Dancecon::Config::Default::pad_config.thresholds);
-
-    auto descriptor_it = Utils::Menu<thresholds_t>::descriptors.find(m_menu_state.page);
-    if (descriptor_it == Utils::Menu<thresholds_t>::descriptors.end()) {
+    auto descriptor_it =
+        Utils::Menu<Dancecon::Config::Default::pad_config.PANEL_COUNT>::descriptors.find(m_menu_state.page);
+    if (descriptor_it == Utils::Menu<Dancecon::Config::Default::pad_config.PANEL_COUNT>::descriptors.end()) {
         return;
     }
 
