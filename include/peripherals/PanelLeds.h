@@ -1,5 +1,5 @@
-#ifndef _PERIPHERALS_PANELLEDS_H_
-#define _PERIPHERALS_PANELLEDS_H_
+#ifndef _PERIPHERALS_PANEL_LEDS_H_
+#define _PERIPHERALS_PANEL_LEDS_H_
 
 #include "utils/InputState.h"
 
@@ -229,4 +229,4 @@ template <size_t TPanelCount> class PanelLeds {
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_PANELLEDS_H_
+#endif // _PERIPHERALS_PANEL_LEDS_H_

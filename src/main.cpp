@@ -1,5 +1,6 @@
 #include "peripherals/Controller.h"
 #include "peripherals/Display.h"
+#include "peripherals/PadButtons.h"
 #include "usb/device/hid/ps4_auth.h"
 #include "usb/device_driver.h"
 #include "utils/Menu.h"
@@ -158,6 +159,7 @@ int main() {
     auto settings_store = std::make_shared<Utils::SettingsStore<Config::Default::pad_config.PANEL_COUNT>>();
     const auto mode = settings_store->getUsbMode();
 
+    Peripherals::PadButtons pad_buttons(Config::Default::pad_buttons_config);
     Peripherals::Pad<Config::Default::pad_config.PANEL_COUNT> pad(Config::Default::pad_config);
     Utils::Menu menu(settings_store, [&pad]() { pad.calibrate(); });
 
@@ -201,6 +203,7 @@ int main() {
     pad.calibrate();
 
     while (true) {
+        pad_buttons.updateInputState(input_state);
         pad.updateInputState(input_state);
         queue_try_remove(&controller_input_queue, &input_state.controller);
 

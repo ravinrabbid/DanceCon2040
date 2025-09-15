@@ -79,8 +79,8 @@ usb_report_t InputState::getSwitchReport() {
                               | (controller.buttons.r ? (1 << 5) : 0)     // R
                               //   | (false ? (1 << 6) : 0)                      // ZL
                               //   | (false ? (1 << 7) : 0)                      // ZR
-                              | (controller.buttons.select ? (1 << 8) : 0) // -
-                              | (controller.buttons.start ? (1 << 9) : 0)  // +
+                              | ((controller.buttons.select || pad.select) ? (1 << 8) : 0) // -
+                              | ((controller.buttons.start || pad.start) ? (1 << 9) : 0)   // +
                               //   | (false ? (1 << 10) : 0)                     // LS
                               //   | (false ? (1 << 11) : 0)                     // RS
                               | (controller.buttons.home ? (1 << 12) : 0)   // Home
@@ -102,16 +102,16 @@ usb_report_t InputState::getPS3InputReport() {
 
     m_ps3_report.report_id = 0x01;
 
-    m_ps3_report.buttons1 = 0                                            //
-                            | (controller.buttons.select ? (1 << 0) : 0) // Select
+    m_ps3_report.buttons1 = 0                                                            //
+                            | ((controller.buttons.select || pad.select) ? (1 << 0) : 0) // Select
                             // | (false ? (1 << 1) : 0)                      // L3
                             // | (false ? (1 << 2) : 0)                      // R3
-                            | (controller.buttons.start ? (1 << 3) : 0) // Start
-                            | (controller.dpad.up ? (1 << 4) : 0)       // Up
-                            | (controller.dpad.right ? (1 << 5) : 0)    // Right
-                            | (controller.dpad.down ? (1 << 6) : 0)     // Down
-                            | (controller.dpad.left ? (1 << 7) : 0);    // Left
-    m_ps3_report.buttons2 = 0                                           //
+                            | ((controller.buttons.start || pad.start) ? (1 << 3) : 0) // Start
+                            | (controller.dpad.up ? (1 << 4) : 0)                      // Up
+                            | (controller.dpad.right ? (1 << 5) : 0)                   // Right
+                            | (controller.dpad.down ? (1 << 6) : 0)                    // Down
+                            | (controller.dpad.left ? (1 << 7) : 0);                   // Left
+    m_ps3_report.buttons2 = 0                                                          //
                               // | (false ? (1 << 0) : 0)                      // L2
                               // | (false ? (1 << 1) : 0)                      // R2
                             | (controller.buttons.l ? (1 << 2) : 0)       // L1
@@ -175,11 +175,11 @@ usb_report_t InputState::getPS4InputReport() {
                             // | (false ? (1 << 3) : 0)                      // R2
                             // | (false ? (1 << 6) : 0)                      // L3
                             // | (false ? (1 << 7) : 0)                      // R3
-                            | (controller.buttons.share ? (1 << 4) : 0)   // Share
-                            | (controller.buttons.start ? (1 << 5) : 0);  // Option
-    m_ps4_report.buttons3 = (report_counter << 2)                         //
-                            | (controller.buttons.home ? (1 << 0) : 0)    // PS
-                            | (controller.buttons.select ? (1 << 1) : 0); // T-Pad
+                            | (controller.buttons.share ? (1 << 4) : 0)                   // Share
+                            | ((controller.buttons.start || pad.start) ? (1 << 5) : 0);   // Option
+    m_ps4_report.buttons3 = (report_counter << 2)                                         //
+                            | (controller.buttons.home ? (1 << 0) : 0)                    // PS
+                            | ((controller.buttons.select || pad.select) ? (1 << 1) : 0); // T-Pad
 
     m_ps4_report.lt = 0x00;
     m_ps4_report.rt = 0x00;
@@ -230,8 +230,8 @@ usb_report_t InputState::getKeyboardReport(InputState::Player player) {
     set_key(controller.buttons.l, HID_KEY_Q);
     set_key(controller.buttons.r, HID_KEY_E);
 
-    set_key(controller.buttons.start, HID_KEY_ESCAPE);
-    set_key(controller.buttons.select, HID_KEY_TAB);
+    set_key((controller.buttons.start || pad.start), HID_KEY_ESCAPE);
+    set_key((controller.buttons.select || pad.select), HID_KEY_TAB);
     // set_key(controller.buttons.home, );
     // set_key(controller.buttons.share, );
 
@@ -239,15 +239,15 @@ usb_report_t InputState::getKeyboardReport(InputState::Player player) {
 }
 
 usb_report_t InputState::getXinputReport() {
-    m_xinput_report.buttons1 = 0                                            //
-                               | (controller.dpad.up ? (1 << 0) : 0)        // Dpad Up
-                               | (controller.dpad.down ? (1 << 1) : 0)      // Dpad Down
-                               | (controller.dpad.left ? (1 << 2) : 0)      // Dpad Left
-                               | (controller.dpad.right ? (1 << 3) : 0)     // Dpad Right
-                               | (controller.buttons.start ? (1 << 4) : 0)  // Start
-                               | (controller.buttons.select ? (1 << 5) : 0) // Select
-                               | (false ? (1 << 6) : 0)                     // L3
-                               | (false ? (1 << 7) : 0);                    // R3
+    m_xinput_report.buttons1 = 0                                                            //
+                               | (controller.dpad.up ? (1 << 0) : 0)                        // Dpad Up
+                               | (controller.dpad.down ? (1 << 1) : 0)                      // Dpad Down
+                               | (controller.dpad.left ? (1 << 2) : 0)                      // Dpad Left
+                               | (controller.dpad.right ? (1 << 3) : 0)                     // Dpad Right
+                               | ((controller.buttons.start || pad.start) ? (1 << 4) : 0)   // Start
+                               | ((controller.buttons.select || pad.select) ? (1 << 5) : 0) // Select
+                               | (false ? (1 << 6) : 0)                                     // L3
+                               | (false ? (1 << 7) : 0);                                    // R3
 
     m_xinput_report.buttons2 = 0                                            //
                                | (controller.buttons.l ? (1 << 0) : 0)      // L1

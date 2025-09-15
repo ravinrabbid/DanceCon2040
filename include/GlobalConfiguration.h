@@ -4,6 +4,7 @@
 #include "peripherals/Controller.h"
 #include "peripherals/Display.h"
 #include "peripherals/Pad.h"
+#include "peripherals/PadButtons.h"
 #include "peripherals/PanelLeds.h"
 
 #include "hardware/i2c.h"
@@ -31,15 +32,15 @@ const I2c i2c_config = {
 const Peripherals::Pad<9>::Config pad_config = {
     .thresholds =
         {
-            .up_left = 100,
-            .up = 100,
-            .up_right = 100,
-            .left = 100,
-            .center = 100,
-            .right = 100,
-            .down_left = 100,
-            .down = 100,
-            .down_right = 100,
+            .up_left = 50,
+            .up = 50,
+            .up_right = 50,
+            .left = 50,
+            .center = 50,
+            .right = 50,
+            .down_left = 50,
+            .down = 50,
+            .down_right = 50,
         },
 
     .debounce_delay_ms = 25,
@@ -121,7 +122,7 @@ const Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config led_config =
 
         .led_pin = 29,
         .is_rgbw = false,
-        .leds_per_panel = 2,
+        .leds_per_panel = 3,
         .panel_order =
             {
                 .up_left = 0,
@@ -135,6 +136,16 @@ const Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config led_config =
                 .down_right = 8,
 
             },
+};
+
+const Peripherals::PadButtons::Config pad_buttons_config = {
+    .pins =
+        {
+            .start = 0,
+            .select = 1,
+        },
+
+    .debounce_delay_ms = 5,
 };
 
 const Peripherals::Controller::Config controller_config = {
