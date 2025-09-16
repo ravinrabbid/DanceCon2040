@@ -66,6 +66,7 @@ void core1_task() {
     gpio_pull_up(Config::Default::i2c_config.scl_pin);
     i2c_init(Config::Default::i2c_config.block, Config::Default::i2c_config.speed_hz);
 
+    Peripherals::StatusLed status_led(Config::Default::status_led_config);
     Peripherals::Controller controller(Config::Default::controller_config);
     Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT> led(Config::Default::led_config);
     Peripherals::Display display(Config::Default::display_config);
@@ -89,6 +90,8 @@ void core1_task() {
                 display.setUsbMode(control_msg.data.usb_mode);
                 break;
             case ControlCommand::SetPlayerLed:
+                status_led.setPlayer(control_msg.data.player_led);
+
                 switch (control_msg.data.player_led.type) {
                 case USB_PLAYER_LED_ID:
                     display.setPlayerId(control_msg.data.player_led.id);

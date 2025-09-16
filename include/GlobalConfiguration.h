@@ -6,6 +6,7 @@
 #include "peripherals/Pad.h"
 #include "peripherals/PadButtons.h"
 #include "peripherals/PanelLeds.h"
+#include "peripherals/StatusLed.h"
 
 #include "hardware/i2c.h"
 
@@ -186,6 +187,15 @@ const Peripherals::Controller::Config controller_config = {
 const Peripherals::Display::Config display_config = {
     .i2c_block = i2c_config.block,
     .i2c_address = 0x3C,
+};
+
+const Peripherals::StatusLed::Config status_led_config = {
+    .led_pin = 16,
+    .led_enable_pin = 255,
+    .is_rgbw = false,
+
+    .base_color = {.r = 0, .g = 255, .b = 128},
+    .brightness = 128,
 };
 
 } // namespace Default

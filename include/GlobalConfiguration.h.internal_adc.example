@@ -140,6 +140,15 @@ const Peripherals::Display::Config display_config = {
     .i2c_address = 0x3C,
 };
 
+const Peripherals::StatusLed::Config status_led_config = {
+    .led_pin = 16,
+    .led_enable_pin = 255,
+    .is_rgbw = false,
+
+    .base_color = {.r = 0, .g = 255, .b = 128},
+    .brightness = 128,
+};
+
 } // namespace Default
 } // namespace Dancecon::Config
 

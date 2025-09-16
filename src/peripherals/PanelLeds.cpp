@@ -2,6 +2,7 @@
 
 #include "GlobalConfiguration.h"
 
+#include "hardware/pio.h"
 #include "pico/rand.h"
 #include "pio_ws2812/ws2812.h"
 
@@ -200,7 +201,7 @@ PanelLeds<TPanelCount>::PanelLeds(const PanelLeds<TPanelCount>::Config &config)
     : m_config(config), m_input_state({}), m_idle_buffer({}), m_active_buffer({}), m_player_color(std::nullopt) {
     m_rendered_frame = std::vector<uint32_t>(TPanelCount * config.leds_per_panel, ws2812_rgb_to_u32pixel(0, 0, 0));
 
-    ws2812_init(config.led_pin, m_config.is_rgbw);
+    ws2812_init(pio0, config.led_pin, m_config.is_rgbw);
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::setBrightness(uint8_t brightness) {
@@ -373,7 +374,7 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::render(uint32_t steps
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::show() {
-    ws2812_put_frame(m_rendered_frame.data(), m_rendered_frame.size());
+    ws2812_put_frame(pio0, m_rendered_frame.data(), m_rendered_frame.size());
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::update() {
