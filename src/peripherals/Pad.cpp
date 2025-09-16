@@ -2,6 +2,7 @@
 
 #include "GlobalConfiguration.h"
 
+#include "hardware/adc.h"
 #include "hardware/gpio.h"
 
 #include <algorithm>
@@ -10,6 +11,35 @@
 namespace Dancecon::Peripherals {
 
 template class Pad<Config::Default::pad_config.PANEL_COUNT>;
+
+template <> Pad<4>::InternalAdc::InternalAdc(const Config::InternalAdc &config) : m_config(config) {
+    static const uint adc_base_pin = 26;
+
+    for (uint pin = adc_base_pin; pin < adc_base_pin + 4; ++pin) {
+        adc_gpio_init(pin);
+    }
+
+    adc_init();
+}
+
+template <> std::array<uint16_t, 4> Pad<4>::InternalAdc::read() {
+    // Oversample ADC inputs to get rid of ADC noise
+    std::array<uint32_t, 4> values{};
+    for (uint8_t sample_number = 0; sample_number < m_config.sample_count; ++sample_number) {
+        for (size_t idx = 0; idx < values.size(); ++idx) {
+            adc_select_input(idx);
+            values[idx] += adc_read();
+        }
+    }
+
+    // Take average of all samples
+    std::array<uint16_t, 4> result{};
+    for (size_t idx = 0; idx < values.size(); ++idx) {
+        result[idx] = values[idx] / m_config.sample_count;
+    }
+
+    return result;
+}
 
 template <size_t TPanelCount>
 template <size_t TAdcCount>
@@ -199,7 +229,9 @@ Pad<TPanelCount>::Pad(const Config &config) : m_config(config), m_panels({}), m_
         [&](auto &&adc_config) {
             using T = std::decay_t<decltype(adc_config)>;
 
-            if constexpr (std::is_same_v<T, typename Config::ExternalAdc<adc_config.ADC_COUNT>>) {
+            if constexpr (std::is_same_v<T, typename Config::InternalAdc>) {
+                m_adc = std::make_unique<InternalAdc>(adc_config);
+            } else if constexpr (std::is_same_v<T, typename Config::ExternalAdc<adc_config.ADC_COUNT>>) {
                 m_adc = std::make_unique<ExternalAdc<adc_config.ADC_COUNT>>(adc_config);
             } else {
                 static_assert(false, "Unknown ADC type!");

@@ -45,6 +45,7 @@ target_link_libraries(
   PUBLIC tinyusb_device
          tinyusb_board
          pico_stdlib
+         hardware_adc
          hardware_i2c
          hardware_spi
          pico_multicore

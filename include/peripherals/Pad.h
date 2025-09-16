@@ -157,6 +157,10 @@ template <size_t TPanelCount> class Pad {
                                 std::monostate          //
                                 >::type>::type>::type>::type>::type;
 
+        struct InternalAdc {
+            uint8_t sample_count;
+        };
+
         template <size_t TAdcCount> struct ExternalAdc {
             static constexpr auto ADC_COUNT = TAdcCount;
 
@@ -179,7 +183,7 @@ template <size_t TPanelCount> class Pad {
         using AdcConfig =                                                 //
             std::conditional<                                             //
                 TConfigPanelCount == 4,                                   //
-                std::variant<ExternalAdc<2>>,                             //
+                std::variant<ExternalAdc<2>, InternalAdc>,                //
                 typename std::conditional<                                //
                     TConfigPanelCount == 5 || TConfigPanelCount == 6,     //
                     std::variant<ExternalAdc<2>, ExternalAdc<3>>,         //
@@ -215,6 +219,15 @@ template <size_t TPanelCount> class Pad {
     class AdcInterface {
       public:
         virtual std::array<uint16_t, TPanelCount> read() = 0;
+    };
+
+    class InternalAdc : public AdcInterface {
+      private:
+        Config::InternalAdc m_config;
+
+      public:
+        InternalAdc(const Config::InternalAdc &config);
+        virtual std::array<uint16_t, TPanelCount> read() final;
     };
 
     template <size_t TAdcCount> class ExternalAdc : public AdcInterface {
