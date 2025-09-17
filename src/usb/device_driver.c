@@ -4,7 +4,6 @@
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
 #include "usb/device/hid/switch_driver.h"
-#include "usb/device/midi_driver.h"
 #include "usb/device/vendor/debug_driver.h"
 #include "usb/device/vendor/xinput_driver.h"
 
@@ -52,9 +51,6 @@ void usbd_driver_init(usb_mode_t mode) {
         break;
     case USB_MODE_XBOX360:
         usbd_driver = xinput_device_driver;
-        break;
-    case USB_MODE_MIDI:
-        usbd_driver = midi_device_driver;
         break;
     case USB_MODE_DEBUG:
         usbd_driver = debug_device_driver;
