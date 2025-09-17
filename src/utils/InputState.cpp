@@ -209,10 +209,32 @@ usb_report_t InputState::getKeyboardReport(InputState::Player player) {
 
     switch (player) {
     case Player::One: {
-        // TODO
+        set_key(pad.start, HID_KEY_ENTER);
+        set_key(pad.select, HID_KEY_SLASH);
+
+        set_key(pad.up_left.triggered, HID_KEY_Q);
+        set_key(pad.up.triggered, HID_KEY_ARROW_UP);
+        set_key(pad.up_right.triggered, HID_KEY_E);
+        set_key(pad.left.triggered, HID_KEY_ARROW_LEFT);
+        set_key(pad.center.triggered, HID_KEY_S);
+        set_key(pad.right.triggered, HID_KEY_ARROW_RIGHT);
+        set_key(pad.down_left.triggered, HID_KEY_Z);
+        set_key(pad.down.triggered, HID_KEY_ARROW_DOWN);
+        set_key(pad.down_right.triggered, HID_KEY_C);
     } break;
     case Player::Two: {
-        // TODO
+        set_key(pad.start, HID_KEY_KEYPAD_ENTER);
+        set_key(pad.select, HID_KEY_KEYPAD_0);
+
+        set_key(pad.up_left.triggered, HID_KEY_KEYPAD_7);
+        set_key(pad.up.triggered, HID_KEY_KEYPAD_8);
+        set_key(pad.up_right.triggered, HID_KEY_KEYPAD_9);
+        set_key(pad.left.triggered, HID_KEY_KEYPAD_4);
+        set_key(pad.center.triggered, HID_KEY_KEYPAD_5);
+        set_key(pad.right.triggered, HID_KEY_KEYPAD_6);
+        set_key(pad.down_left.triggered, HID_KEY_KEYPAD_1);
+        set_key(pad.down.triggered, HID_KEY_KEYPAD_2);
+        set_key(pad.down_right.triggered, HID_KEY_KEYPAD_3);
     } break;
     }
 
@@ -221,18 +243,18 @@ usb_report_t InputState::getKeyboardReport(InputState::Player player) {
     set_key(controller.dpad.left, HID_KEY_ARROW_LEFT);
     set_key(controller.dpad.right, HID_KEY_ARROW_RIGHT);
 
-    set_key(controller.buttons.north, HID_KEY_L);
-    set_key(controller.buttons.east, HID_KEY_BACKSPACE);
+    set_key(controller.buttons.north, HID_KEY_TAB);
+    set_key(controller.buttons.east, HID_KEY_ESCAPE);
     set_key(controller.buttons.south, HID_KEY_ENTER);
-    set_key(controller.buttons.west, HID_KEY_P);
+    set_key(controller.buttons.west, HID_KEY_BACKSPACE);
 
-    set_key(controller.buttons.l, HID_KEY_Q);
-    set_key(controller.buttons.r, HID_KEY_E);
+    set_key(controller.buttons.l, HID_KEY_F);
+    set_key(controller.buttons.r, HID_KEY_J);
 
-    set_key((controller.buttons.start || pad.start), HID_KEY_ESCAPE);
-    set_key((controller.buttons.select || pad.select), HID_KEY_TAB);
-    // set_key(controller.buttons.home, );
-    // set_key(controller.buttons.share, );
+    set_key(controller.buttons.start, HID_KEY_ENTER);
+    set_key(controller.buttons.select, HID_KEY_SLASH);
+    set_key(controller.buttons.home, HID_KEY_HOME);
+    set_key(controller.buttons.share, HID_KEY_F1);
 
     return {(uint8_t *)&m_keyboard_report, sizeof(hid_nkro_keyboard_report_t)};
 }
