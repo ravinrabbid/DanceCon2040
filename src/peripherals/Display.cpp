@@ -42,6 +42,8 @@ static std::string modeToString(usb_mode_t mode) {
         return "Keyboard P1";
     case USB_MODE_KEYBOARD_P2:
         return "Keyboard P2";
+    case USB_MODE_XBOX360_DANCE:
+        return "X360 Dance";
     case USB_MODE_XBOX360:
         return "Xbox 360";
     case USB_MODE_DEBUG:

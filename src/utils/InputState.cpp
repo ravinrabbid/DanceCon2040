@@ -35,6 +35,7 @@ usb_report_t InputState::getReport(usb_mode_t mode) {
         return getKeyboardReport(Player::One);
     case USB_MODE_KEYBOARD_P2:
         return getKeyboardReport(Player::Two);
+    case USB_MODE_XBOX360_DANCE:
     case USB_MODE_XBOX360:
         return getXinputReport();
     case USB_MODE_DEBUG:
@@ -236,24 +237,24 @@ usb_report_t InputState::getKeyboardReport(InputState::Player player) {
 }
 
 usb_report_t InputState::getXinputReport() {
-    m_xinput_report.buttons1 = 0                                                            //
-                               | (controller.dpad.up ? (1 << 0) : 0)                        // Dpad Up
-                               | (controller.dpad.down ? (1 << 1) : 0)                      // Dpad Down
-                               | (controller.dpad.left ? (1 << 2) : 0)                      // Dpad Left
-                               | (controller.dpad.right ? (1 << 3) : 0)                     // Dpad Right
-                               | ((controller.buttons.start || pad.start) ? (1 << 4) : 0)   // Start
-                               | ((controller.buttons.select || pad.select) ? (1 << 5) : 0) // Select
-                               | (false ? (1 << 6) : 0)                                     // L3
-                               | (false ? (1 << 7) : 0);                                    // R3
+    m_xinput_report.buttons1 = 0                                                                 //
+                               | ((controller.dpad.up || pad.up.triggered) ? (1 << 0) : 0)       // Dpad Up
+                               | ((controller.dpad.down || pad.down.triggered) ? (1 << 1) : 0)   // Dpad Down
+                               | ((controller.dpad.left || pad.left.triggered) ? (1 << 2) : 0)   // Dpad Left
+                               | ((controller.dpad.right || pad.right.triggered) ? (1 << 3) : 0) // Dpad Right
+                               | ((controller.buttons.start || pad.start) ? (1 << 4) : 0)        // Start
+                               | ((controller.buttons.select || pad.select) ? (1 << 5) : 0)      // Back
+                               | (false ? (1 << 6) : 0)                                          // L3
+                               | (false ? (1 << 7) : 0);                                         // R3
 
-    m_xinput_report.buttons2 = 0                                            //
-                               | (controller.buttons.l ? (1 << 0) : 0)      // L1
-                               | (controller.buttons.r ? (1 << 1) : 0)      // R1
-                               | (controller.buttons.home ? (1 << 2) : 0)   // Guide
-                               | (controller.buttons.south ? (1 << 4) : 0)  // A
-                               | (controller.buttons.east ? (1 << 5) : 0)   // B
-                               | (controller.buttons.west ? (1 << 6) : 0)   // X
-                               | (controller.buttons.north ? (1 << 7) : 0); // Y
+    m_xinput_report.buttons2 = 0                                                                         //
+                               | (controller.buttons.l ? (1 << 0) : 0)                                   // L1
+                               | ((controller.buttons.r || pad.center.triggered) ? (1 << 1) : 0)         // R1
+                               | (controller.buttons.home ? (1 << 2) : 0)                                // Guide
+                               | ((controller.buttons.south || pad.up_right.triggered) ? (1 << 4) : 0)   // A
+                               | ((controller.buttons.east || pad.up_left.triggered) ? (1 << 5) : 0)     // B
+                               | ((controller.buttons.west || pad.down_right.triggered) ? (1 << 6) : 0)  // X
+                               | ((controller.buttons.north || pad.down_left.triggered) ? (1 << 7) : 0); // Y
 
     m_xinput_report.lt = 0;
     m_xinput_report.rt = 0;

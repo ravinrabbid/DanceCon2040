@@ -26,6 +26,7 @@ typedef struct __attribute((packed, aligned(1))) {
 } xinput_report_t;
 
 extern const usbd_driver_t xinput_device_driver;
+extern const usbd_driver_t xinput_dance_pad_device_driver;
 
 bool xinput_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
 

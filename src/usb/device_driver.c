@@ -49,6 +49,9 @@ void usbd_driver_init(usb_mode_t mode) {
     case USB_MODE_KEYBOARD_P2:
         usbd_driver = hid_keyboard_device_driver;
         break;
+    case USB_MODE_XBOX360_DANCE:
+        usbd_driver = xinput_dance_pad_device_driver;
+        break;
     case USB_MODE_XBOX360:
         usbd_driver = xinput_device_driver;
         break;

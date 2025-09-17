@@ -216,6 +216,7 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
        {"PS4 Compat", MenuDescriptor::Action::SetUsbMode}, //
        {"Keybrd P1", MenuDescriptor::Action::SetUsbMode},  //
        {"Keybrd P2", MenuDescriptor::Action::SetUsbMode},  //
+       {"X360 Dance", MenuDescriptor::Action::SetUsbMode}, //
        {"Xbox 360", MenuDescriptor::Action::SetUsbMode},   //
        {"Debug", MenuDescriptor::Action::SetUsbMode}},     //
       0}},                                                 //

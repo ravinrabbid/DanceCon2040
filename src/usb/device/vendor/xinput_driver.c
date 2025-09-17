@@ -22,6 +22,23 @@ const tusb_desc_device_t xinput_desc_device = {
     .bNumConfigurations = 1,
 };
 
+const tusb_desc_device_t xinput_dance_pad_desc_device = {
+    .bLength = sizeof(tusb_desc_device_t),
+    .bDescriptorType = TUSB_DESC_DEVICE,
+    .bcdUSB = 0x0200,
+    .bDeviceClass = TUSB_CLASS_VENDOR_SPECIFIC,
+    .bDeviceSubClass = 0xFF,
+    .bDeviceProtocol = 0xFF,
+    .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
+    .idVendor = 0x12AB,
+    .idProduct = 0x0004,
+    .bcdDevice = 0x0114,
+    .iManufacturer = USBD_STR_MANUFACTURER,
+    .iProduct = USBD_STR_PRODUCT,
+    .iSerialNumber = USBD_STR_SERIAL,
+    .bNumConfigurations = 1,
+};
+
 enum {
     USBD_ITF_XINPUT,
     USBD_ITF_MAX,
@@ -250,6 +267,15 @@ const usbd_driver_t xinput_device_driver = {
     .name = "XInput",
     .app_driver = &xinput_app_driver,
     .desc_device = &xinput_desc_device,
+    .desc_cfg = xinput_desc_cfg,
+    .desc_bos = NULL,
+    .send_report = send_xinput_report,
+};
+
+const usbd_driver_t xinput_dance_pad_device_driver = {
+    .name = "XInput Dance Pad",
+    .app_driver = &xinput_app_driver,
+    .desc_device = &xinput_dance_pad_desc_device,
     .desc_cfg = xinput_desc_cfg,
     .desc_bos = NULL,
     .send_report = send_xinput_report,
