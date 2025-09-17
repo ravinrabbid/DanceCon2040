@@ -23,6 +23,23 @@ const tusb_desc_device_t ds3_desc_device = {
     .bNumConfigurations = 1,
 };
 
+const tusb_desc_device_t ps3_desc_dance_pad_device = {
+    .bLength = sizeof(tusb_desc_device_t),
+    .bDescriptorType = TUSB_DESC_DEVICE,
+    .bcdUSB = 0x0200,
+    .bDeviceClass = TUSB_CLASS_UNSPECIFIED,
+    .bDeviceSubClass = 0x00,
+    .bDeviceProtocol = 0x00,
+    .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
+    .idVendor = 0x1CCF,
+    .idProduct = 0x1010,
+    .bcdDevice = 0x0100,
+    .iManufacturer = USBD_STR_MANUFACTURER,
+    .iProduct = USBD_STR_PRODUCT,
+    .iSerialNumber = USBD_STR_SERIAL,
+    .bNumConfigurations = 1,
+};
+
 enum {
     USBD_ITF_HID,
     USBD_ITF_MAX,
@@ -266,6 +283,15 @@ const usbd_driver_t hid_ds3_device_driver = {
     .name = "DS3",
     .app_driver = &hid_app_driver,
     .desc_device = &ds3_desc_device,
+    .desc_cfg = ps3_desc_cfg,
+    .desc_bos = NULL,
+    .send_report = send_hid_ps3_report,
+};
+
+const usbd_driver_t hid_ps3_dance_pad_device_driver = {
+    .name = "PS3 Dance Pad",
+    .app_driver = &hid_app_driver,
+    .desc_device = &ps3_desc_dance_pad_device,
     .desc_cfg = ps3_desc_cfg,
     .desc_bos = NULL,
     .send_report = send_hid_ps3_report,

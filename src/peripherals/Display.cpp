@@ -34,6 +34,8 @@ static std::string modeToString(usb_mode_t mode) {
         return "Switch Horipad";
     case USB_MODE_DUALSHOCK3:
         return "Dualshock 3";
+    case USB_MODE_PS3_DANCE:
+        return "PS3 DDR";
     case USB_MODE_DUALSHOCK4:
         return "Dualshock 4";
     case USB_MODE_PS4_COMPAT:
@@ -43,7 +45,7 @@ static std::string modeToString(usb_mode_t mode) {
     case USB_MODE_KEYBOARD_P2:
         return "Keyboard P2";
     case USB_MODE_XBOX360_DANCE:
-        return "X360 Dance";
+        return "X360 DDR";
     case USB_MODE_XBOX360:
         return "Xbox 360";
     case USB_MODE_DEBUG:

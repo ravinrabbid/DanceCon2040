@@ -211,12 +211,13 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
      {MenuDescriptor::Type::Selection,                     //
       "Mode",                                              //
       {{"Swtch Pro", MenuDescriptor::Action::SetUsbMode},  //
+       {"PS3 DDR", MenuDescriptor::Action::SetUsbMode},    //
        {"Dualshock3", MenuDescriptor::Action::SetUsbMode}, //
        {"Dualshock4", MenuDescriptor::Action::SetUsbMode}, //
        {"PS4 Compat", MenuDescriptor::Action::SetUsbMode}, //
        {"Keybrd P1", MenuDescriptor::Action::SetUsbMode},  //
        {"Keybrd P2", MenuDescriptor::Action::SetUsbMode},  //
-       {"X360 Dance", MenuDescriptor::Action::SetUsbMode}, //
+       {"X360 DDR", MenuDescriptor::Action::SetUsbMode},   //
        {"Xbox 360", MenuDescriptor::Action::SetUsbMode},   //
        {"Debug", MenuDescriptor::Action::SetUsbMode}},     //
       0}},                                                 //

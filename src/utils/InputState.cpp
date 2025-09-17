@@ -26,6 +26,7 @@ usb_report_t InputState::getReport(usb_mode_t mode) {
     switch (mode) {
     case USB_MODE_SWITCH_HORIPAD:
         return getSwitchReport();
+    case USB_MODE_PS3_DANCE:
     case USB_MODE_DUALSHOCK3:
         return getPS3InputReport();
     case USB_MODE_DUALSHOCK4:
@@ -104,21 +105,21 @@ usb_report_t InputState::getPS3InputReport() {
                             | ((controller.buttons.select || pad.select) ? (1 << 0) : 0) // Select
                             // | (false ? (1 << 1) : 0)                      // L3
                             // | (false ? (1 << 2) : 0)                      // R3
-                            | ((controller.buttons.start || pad.start) ? (1 << 3) : 0) // Start
-                            | (controller.dpad.up ? (1 << 4) : 0)                      // Up
-                            | (controller.dpad.right ? (1 << 5) : 0)                   // Right
-                            | (controller.dpad.down ? (1 << 6) : 0)                    // Down
-                            | (controller.dpad.left ? (1 << 7) : 0);                   // Left
-    m_ps3_report.buttons2 = 0                                                          //
+                            | ((controller.buttons.start || pad.start) ? (1 << 3) : 0)        // Start
+                            | ((controller.dpad.up || pad.up.triggered) ? (1 << 4) : 0)       // Up
+                            | ((controller.dpad.right || pad.right.triggered) ? (1 << 5) : 0) // Right
+                            | ((controller.dpad.down || pad.down.triggered) ? (1 << 6) : 0)   // Down
+                            | ((controller.dpad.left || pad.left.triggered) ? (1 << 7) : 0);  // Left
+    m_ps3_report.buttons2 = 0                                                                 //
                               // | (false ? (1 << 0) : 0)                      // L2
                               // | (false ? (1 << 1) : 0)                      // R2
-                            | (controller.buttons.l ? (1 << 2) : 0)       // L1
-                            | (controller.buttons.r ? (1 << 3) : 0)       // R1
-                            | (controller.buttons.north ? (1 << 4) : 0)   // Triangle
-                            | (controller.buttons.east ? (1 << 5) : 0)    // Circle
-                            | (controller.buttons.south ? (1 << 6) : 0)   // Cross
-                            | (controller.buttons.west ? (1 << 7) : 0);   // Square
-    m_ps3_report.buttons3 = 0 | (controller.buttons.home ? (1 << 0) : 0); // Home
+                            | (controller.buttons.l ? (1 << 2) : 0)                                   // L1
+                            | ((controller.buttons.r || pad.center.triggered) ? (1 << 3) : 0)         // R1
+                            | ((controller.buttons.north || pad.down_left.triggered) ? (1 << 4) : 0)  // Triangle
+                            | ((controller.buttons.east || pad.up_left.triggered) ? (1 << 5) : 0)     // Circle
+                            | ((controller.buttons.south || pad.up_right.triggered) ? (1 << 6) : 0)   // Cross
+                            | ((controller.buttons.west || pad.down_right.triggered) ? (1 << 7) : 0); // Square
+    m_ps3_report.buttons3 = 0 | (controller.buttons.home ? (1 << 0) : 0);                             // Home
 
     // Center all sticks
     m_ps3_report.lx = 0x80;

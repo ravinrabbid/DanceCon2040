@@ -14,6 +14,7 @@ uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
     switch (usbd_driver_get_mode()) {
     case USB_MODE_SWITCH_HORIPAD:
         return hid_switch_get_report_cb(itf, report_id, report_type, buffer, reqlen);
+    case USB_MODE_PS3_DANCE:
     case USB_MODE_DUALSHOCK3:
         return hid_ps3_get_report_cb(itf, report_id, report_type, buffer, reqlen);
     case USB_MODE_DUALSHOCK4:
@@ -34,6 +35,7 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
     case USB_MODE_SWITCH_HORIPAD:
         hid_switch_set_report_cb(itf, report_id, report_type, buffer, bufsize);
         break;
+    case USB_MODE_PS3_DANCE:
     case USB_MODE_DUALSHOCK3:
         hid_ps3_set_report_cb(itf, report_id, report_type, buffer, bufsize);
         break;
@@ -67,6 +69,7 @@ uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
     switch (usbd_driver_get_mode()) {
     case USB_MODE_SWITCH_HORIPAD:
         return switch_desc_hid_report;
+    case USB_MODE_PS3_DANCE:
     case USB_MODE_DUALSHOCK3:
         return ps3_desc_hid_report;
     case USB_MODE_DUALSHOCK4:

@@ -36,6 +36,9 @@ void usbd_driver_init(usb_mode_t mode) {
     case USB_MODE_SWITCH_HORIPAD:
         usbd_driver = hid_switch_horipad_device_driver;
         break;
+    case USB_MODE_PS3_DANCE:
+        usbd_driver = hid_ps3_dance_pad_device_driver;
+        break;
     case USB_MODE_DUALSHOCK3:
         usbd_driver = hid_ds3_device_driver;
         break;
