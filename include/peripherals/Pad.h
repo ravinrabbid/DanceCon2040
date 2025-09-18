@@ -161,6 +161,10 @@ template <size_t TPanelCount> class Pad {
             uint8_t sample_count;
         };
 
+        struct GpioAdc {
+            uint8_t base_pin;
+        };
+
         template <size_t TAdcCount> struct ExternalAdc {
             static constexpr auto ADC_COUNT = TAdcCount;
 
@@ -180,17 +184,17 @@ template <size_t TPanelCount> class Pad {
             std::array<Ads124s06, TAdcCount> adcs;
         };
 
-        using AdcConfig =                                                 //
-            std::conditional<                                             //
-                TConfigPanelCount == 4,                                   //
-                std::variant<ExternalAdc<2>, InternalAdc>,                //
-                typename std::conditional<                                //
-                    TConfigPanelCount == 5 || TConfigPanelCount == 6,     //
-                    std::variant<ExternalAdc<2>, ExternalAdc<3>>,         //
-                    typename std::conditional<                            //
-                        TConfigPanelCount == 8 || TConfigPanelCount == 9, //
-                        std::variant<ExternalAdc<3>>,                     //
-                        std::monostate                                    //
+        using AdcConfig =                                                  //
+            std::conditional<                                              //
+                TConfigPanelCount == 4,                                    //
+                std::variant<ExternalAdc<2>, InternalAdc, GpioAdc>,        //
+                typename std::conditional<                                 //
+                    TConfigPanelCount == 5 || TConfigPanelCount == 6,      //
+                    std::variant<ExternalAdc<2>, ExternalAdc<3>, GpioAdc>, //
+                    typename std::conditional<                             //
+                        TConfigPanelCount == 8 || TConfigPanelCount == 9,  //
+                        std::variant<ExternalAdc<3>, GpioAdc>,             //
+                        std::monostate                                     //
                         >::type>::type>::type;
 
         Thresholds thresholds;
@@ -219,6 +223,15 @@ template <size_t TPanelCount> class Pad {
     class AdcInterface {
       public:
         virtual std::array<uint16_t, TPanelCount> read() = 0;
+    };
+
+    class GpioAdc : public AdcInterface {
+      private:
+        Config::GpioAdc m_config;
+
+      public:
+        GpioAdc(const Config::GpioAdc &config);
+        virtual std::array<uint16_t, TPanelCount> read() final;
     };
 
     class InternalAdc : public AdcInterface {

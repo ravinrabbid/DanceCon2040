@@ -12,6 +12,25 @@ namespace Dancecon::Peripherals {
 
 template class Pad<Config::Default::pad_config.PANEL_COUNT>;
 
+template <size_t TPanelCount> Pad<TPanelCount>::GpioAdc::GpioAdc(const Config::GpioAdc &config) : m_config(config) {
+    for (uint8_t pin_idx = 0; pin_idx < TPanelCount; ++pin_idx) {
+        gpio_init(m_config.base_pin + pin_idx);
+        gpio_set_dir(m_config.base_pin + pin_idx, GPIO_IN);
+        gpio_pull_up(m_config.base_pin + pin_idx);
+    }
+}
+
+template <size_t TPanelCount> std::array<uint16_t, TPanelCount> Pad<TPanelCount>::GpioAdc::read() {
+    std::array<uint16_t, TPanelCount> result{};
+
+    uint32_t gpio_state = ~gpio_get_all();
+    for (uint8_t pin_idx = 0; pin_idx < TPanelCount; ++pin_idx) {
+        result[pin_idx] = (gpio_state & (1 << (m_config.base_pin + pin_idx))) ? UINT16_MAX : 0;
+    }
+
+    return result;
+}
+
 template <> Pad<4>::InternalAdc::InternalAdc(const Config::InternalAdc &config) : m_config(config) {
     static const uint adc_base_pin = 26;
 
@@ -229,7 +248,9 @@ Pad<TPanelCount>::Pad(const Config &config) : m_config(config), m_panels({}), m_
         [&](auto &&adc_config) {
             using T = std::decay_t<decltype(adc_config)>;
 
-            if constexpr (std::is_same_v<T, typename Config::InternalAdc>) {
+            if constexpr (std::is_same_v<T, typename Config::GpioAdc>) {
+                m_adc = std::make_unique<GpioAdc>(adc_config);
+            } else if constexpr (std::is_same_v<T, typename Config::InternalAdc>) {
                 m_adc = std::make_unique<InternalAdc>(adc_config);
             } else if constexpr (std::is_same_v<T, typename Config::ExternalAdc<adc_config.ADC_COUNT>>) {
                 m_adc = std::make_unique<ExternalAdc<adc_config.ADC_COUNT>>(adc_config);
