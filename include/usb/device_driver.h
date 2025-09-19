@@ -15,15 +15,16 @@ extern "C" {
 #endif
 
 typedef enum {
-    USB_MODE_SWITCH_HORIPAD,
+    USB_MODE_SPICE2X,
+    USB_MODE_XBOX360_DANCE,
+    USB_MODE_XBOX360,
     USB_MODE_PS3_DANCE,
     USB_MODE_DUALSHOCK3,
     USB_MODE_DUALSHOCK4,
     USB_MODE_PS4_COMPAT,
+    USB_MODE_SWITCH_HORIPAD,
     USB_MODE_KEYBOARD_P1,
     USB_MODE_KEYBOARD_P2,
-    USB_MODE_XBOX360_DANCE,
-    USB_MODE_XBOX360,
     USB_MODE_DEBUG,
 } usb_mode_t;
 
@@ -32,6 +33,16 @@ enum {
     USBD_STR_MANUFACTURER,
     USBD_STR_PRODUCT,
     USBD_STR_SERIAL,
+
+    USBD_STR_LED_UP_LEFT,
+    USBD_STR_LED_UP,
+    USBD_STR_LED_UP_RIGHT,
+    USBD_STR_LED_LEFT,
+    USBD_STR_LED_CENTER,
+    USBD_STR_LED_RIGHT,
+    USBD_STR_LED_DOWN_LEFT,
+    USBD_STR_LED_DOWN,
+    USBD_STR_LED_DOWN_RIGHT,
 };
 
 typedef struct {
@@ -68,9 +79,22 @@ typedef struct {
     };
 } usb_player_led_t;
 
+typedef struct {
+    uint8_t up_left;
+    uint8_t up;
+    uint8_t up_right;
+    uint8_t left;
+    uint8_t center;
+    uint8_t right;
+    uint8_t down_left;
+    uint8_t down;
+    uint8_t down_right;
+} usb_panel_led_t;
+
 extern char *const usbd_desc_str[];
 
 typedef void (*usbd_player_led_cb_t)(usb_player_led_t);
+typedef void (*usbd_panel_led_cb_t)(usb_panel_led_t);
 
 void usbd_driver_init(usb_mode_t mode);
 void usbd_driver_task();
@@ -81,6 +105,9 @@ void usbd_driver_send_report(usb_report_t report);
 
 void usbd_driver_set_player_led_cb(usbd_player_led_cb_t cb);
 usbd_player_led_cb_t usbd_driver_get_player_led_cb();
+
+void usbd_driver_set_panel_led_cb(usbd_panel_led_cb_t cb);
+usbd_panel_led_cb_t usbd_driver_get_panel_led_cb();
 
 #ifdef __cplusplus
 }

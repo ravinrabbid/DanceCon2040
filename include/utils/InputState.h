@@ -4,6 +4,7 @@
 #include "usb/device/hid/keyboard_driver.h"
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
+#include "usb/device/hid/spice2x_driver.h"
 #include "usb/device/hid/switch_driver.h"
 #include "usb/device/vendor/xinput_driver.h"
 #include "usb/device_driver.h"
@@ -56,6 +57,7 @@ struct InputState {
     hid_ps4_report_t m_ps4_report;
     hid_nkro_keyboard_report_t m_keyboard_report;
     xinput_report_t m_xinput_report;
+    hid_spice2x_report_t m_spice2x_report;
     std::string m_debug_report;
 
     usb_report_t getSwitchReport();
@@ -63,6 +65,7 @@ struct InputState {
     usb_report_t getPS4InputReport();
     usb_report_t getKeyboardReport(Player player);
     usb_report_t getXinputReport();
+    usb_report_t getSpice2xReport();
     usb_report_t getDebugReport();
 
   public:

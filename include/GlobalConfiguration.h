@@ -120,6 +120,7 @@ const Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config led_config =
         .active_mode = Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config::ActiveMode::ActiveFade,
 
         .enable_player_color = true,
+        .enable_hid_lights = true,
 
         .led_pin = 29,
         .is_rgbw = false,

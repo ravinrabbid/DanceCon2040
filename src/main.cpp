@@ -29,6 +29,7 @@ queue_t auth_signed_challenge_queue;
 enum class ControlCommand {
     SetUsbMode,
     SetPlayerLed,
+    SetPanelLed,
     SetLedBrightness,
     SetLedAnimationSpeed,
     SetLedIdleMode,
@@ -45,6 +46,7 @@ struct ControlMessage {
     union {
         usb_mode_t usb_mode;
         usb_player_led_t player_led;
+        usb_panel_led_t panel_led;
         uint8_t led_brightness;
         uint8_t led_animation_speed;
         Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::IdleMode led_idle_mode;
@@ -101,6 +103,9 @@ void core1_task() {
                                         control_msg.data.player_led.blue});
                     break;
                 }
+                break;
+            case ControlCommand::SetPanelLed:
+                led.update(control_msg.data.panel_led);
                 break;
             case ControlCommand::SetLedBrightness:
                 led.setBrightness(control_msg.data.led_brightness);
@@ -171,6 +176,10 @@ int main() {
     usbd_driver_init(mode);
     usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
         const auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
+        queue_try_add(&control_queue, &ctrl_message);
+    });
+    usbd_driver_set_panel_led_cb([](usb_panel_led_t panel_led) {
+        const auto ctrl_message = ControlMessage{ControlCommand::SetPanelLed, {.panel_led = panel_led}};
         queue_try_add(&control_queue, &ctrl_message);
     });
 

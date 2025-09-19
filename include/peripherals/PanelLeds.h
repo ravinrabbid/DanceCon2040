@@ -183,6 +183,7 @@ template <size_t TPanelCount> class PanelLeds {
         ActiveMode active_mode;
 
         bool enable_player_color;
+        bool enable_hid_lights;
 
         uint8_t led_pin;
         bool is_rgbw;
@@ -201,8 +202,10 @@ template <size_t TPanelCount> class PanelLeds {
 
     std::array<typename Config::Color, TPanelCount> m_idle_buffer;
     std::array<typename Config::Color, TPanelCount> m_active_buffer;
+    std::array<typename Config::Color, TPanelCount> m_direct_buffer;
 
     std::optional<typename Config::Color> m_player_color;
+    bool m_direct_mode;
 
     void updateIdle(uint32_t steps);
     void updateActive(uint32_t steps);
@@ -220,11 +223,13 @@ template <size_t TPanelCount> class PanelLeds {
     void setIdleColors(const Config::PanelColors &color);
     void setActiveColors(const Config::PanelColors &colors);
     void setEnablePlayerColor(const bool do_enable);
+    void setEnableHidLights(const bool do_enable);
 
     void setInputState(const Utils::InputState &input_state);
     void setPlayerColor(const Config::Color &color);
 
     void update();
+    void update(const usb_panel_led_t &raw);
 };
 
 } // namespace Dancecon::Peripherals

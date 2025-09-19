@@ -20,7 +20,7 @@ InputState::InputState()
       controller(
           {{false, false, false, false}, {false, false, false, false, false, false, false, false, false, false}}),
       m_switch_report({}), m_ps3_report({}), m_ps4_report({}), m_keyboard_report({}),
-      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}) {}
+      m_xinput_report({0x00, sizeof(xinput_report_t), 0, 0, 0, 0, 0, 0, 0, 0, {}}), m_spice2x_report({}) {}
 
 usb_report_t InputState::getReport(usb_mode_t mode) {
     switch (mode) {
@@ -39,6 +39,8 @@ usb_report_t InputState::getReport(usb_mode_t mode) {
     case USB_MODE_XBOX360_DANCE:
     case USB_MODE_XBOX360:
         return getXinputReport();
+    case USB_MODE_SPICE2X:
+        return getSpice2xReport();
     case USB_MODE_DEBUG:
         return getDebugReport();
     }
@@ -287,6 +289,37 @@ usb_report_t InputState::getXinputReport() {
     m_xinput_report.ry = 0;
 
     return {(uint8_t *)&m_xinput_report, sizeof(xinput_report_t)};
+}
+
+usb_report_t InputState::getSpice2xReport() {
+    m_spice2x_report.report_id = 0x01;
+
+    m_spice2x_report.controller_buttons = getHidHat(controller.dpad)                    //
+                                          | (controller.buttons.south ? (1 << 4) : 0)   //
+                                          | (controller.buttons.east ? (1 << 5) : 0)    //
+                                          | (controller.buttons.west ? (1 << 6) : 0)    //
+                                          | (controller.buttons.north ? (1 << 7) : 0)   //
+                                          | (controller.buttons.r ? (1 << 8) : 0)       //
+                                          | (controller.buttons.l ? (1 << 9) : 0)       //
+                                          | (controller.buttons.start ? (1 << 10) : 0)  //
+                                          | (controller.buttons.select ? (1 << 11) : 0) //
+                                          | (controller.buttons.home ? (1 << 12) : 0)   //
+                                          | (controller.buttons.share ? (1 << 13) : 0); //
+
+    m_spice2x_report.pad_buttons = 0                                             //
+                                   | (pad.start ? (1 << 0) : 0)                  //
+                                   | (pad.select ? (1 << 1) : 0)                 //
+                                   | (pad.up_left.triggered ? (1 << 2) : 0)      //
+                                   | (pad.up.triggered ? (1 << 3) : 0)           //
+                                   | (pad.up_right.triggered ? (1 << 4) : 0)     //
+                                   | (pad.left.triggered ? (1 << 5) : 0)         //
+                                   | (pad.center.triggered ? (1 << 6) : 0)       //
+                                   | (pad.right.triggered ? (1 << 7) : 0)        //
+                                   | (pad.down_left.triggered ? (1 << 8) : 0)    //
+                                   | (pad.down.triggered ? (1 << 9) : 0)         //
+                                   | (pad.down_right.triggered ? (1 << 10) : 0); //
+
+    return {(uint8_t *)&m_spice2x_report, sizeof(hid_spice2x_report_t)};
 }
 
 usb_report_t InputState::getDebugReport() {

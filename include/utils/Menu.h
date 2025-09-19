@@ -39,6 +39,7 @@ enum class MenuPage {
     LedBrightness,
     LedAnimationSpeed,
     LedEnablePlayerColor,
+    LedEnableHidLights,
     LedIdleMode,
     LedIdleColors,
     LedActiveMode,
@@ -183,6 +184,7 @@ struct MenuDescriptor {
         GotoPageLedActiveMode,
         GotoPageLedActiveColors,
         GotoPageLedEnablePlayerColor,
+        GotoPageLedEnableHidLights,
 
         GotoPageLedIdleColorUpLeft,
         GotoPageLedIdleColorUpLeftRed,
@@ -292,6 +294,7 @@ struct MenuDescriptor {
         SetLedIdleMode,
         SetLedActiveMode,
         SetLedEnablePlayerColor,
+        SetLedEnableHidLights,
 
         SetLedIdleColorUpLeftRed,
         SetLedIdleColorUpLeftGreen,

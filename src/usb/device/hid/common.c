@@ -3,6 +3,7 @@
 #include "usb/device/hid/keyboard_driver.h"
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
+#include "usb/device/hid/spice2x_driver.h"
 #include "usb/device/hid/switch_driver.h"
 #include "usb/device_driver.h"
 
@@ -23,6 +24,8 @@ uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
     case USB_MODE_KEYBOARD_P1:
     case USB_MODE_KEYBOARD_P2:
         return hid_keyboard_get_report_cb(itf, report_id, report_type, buffer, reqlen);
+    case USB_MODE_SPICE2X:
+        return hid_spice2x_get_report_cb(itf, report_id, report_type, buffer, reqlen);
     default:
     }
 
@@ -46,6 +49,9 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
     case USB_MODE_KEYBOARD_P1:
     case USB_MODE_KEYBOARD_P2:
         hid_keyboard_set_report_cb(itf, report_id, report_type, buffer, bufsize);
+        break;
+    case USB_MODE_SPICE2X:
+        hid_spice2x_set_report_cb(itf, report_id, report_type, buffer, bufsize);
         break;
     default:
     }
@@ -78,6 +84,8 @@ uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
     case USB_MODE_KEYBOARD_P1:
     case USB_MODE_KEYBOARD_P2:
         return keyboard_desc_hid_report;
+    case USB_MODE_SPICE2X:
+        return spice2x_desc_hid_report;
     default:
     }
 

@@ -29,6 +29,7 @@ SettingsStore<TPanelCount>::SettingsStore()
                      Config::Default::led_config.idle_mode,
                      Config::Default::led_config.active_mode,
                      Config::Default::led_config.enable_player_color,
+                     Config::Default::led_config.enable_hid_lights,
                      {}}),
       m_dirty(true), m_scheduled_reboot(RebootType::None) {
     uint32_t current_page = m_flash_offset + m_flash_size - m_store_size;
@@ -138,6 +139,16 @@ template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedEnablePlaye
 }
 template <size_t TPanelCount> bool SettingsStore<TPanelCount>::getLedEnablePlayerColor() {
     return m_store_cache.led_enable_player_color;
+}
+
+template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedEnableHidLights(const bool do_enable) {
+    if (m_store_cache.led_enable_hid_lights != do_enable) {
+        m_store_cache.led_enable_hid_lights = do_enable;
+        m_dirty = true;
+    }
+}
+template <size_t TPanelCount> bool SettingsStore<TPanelCount>::getLedEnableHidLights() {
+    return m_store_cache.led_enable_hid_lights;
 }
 
 template <size_t TPanelCount> void SettingsStore<TPanelCount>::setDebounceDelay(const uint16_t delay) {

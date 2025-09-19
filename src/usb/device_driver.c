@@ -3,6 +3,7 @@
 #include "usb/device/hid/keyboard_driver.h"
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
+#include "usb/device/hid/spice2x_driver.h"
 #include "usb/device/hid/switch_driver.h"
 #include "usb/device/vendor/debug_driver.h"
 #include "usb/device/vendor/xinput_driver.h"
@@ -18,6 +19,7 @@
 static usb_mode_t usbd_mode = USB_MODE_DEBUG;
 static usbd_driver_t usbd_driver = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 static usbd_player_led_cb_t usbd_player_led_cb = NULL;
+static usbd_panel_led_cb_t usbd_panel_led_cb = NULL;
 
 #define USBD_SERIAL_STR_SIZE (PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2 + 1 + 3)
 static char usbd_serial_str[USBD_SERIAL_STR_SIZE] = {};
@@ -27,6 +29,16 @@ char *const usbd_desc_str[] = {
     [USBD_STR_MANUFACTURER] = USBD_MANUFACTURER, //
     [USBD_STR_PRODUCT] = usbd_product_str,       //
     [USBD_STR_SERIAL] = usbd_serial_str,         //
+
+    [USBD_STR_LED_UP_LEFT] = "Panel LED Up Left",       //
+    [USBD_STR_LED_UP] = "Panel LED Up",                 //
+    [USBD_STR_LED_UP_RIGHT] = "Panel LED Up Right",     //
+    [USBD_STR_LED_LEFT] = "Panel LED Left",             //
+    [USBD_STR_LED_CENTER] = "Panel LED Center",         //
+    [USBD_STR_LED_RIGHT] = "Panel LED Right",           //
+    [USBD_STR_LED_DOWN_LEFT] = "Panel LED Down Left",   //
+    [USBD_STR_LED_DOWN] = "Panel LED Down",             //
+    [USBD_STR_LED_DOWN_RIGHT] = "Panel LED Down Right", //
 };
 
 void usbd_driver_init(usb_mode_t mode) {
@@ -57,6 +69,9 @@ void usbd_driver_init(usb_mode_t mode) {
         break;
     case USB_MODE_XBOX360:
         usbd_driver = xinput_device_driver;
+        break;
+    case USB_MODE_SPICE2X:
+        usbd_driver = hid_spice2x_device_driver;
         break;
     case USB_MODE_DEBUG:
         usbd_driver = debug_device_driver;
@@ -90,6 +105,9 @@ void usbd_driver_send_report(usb_report_t report) {
 
 void usbd_driver_set_player_led_cb(usbd_player_led_cb_t cb) { usbd_player_led_cb = cb; };
 usbd_player_led_cb_t usbd_driver_get_player_led_cb() { return usbd_player_led_cb; };
+
+void usbd_driver_set_panel_led_cb(usbd_panel_led_cb_t cb) { usbd_panel_led_cb = cb; };
+usbd_panel_led_cb_t usbd_driver_get_panel_led_cb() { return usbd_panel_led_cb; };
 
 const uint8_t *tud_descriptor_device_cb(void) { return (const uint8_t *)usbd_driver.desc_device; }
 

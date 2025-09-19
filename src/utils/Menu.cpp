@@ -210,15 +210,16 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
     {MenuPage::DeviceMode,
      {MenuDescriptor::Type::Selection,                     //
       "Mode",                                              //
-      {{"Swtch Pro", MenuDescriptor::Action::SetUsbMode},  //
+      {{"Spice2x", MenuDescriptor::Action::SetUsbMode},    //
+       {"X360 DDR", MenuDescriptor::Action::SetUsbMode},   //
+       {"Xbox 360", MenuDescriptor::Action::SetUsbMode},   //
        {"PS3 DDR", MenuDescriptor::Action::SetUsbMode},    //
        {"Dualshock3", MenuDescriptor::Action::SetUsbMode}, //
        {"Dualshock4", MenuDescriptor::Action::SetUsbMode}, //
        {"PS4 Compat", MenuDescriptor::Action::SetUsbMode}, //
+       {"Swtch Pro", MenuDescriptor::Action::SetUsbMode},  //
        {"Keybrd P1", MenuDescriptor::Action::SetUsbMode},  //
        {"Keybrd P2", MenuDescriptor::Action::SetUsbMode},  //
-       {"X360 DDR", MenuDescriptor::Action::SetUsbMode},   //
-       {"Xbox 360", MenuDescriptor::Action::SetUsbMode},   //
        {"Debug", MenuDescriptor::Action::SetUsbMode}},     //
       0}},                                                 //
 
@@ -298,17 +299,18 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
       {{"", MenuDescriptor::Action::SetPadTriggerThresholdDownRight}}, //
       UINT16_MAX}},
 
-    {MenuPage::Led,                                                           //
-     {MenuDescriptor::Type::Menu,                                             //
-      "LED Settings",                                                         //
-      {{"Brightness", MenuDescriptor::Action::GotoPageLedBrightness},         //
-       {"Anim Speed", MenuDescriptor::Action::GotoPageLedAnimationSpeed},     //
-       {"Idle Mode", MenuDescriptor::Action::GotoPageLedIdleMode},            //
-       {"Idle Color", MenuDescriptor::Action::GotoPageLedIdleColors},         //
-       {"Actv Mode", MenuDescriptor::Action::GotoPageLedActiveMode},          //
-       {"Actv Color", MenuDescriptor::Action::GotoPageLedActiveColors},       //
-       {"Plyr Color", MenuDescriptor::Action::GotoPageLedEnablePlayerColor}}, //
-      0}},                                                                    //
+    {MenuPage::Led,                                                          //
+     {MenuDescriptor::Type::Menu,                                            //
+      "LED Settings",                                                        //
+      {{"Brightness", MenuDescriptor::Action::GotoPageLedBrightness},        //
+       {"Anim Speed", MenuDescriptor::Action::GotoPageLedAnimationSpeed},    //
+       {"Idle Mode", MenuDescriptor::Action::GotoPageLedIdleMode},           //
+       {"Idle Color", MenuDescriptor::Action::GotoPageLedIdleColors},        //
+       {"Actv Mode", MenuDescriptor::Action::GotoPageLedActiveMode},         //
+       {"Actv Color", MenuDescriptor::Action::GotoPageLedActiveColors},      //
+       {"Plyr Color", MenuDescriptor::Action::GotoPageLedEnablePlayerColor}, //
+       {"HID Lights", MenuDescriptor::Action::GotoPageLedEnableHidLights}},  //
+      0}},                                                                   //
 
     {MenuPage::LedBrightness,                           //
      {MenuDescriptor::Type::Value,                      //
@@ -764,6 +766,12 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
       "Player Color (PS4)",                                    //
       {{"", MenuDescriptor::Action::SetLedEnablePlayerColor}}, //
       0}},                                                     //
+
+    {MenuPage::LedEnableHidLights,                           //
+     {MenuDescriptor::Type::Toggle,                          //
+      "HID Lights",                                          //
+      {{"", MenuDescriptor::Action::SetLedEnableHidLights}}, //
+      0}},                                                   //
 
     {MenuPage::Reset,                              //
      {MenuDescriptor::Type::Menu,                  //
@@ -1463,6 +1471,8 @@ template <size_t TPanelCount> uint16_t Menu<TPanelCount>::getCurrentValue(MenuPa
         return m_store->getLedAnimationSpeed();
     case MenuPage::LedEnablePlayerColor:
         return static_cast<uint16_t>(m_store->getLedEnablePlayerColor());
+    case MenuPage::LedEnableHidLights:
+        return static_cast<uint16_t>(m_store->getLedEnableHidLights());
     case MenuPage::LedIdleMode:
         return static_cast<uint16_t>(m_store->getLedIdleMode());
     case MenuPage::LedIdleColors:
@@ -2441,6 +2451,9 @@ template <size_t TPanelCount> void Menu<TPanelCount>::gotoParent(bool do_restore
             break;
         case MenuPage::LedEnablePlayerColor:
             m_store->setLedEnablePlayerColor(static_cast<bool>(current_state.original_value));
+            break;
+        case MenuPage::LedEnableHidLights:
+            m_store->setLedEnableHidLights(static_cast<bool>(current_state.original_value));
             break;
         case MenuPage::LedIdleMode:
             m_store->setLedIdleMode(
@@ -3677,6 +3690,9 @@ template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescript
     case MenuDescriptor::Action::GotoPageLedEnablePlayerColor:
         gotoPage(MenuPage::LedEnablePlayerColor);
         break;
+    case MenuDescriptor::Action::GotoPageLedEnableHidLights:
+        gotoPage(MenuPage::LedEnableHidLights);
+        break;
     case MenuDescriptor::Action::SetUsbMode:
         m_store->setUsbMode(static_cast<usb_mode_t>(value));
         break;
@@ -3766,6 +3782,9 @@ template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescript
         break;
     case MenuDescriptor::Action::SetLedEnablePlayerColor:
         m_store->setLedEnablePlayerColor(static_cast<bool>(value));
+        break;
+    case MenuDescriptor::Action::SetLedEnableHidLights:
+        m_store->setLedEnableHidLights(static_cast<bool>(value));
         break;
     case MenuDescriptor::Action::DoCalibrate:
         m_calibration_callback();

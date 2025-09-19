@@ -34,10 +34,11 @@ template <size_t TPanelCount> class SettingsStore {
         idle_mode_t led_idle_mode;
         active_mode_t led_active_mode;
         bool led_enable_player_color;
+        bool led_enable_hid_lights;
 
         uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(thresholds_t) - sizeof(uint16_t) -
                          sizeof(led_colors_t) - sizeof(led_colors_t) - sizeof(uint8_t) - sizeof(uint8_t) -
-                         sizeof(idle_mode_t) - sizeof(active_mode_t) - sizeof(bool)];
+                         sizeof(idle_mode_t) - sizeof(active_mode_t) - sizeof(bool) - sizeof(bool)];
     };
     static_assert(sizeof(Storecache) == m_store_size);
 
@@ -84,6 +85,9 @@ template <size_t TPanelCount> class SettingsStore {
 
     void setLedEnablePlayerColor(const bool do_enable);
     bool getLedEnablePlayerColor();
+
+    void setLedEnableHidLights(const bool do_enable);
+    bool getLedEnableHidLights();
 
     void setDebounceDelay(const uint16_t delay);
     uint16_t getDebounceDelay();

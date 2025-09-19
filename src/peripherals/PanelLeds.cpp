@@ -198,7 +198,8 @@ uint16_t get_active_bitvector(const typename PanelLeds<TPanelCount>::Config::Pan
 
 template <size_t TPanelCount>
 PanelLeds<TPanelCount>::PanelLeds(const PanelLeds<TPanelCount>::Config &config)
-    : m_config(config), m_input_state({}), m_idle_buffer({}), m_active_buffer({}), m_player_color(std::nullopt) {
+    : m_config(config), m_input_state({}), m_idle_buffer({}), m_active_buffer({}), m_direct_buffer({}),
+      m_player_color(std::nullopt), m_direct_mode(false) {
     m_rendered_frame = std::vector<uint32_t>(TPanelCount * config.leds_per_panel, ws2812_rgb_to_u32pixel(0, 0, 0));
 
     ws2812_init(pio0, config.led_pin, m_config.is_rgbw);
@@ -224,6 +225,9 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::setActiveColors(const
 };
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::setEnablePlayerColor(bool do_enable) {
     m_config.enable_player_color = do_enable;
+};
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::setEnableHidLights(bool do_enable) {
+    m_config.enable_hid_lights = do_enable;
 };
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::setInputState(const Utils::InputState &input_state) {
@@ -378,6 +382,10 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::show() {
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::update() {
+    if (m_direct_mode && m_config.enable_hid_lights) {
+        return;
+    }
+
     static uint32_t previous_frame_time = to_ms_since_boot(get_absolute_time());
 
     const uint32_t now = to_ms_since_boot(get_absolute_time());
@@ -390,6 +398,76 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::update() {
     updateActive(steps);
 
     render(steps);
+    show();
+}
+
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::update(const usb_panel_led_t &raw) {
+    if (!m_config.enable_hid_lights) {
+        return;
+    }
+
+    m_direct_mode = true;
+
+    auto dim_factor = [](const auto value) { return (float)value / 255.; };
+
+    const auto &order = m_config.panel_order;
+    const auto &colors = m_config.active_colors;
+
+    using T = std::decay_t<decltype(m_config.panel_order)>;
+
+    if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderFourPanel>) {
+        m_direct_buffer[order.up] = dim_color<TPanelCount>(colors.up, dim_factor(raw.up));
+        m_direct_buffer[order.left] = dim_color<TPanelCount>(colors.left, dim_factor(raw.left));
+        m_direct_buffer[order.right] = dim_color<TPanelCount>(colors.right, dim_factor(raw.right));
+        m_direct_buffer[order.down] = dim_color<TPanelCount>(colors.down, dim_factor(raw.down));
+    } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderFivePanel>) {
+        m_direct_buffer[order.up_left] = dim_color<TPanelCount>(colors.up_left, dim_factor(raw.up_left));
+        m_direct_buffer[order.up_right] = dim_color<TPanelCount>(colors.up_right, dim_factor(raw.up_right));
+        m_direct_buffer[order.center] = dim_color<TPanelCount>(colors.center, dim_factor(raw.center));
+        m_direct_buffer[order.down_left] = dim_color<TPanelCount>(colors.down_left, dim_factor(raw.down_left));
+        m_direct_buffer[order.down_right] = dim_color<TPanelCount>(colors.down_right, dim_factor(raw.down_right));
+    } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderSixPanel>) {
+        m_direct_buffer[order.up_left] = dim_color<TPanelCount>(colors.up_left, dim_factor(raw.up_left));
+        m_direct_buffer[order.up] = dim_color<TPanelCount>(colors.up, dim_factor(raw.up));
+        m_direct_buffer[order.up_right] = dim_color<TPanelCount>(colors.up_right, dim_factor(raw.up_right));
+        m_direct_buffer[order.left] = dim_color<TPanelCount>(colors.left, dim_factor(raw.left));
+        m_direct_buffer[order.right] = dim_color<TPanelCount>(colors.right, dim_factor(raw.right));
+        m_direct_buffer[order.down] = dim_color<TPanelCount>(colors.down, dim_factor(raw.down));
+    } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderEightPanel>) {
+        m_direct_buffer[order.up_left] = dim_color<TPanelCount>(colors.up_left, dim_factor(raw.up_left));
+        m_direct_buffer[order.up] = dim_color<TPanelCount>(colors.up, dim_factor(raw.up));
+        m_direct_buffer[order.up_right] = dim_color<TPanelCount>(colors.up_right, dim_factor(raw.up_right));
+        m_direct_buffer[order.left] = dim_color<TPanelCount>(colors.left, dim_factor(raw.left));
+        m_direct_buffer[order.right] = dim_color<TPanelCount>(colors.right, dim_factor(raw.right));
+        m_direct_buffer[order.down_left] = dim_color<TPanelCount>(colors.down_left, dim_factor(raw.down_left));
+        m_direct_buffer[order.down] = dim_color<TPanelCount>(colors.down, dim_factor(raw.down));
+        m_direct_buffer[order.down_right] = dim_color<TPanelCount>(colors.down_right, dim_factor(raw.down_right));
+    } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderNinePanel>) {
+        m_direct_buffer[order.up_left] = dim_color<TPanelCount>(colors.up_left, dim_factor(raw.up_left));
+        m_direct_buffer[order.up] = dim_color<TPanelCount>(colors.up, dim_factor(raw.up));
+        m_direct_buffer[order.up_right] = dim_color<TPanelCount>(colors.up_right, dim_factor(raw.up_right));
+        m_direct_buffer[order.left] = dim_color<TPanelCount>(colors.left, dim_factor(raw.left));
+        m_direct_buffer[order.center] = dim_color<TPanelCount>(colors.center, dim_factor(raw.center));
+        m_direct_buffer[order.right] = dim_color<TPanelCount>(colors.right, dim_factor(raw.right));
+        m_direct_buffer[order.down_left] = dim_color<TPanelCount>(colors.down_left, dim_factor(raw.down_left));
+        m_direct_buffer[order.down] = dim_color<TPanelCount>(colors.down, dim_factor(raw.down));
+        m_direct_buffer[order.down_right] = dim_color<TPanelCount>(colors.down_right, dim_factor(raw.down_right));
+    } else {
+        static_assert(false, "Unknown Panel count!");
+    }
+
+    const float brightness_dim_factor = (float)m_config.brightness / 255.;
+
+    size_t idx = 0;
+    for (auto &rendered_segment : m_rendered_frame) {
+        const auto color = m_direct_buffer[idx / m_config.leds_per_panel];
+
+        rendered_segment = ws2812_rgb_to_u32pixel(color.r * brightness_dim_factor, color.g * brightness_dim_factor,
+                                                  color.b * brightness_dim_factor);
+
+        ++idx;
+    }
+
     show();
 }
 
