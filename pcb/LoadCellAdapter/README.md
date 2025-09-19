@@ -1,6 +1,6 @@
 # LoadCellAdapter
 
-A simple passive adapter pcb to combine four 3-Wire load cells into a Wheatstone bridge configuration.
+A simple passive adapter pcb to combine four 3-Wire half bridge load cells into a Wheatstone bridge configuration.
 
 ## Bill of Materials
 
