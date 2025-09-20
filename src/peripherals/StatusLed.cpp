@@ -23,7 +23,7 @@ StatusLed::StatusLed(const Config &config) : m_config(config) {
 
     ws2812_init(pio1, config.led_pin, m_config.is_rgbw);
 
-    update_led(m_config.base_color, m_config.brightness);
+    update_led(m_config.idle_color, m_config.brightness);
 }
 
 void StatusLed::setPlayer(const usb_player_led_t &player) {
@@ -43,7 +43,7 @@ void StatusLed::setPlayer(const usb_player_led_t &player) {
             update_led({0, 255, 0}, m_config.brightness);
             break;
         default:
-            update_led(m_config.base_color, m_config.brightness);
+            update_led(m_config.idle_color, m_config.brightness);
             break;
         }
         break;

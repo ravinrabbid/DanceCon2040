@@ -21,7 +21,7 @@ class StatusLed {
         uint8_t led_enable_pin;
         bool is_rgbw;
 
-        Color base_color;
+        Color idle_color;
         uint8_t brightness;
     };
 
