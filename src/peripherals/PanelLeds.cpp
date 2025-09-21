@@ -10,7 +10,7 @@
 
 namespace Dancecon::Peripherals {
 
-template class PanelLeds<Config::Default::pad_config.PANEL_COUNT>;
+template class PanelLeds<Config::Default::led_config.PANEL_COUNT>;
 
 namespace {
 const static uint32_t pulse_step_count = 4096;

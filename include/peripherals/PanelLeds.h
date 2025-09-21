@@ -17,6 +17,8 @@ template <size_t TPanelCount> class PanelLeds {
         requires(TConfigPanelCount == 4 || TConfigPanelCount == 5 || TConfigPanelCount == 6 || TConfigPanelCount == 8 ||
                  TConfigPanelCount == 9)
     struct TConfig {
+        static constexpr auto PANEL_COUNT = TPanelCount;
+
         enum class IdleMode {
             Off,
             Static,

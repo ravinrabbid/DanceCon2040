@@ -9,15 +9,15 @@
 
 namespace Dancecon::Utils {
 
-template class SettingsStore<Config::Default::pad_config.PANEL_COUNT>;
+template class SettingsStore<Config::Default::pad_config.PANEL_COUNT, Config::Default::led_config.PANEL_COUNT>;
 
 namespace {
 uint8_t read_byte(uint32_t offset) { return *(reinterpret_cast<uint8_t *>(XIP_BASE + offset)); }
 
 } // namespace
 
-template <size_t TPanelCount>
-SettingsStore<TPanelCount>::SettingsStore()
+template <size_t TPanelCount, size_t TPanelLedsCount>
+SettingsStore<TPanelCount, TPanelLedsCount>::SettingsStore()
     : m_store_cache({m_magic_byte,
                      Config::Default::usb_mode,
                      Config::Default::pad_config.thresholds,
@@ -49,7 +49,8 @@ SettingsStore<TPanelCount>::SettingsStore()
     }
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setUsbMode(const usb_mode_t mode) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setUsbMode(const usb_mode_t mode) {
     if (mode != m_store_cache.usb_mode) {
         m_store_cache.usb_mode = mode;
         m_dirty = true;
@@ -57,111 +58,136 @@ template <size_t TPanelCount> void SettingsStore<TPanelCount>::setUsbMode(const 
         scheduleReboot();
     }
 }
-template <size_t TPanelCount> usb_mode_t SettingsStore<TPanelCount>::getUsbMode() { return m_store_cache.usb_mode; }
+template <size_t TPanelCount, size_t TPanelLedsCount>
+usb_mode_t SettingsStore<TPanelCount, TPanelLedsCount>::getUsbMode() {
+    return m_store_cache.usb_mode;
+}
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setTriggerThresholds(const thresholds_t &thresholds) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setTriggerThresholds(const thresholds_t &thresholds) {
     if (m_store_cache.trigger_thresholds != thresholds) {
         m_store_cache.trigger_thresholds = thresholds;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount>
-SettingsStore<TPanelCount>::thresholds_t SettingsStore<TPanelCount>::getTriggerThresholds() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+SettingsStore<TPanelCount, TPanelLedsCount>::thresholds_t
+SettingsStore<TPanelCount, TPanelLedsCount>::getTriggerThresholds() {
     return m_store_cache.trigger_thresholds;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedIdleColors(const led_colors_t &colors) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedIdleColors(const led_colors_t &colors) {
     if (m_store_cache.led_idle_colors != colors) {
         m_store_cache.led_idle_colors = colors;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> SettingsStore<TPanelCount>::led_colors_t SettingsStore<TPanelCount>::getLedIdleColors() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+SettingsStore<TPanelCount, TPanelLedsCount>::led_colors_t
+SettingsStore<TPanelCount, TPanelLedsCount>::getLedIdleColors() {
     return m_store_cache.led_idle_colors;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedActiveColors(const led_colors_t &colors) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedActiveColors(const led_colors_t &colors) {
     if (m_store_cache.led_active_colors != colors) {
         m_store_cache.led_active_colors = colors;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount>
-SettingsStore<TPanelCount>::led_colors_t SettingsStore<TPanelCount>::getLedActiveColors() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+SettingsStore<TPanelCount, TPanelLedsCount>::led_colors_t
+SettingsStore<TPanelCount, TPanelLedsCount>::getLedActiveColors() {
     return m_store_cache.led_active_colors;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedBrightness(const uint8_t brightness) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedBrightness(const uint8_t brightness) {
     if (m_store_cache.led_brightness != brightness) {
         m_store_cache.led_brightness = brightness;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> uint8_t SettingsStore<TPanelCount>::getLedBrightness() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+uint8_t SettingsStore<TPanelCount, TPanelLedsCount>::getLedBrightness() {
     return m_store_cache.led_brightness;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedAnimationSpeed(const uint8_t speed) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedAnimationSpeed(const uint8_t speed) {
     if (m_store_cache.led_animation_speed != speed) {
         m_store_cache.led_animation_speed = speed;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> uint8_t SettingsStore<TPanelCount>::getLedAnimationSpeed() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+uint8_t SettingsStore<TPanelCount, TPanelLedsCount>::getLedAnimationSpeed() {
     return m_store_cache.led_animation_speed;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedIdleMode(const idle_mode_t mode) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedIdleMode(const idle_mode_t mode) {
     if (m_store_cache.led_idle_mode != mode) {
         m_store_cache.led_idle_mode = mode;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> SettingsStore<TPanelCount>::idle_mode_t SettingsStore<TPanelCount>::getLedIdleMode() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+SettingsStore<TPanelCount, TPanelLedsCount>::idle_mode_t SettingsStore<TPanelCount, TPanelLedsCount>::getLedIdleMode() {
     return m_store_cache.led_idle_mode;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedActiveMode(const active_mode_t mode) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedActiveMode(const active_mode_t mode) {
     if (m_store_cache.led_active_mode != mode) {
         m_store_cache.led_active_mode = mode;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> SettingsStore<TPanelCount>::active_mode_t SettingsStore<TPanelCount>::getLedActiveMode() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+SettingsStore<TPanelCount, TPanelLedsCount>::active_mode_t
+SettingsStore<TPanelCount, TPanelLedsCount>::getLedActiveMode() {
     return m_store_cache.led_active_mode;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedEnablePlayerColor(const bool do_enable) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedEnablePlayerColor(const bool do_enable) {
     if (m_store_cache.led_enable_player_color != do_enable) {
         m_store_cache.led_enable_player_color = do_enable;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> bool SettingsStore<TPanelCount>::getLedEnablePlayerColor() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+bool SettingsStore<TPanelCount, TPanelLedsCount>::getLedEnablePlayerColor() {
     return m_store_cache.led_enable_player_color;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setLedEnableHidLights(const bool do_enable) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setLedEnableHidLights(const bool do_enable) {
     if (m_store_cache.led_enable_hid_lights != do_enable) {
         m_store_cache.led_enable_hid_lights = do_enable;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> bool SettingsStore<TPanelCount>::getLedEnableHidLights() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+bool SettingsStore<TPanelCount, TPanelLedsCount>::getLedEnableHidLights() {
     return m_store_cache.led_enable_hid_lights;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::setDebounceDelay(const uint16_t delay) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setDebounceDelay(const uint16_t delay) {
     if (m_store_cache.debounce_delay != delay) {
         m_store_cache.debounce_delay = delay;
         m_dirty = true;
     }
 }
-template <size_t TPanelCount> uint16_t SettingsStore<TPanelCount>::getDebounceDelay() {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+uint16_t SettingsStore<TPanelCount, TPanelLedsCount>::getDebounceDelay() {
     return m_store_cache.debounce_delay;
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::store() {
+template <size_t TPanelCount, size_t TPanelLedsCount> void SettingsStore<TPanelCount, TPanelLedsCount>::store() {
     if (m_dirty) {
         multicore_lockout_start_blocking();
         uint32_t interrupts = save_and_disable_interrupts();
@@ -203,7 +229,7 @@ template <size_t TPanelCount> void SettingsStore<TPanelCount>::store() {
     }
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::reset() {
+template <size_t TPanelCount, size_t TPanelLedsCount> void SettingsStore<TPanelCount, TPanelLedsCount>::reset() {
     multicore_lockout_start_blocking();
     uint32_t interrupts = save_and_disable_interrupts();
 
@@ -218,7 +244,8 @@ template <size_t TPanelCount> void SettingsStore<TPanelCount>::reset() {
     store();
 }
 
-template <size_t TPanelCount> void SettingsStore<TPanelCount>::scheduleReboot(const bool bootsel) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::scheduleReboot(const bool bootsel) {
     if (m_scheduled_reboot != RebootType::Bootsel) {
         m_scheduled_reboot = (bootsel ? RebootType::Bootsel : RebootType::Normal);
     }

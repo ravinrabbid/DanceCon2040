@@ -49,10 +49,10 @@ struct ControlMessage {
         usb_panel_led_t panel_led;
         uint8_t led_brightness;
         uint8_t led_animation_speed;
-        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::IdleMode led_idle_mode;
-        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::PanelColors led_idle_colors;
-        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::ActiveMode led_active_mode;
-        Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT>::Config::PanelColors led_active_colors;
+        Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT>::Config::IdleMode led_idle_mode;
+        Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT>::Config::PanelColors led_idle_colors;
+        Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT>::Config::ActiveMode led_active_mode;
+        Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT>::Config::PanelColors led_active_colors;
         bool led_enable_player_color;
     } data;
 };
@@ -70,7 +70,7 @@ void core1_task() {
 
     Peripherals::StatusLed status_led(Config::Default::status_led_config);
     Peripherals::Controller controller(Config::Default::controller_config);
-    Peripherals::PanelLeds<Config::Default::pad_config.PANEL_COUNT> led(Config::Default::led_config);
+    Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT> led(Config::Default::led_config);
     Peripherals::Display display(Config::Default::display_config);
 
     Utils::PS4AuthProvider ps4authprovider;
@@ -164,7 +164,8 @@ int main() {
     Utils::InputState input_state;
     std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response;
 
-    auto settings_store = std::make_shared<Utils::SettingsStore<Config::Default::pad_config.PANEL_COUNT>>();
+    auto settings_store = std::make_shared<
+        Utils::SettingsStore<Config::Default::pad_config.PANEL_COUNT, Config::Default::led_config.PANEL_COUNT>>();
     const auto mode = settings_store->getUsbMode();
 
     Peripherals::PadButtons pad_buttons(Config::Default::pad_buttons_config);

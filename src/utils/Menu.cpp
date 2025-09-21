@@ -7,33 +7,34 @@ namespace Dancecon::Utils {
 
 using config_t = decltype(Config::Default::pad_config);
 
-template class Menu<Config::Default::pad_config.PANEL_COUNT>;
+template class Menu<Config::Default::pad_config.PANEL_COUNT, Config::Default::led_config.PANEL_COUNT>;
 
+namespace {
+
+template <size_t TPanelLedsCount> const MenuDescriptor thresholds_descriptor = {};
 template <>
-const MenuDescriptor Menu<4>::thresholds_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Thresholds",
+const MenuDescriptor thresholds_descriptor<4> = {                         //
+    MenuDescriptor::Type::Menu,                                           //
+    "Thresholds",                                                         //
     {{"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},       //
      {"Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdLeft},   //
      {"Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdRight}, //
      {"Down", MenuDescriptor::Action::GotoPagePadTriggerThresholdDown}},  //
     0};
-
 template <>
-const MenuDescriptor Menu<5>::thresholds_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Thresholds",
+const MenuDescriptor thresholds_descriptor<5> = {                                  //
+    MenuDescriptor::Type::Menu,                                                    //
+    "Thresholds",                                                                  //
     {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},       //
      {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight},     //
      {"Center", MenuDescriptor::Action::GotoPagePadTriggerThresholdCenter},        //
      {"Down Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownRight},  //
      {"Down Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownLeft}}, //
     0};
-
 template <>
-const MenuDescriptor Menu<6>::thresholds_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Thresholds",
+const MenuDescriptor thresholds_descriptor<6> = {                              //
+    MenuDescriptor::Type::Menu,                                                //
+    "Thresholds",                                                              //
     {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},   //
      {"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},            //
      {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight}, //
@@ -43,9 +44,9 @@ const MenuDescriptor Menu<6>::thresholds_descriptor = {
     0};
 
 template <>
-const MenuDescriptor Menu<8>::thresholds_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Thresholds",
+const MenuDescriptor thresholds_descriptor<8> = {                                  //
+    MenuDescriptor::Type::Menu,                                                    //
+    "Thresholds",                                                                  //
     {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},       //
      {"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},                //
      {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight},     //
@@ -57,9 +58,9 @@ const MenuDescriptor Menu<8>::thresholds_descriptor = {
     0};
 
 template <>
-const MenuDescriptor Menu<9>::thresholds_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Thresholds",
+const MenuDescriptor thresholds_descriptor<9> = {                                  //
+    MenuDescriptor::Type::Menu,                                                    //
+    "Thresholds",                                                                  //
     {{"Up Left", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpLeft},       //
      {"Up", MenuDescriptor::Action::GotoPagePadTriggerThresholdUp},                //
      {"Up Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdUpRight},     //
@@ -71,31 +72,30 @@ const MenuDescriptor Menu<9>::thresholds_descriptor = {
      {"Down Right", MenuDescriptor::Action::GotoPagePadTriggerThresholdDownLeft}}, //
     0};
 
+template <size_t TPanelCount> const MenuDescriptor idle_colors_descriptor = {};
 template <>
-const MenuDescriptor Menu<4>::idle_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Idle Colors",
+const MenuDescriptor idle_colors_descriptor<4> = {                 //
+    MenuDescriptor::Type::Menu,                                    //
+    "Idle Colors",                                                 //
     {{"Up", MenuDescriptor::Action::GotoPageLedIdleColorUp},       //
      {"Left", MenuDescriptor::Action::GotoPageLedIdleColorLeft},   //
      {"Right", MenuDescriptor::Action::GotoPageLedIdleColorRight}, //
      {"Down", MenuDescriptor::Action::GotoPageLedIdleColorDown}},  //
     0};
-
 template <>
-const MenuDescriptor Menu<5>::idle_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Idle Colors",
+const MenuDescriptor idle_colors_descriptor<5> = {                          //
+    MenuDescriptor::Type::Menu,                                             //
+    "Idle Colors",                                                          //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedIdleColorUpLeft},       //
      {"Up Right", MenuDescriptor::Action::GotoPageLedIdleColorUpRight},     //
      {"Center", MenuDescriptor::Action::GotoPageLedIdleColorCenter},        //
      {"Down Left", MenuDescriptor::Action::GotoPageLedIdleColorDownRight},  //
      {"Down Right", MenuDescriptor::Action::GotoPageLedIdleColorDownLeft}}, //
     0};
-
 template <>
-const MenuDescriptor Menu<6>::idle_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Idle Colors",
+const MenuDescriptor idle_colors_descriptor<6> = {                      //
+    MenuDescriptor::Type::Menu,                                         //
+    "Idle Colors",                                                      //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedIdleColorUpLeft},   //
      {"Up", MenuDescriptor::Action::GotoPageLedIdleColorUp},            //
      {"Up Right", MenuDescriptor::Action::GotoPageLedIdleColorUpRight}, //
@@ -103,11 +103,10 @@ const MenuDescriptor Menu<6>::idle_colors_descriptor = {
      {"Right", MenuDescriptor::Action::GotoPageLedIdleColorRight},      //
      {"Down", MenuDescriptor::Action::GotoPageLedIdleColorDown}},       //
     0};
-
 template <>
-const MenuDescriptor Menu<8>::idle_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Idle Colors",
+const MenuDescriptor idle_colors_descriptor<8> = {                          //
+    MenuDescriptor::Type::Menu,                                             //
+    "Idle Colors",                                                          //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedIdleColorUpLeft},       //
      {"Up", MenuDescriptor::Action::GotoPageLedIdleColorUp},                //
      {"Up Right", MenuDescriptor::Action::GotoPageLedIdleColorUpRight},     //
@@ -117,11 +116,10 @@ const MenuDescriptor Menu<8>::idle_colors_descriptor = {
      {"Down", MenuDescriptor::Action::GotoPageLedIdleColorDown},            //
      {"Down Right", MenuDescriptor::Action::GotoPageLedIdleColorDownLeft}}, //
     0};
-
 template <>
-const MenuDescriptor Menu<9>::idle_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Idle Colors",
+const MenuDescriptor idle_colors_descriptor<9> = {                          //
+    MenuDescriptor::Type::Menu,                                             //
+    "Idle Colors",                                                          //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedIdleColorUpLeft},       //
      {"Up", MenuDescriptor::Action::GotoPageLedIdleColorUp},                //
      {"Up Right", MenuDescriptor::Action::GotoPageLedIdleColorUpRight},     //
@@ -133,31 +131,30 @@ const MenuDescriptor Menu<9>::idle_colors_descriptor = {
      {"Down Right", MenuDescriptor::Action::GotoPageLedIdleColorDownLeft}}, //
     0};
 
+template <size_t TPanelCount> const MenuDescriptor active_colors_descriptor = {};
 template <>
-const MenuDescriptor Menu<4>::active_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Active Colors",
+const MenuDescriptor active_colors_descriptor<4> = {                 //
+    MenuDescriptor::Type::Menu,                                      //
+    "Active Colors",                                                 //
     {{"Up", MenuDescriptor::Action::GotoPageLedActiveColorUp},       //
      {"Left", MenuDescriptor::Action::GotoPageLedActiveColorLeft},   //
      {"Right", MenuDescriptor::Action::GotoPageLedActiveColorRight}, //
      {"Down", MenuDescriptor::Action::GotoPageLedActiveColorDown}},  //
     0};
-
 template <>
-const MenuDescriptor Menu<5>::active_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Active Colors",
+const MenuDescriptor active_colors_descriptor<5> = {                          //
+    MenuDescriptor::Type::Menu,                                               //
+    "Active Colors",                                                          //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedActiveColorUpLeft},       //
      {"Up Right", MenuDescriptor::Action::GotoPageLedActiveColorUpRight},     //
      {"Center", MenuDescriptor::Action::GotoPageLedActiveColorCenter},        //
      {"Down Left", MenuDescriptor::Action::GotoPageLedActiveColorDownRight},  //
      {"Down Right", MenuDescriptor::Action::GotoPageLedActiveColorDownLeft}}, //
     0};
-
 template <>
-const MenuDescriptor Menu<6>::active_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Active Colors",
+const MenuDescriptor active_colors_descriptor<6> = {                      //
+    MenuDescriptor::Type::Menu,                                           //
+    "Active Colors",                                                      //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedActiveColorUpLeft},   //
      {"Up", MenuDescriptor::Action::GotoPageLedActiveColorUp},            //
      {"Up Right", MenuDescriptor::Action::GotoPageLedActiveColorUpRight}, //
@@ -165,11 +162,10 @@ const MenuDescriptor Menu<6>::active_colors_descriptor = {
      {"Right", MenuDescriptor::Action::GotoPageLedActiveColorRight},      //
      {"Down", MenuDescriptor::Action::GotoPageLedActiveColorDown}},       //
     0};
-
 template <>
-const MenuDescriptor Menu<8>::active_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Active Colors",
+const MenuDescriptor active_colors_descriptor<8> = {                          //
+    MenuDescriptor::Type::Menu,                                               //
+    "Active Colors",                                                          //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedActiveColorUpLeft},       //
      {"Up", MenuDescriptor::Action::GotoPageLedActiveColorUp},                //
      {"Up Right", MenuDescriptor::Action::GotoPageLedActiveColorUpRight},     //
@@ -179,11 +175,10 @@ const MenuDescriptor Menu<8>::active_colors_descriptor = {
      {"Down", MenuDescriptor::Action::GotoPageLedActiveColorDown},            //
      {"Down Right", MenuDescriptor::Action::GotoPageLedActiveColorDownLeft}}, //
     0};
-
 template <>
-const MenuDescriptor Menu<9>::active_colors_descriptor = {
-    MenuDescriptor::Type::Menu,
-    "Active Colors",
+const MenuDescriptor active_colors_descriptor<9> = {                          //
+    MenuDescriptor::Type::Menu,                                               //
+    "Active Colors",                                                          //
     {{"Up Left", MenuDescriptor::Action::GotoPageLedActiveColorUpLeft},       //
      {"Up", MenuDescriptor::Action::GotoPageLedActiveColorUp},                //
      {"Up Right", MenuDescriptor::Action::GotoPageLedActiveColorUpRight},     //
@@ -196,7 +191,656 @@ const MenuDescriptor Menu<9>::active_colors_descriptor = {
     0};
 
 template <size_t TPanelCount>
-const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = {
+uint16_t getThresholdValue(const MenuPage page,
+                           const typename Peripherals::Pad<TPanelCount>::Config::Thresholds &thresholds) {
+    if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdUp:
+            return thresholds.up;
+        case MenuPage::PadTriggerThresholdLeft:
+            return thresholds.left;
+        case MenuPage::PadTriggerThresholdRight:
+            return thresholds.right;
+        case MenuPage::PadTriggerThresholdDown:
+            return thresholds.down;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdUpLeft:
+            return thresholds.up_left;
+        case MenuPage::PadTriggerThresholdUpRight:
+            return thresholds.up_right;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdDownLeft:
+            return thresholds.down_left;
+        case MenuPage::PadTriggerThresholdDownRight:
+            return thresholds.down_right;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdCenter:
+            return thresholds.center;
+        default:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+template <size_t TPanelLedsCount>
+uint8_t getLedColorValue(const MenuPage page,
+                         const typename Peripherals::PanelLeds<TPanelLedsCount>::Config::PanelColors &colors) {
+    if constexpr (TPanelLedsCount == 4 || TPanelLedsCount == 6 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorUpRed:
+        case MenuPage::LedActiveColorUpRed:
+            return colors.up.r;
+        case MenuPage::LedIdleColorUpGreen:
+        case MenuPage::LedActiveColorUpGreen:
+            return colors.up.g;
+        case MenuPage::LedIdleColorUpBlue:
+        case MenuPage::LedActiveColorUpBlue:
+            return colors.up.b;
+        case MenuPage::LedIdleColorLeftRed:
+        case MenuPage::LedActiveColorLeftRed:
+            return colors.left.r;
+        case MenuPage::LedIdleColorLeftGreen:
+        case MenuPage::LedActiveColorLeftGreen:
+            return colors.left.g;
+        case MenuPage::LedIdleColorLeftBlue:
+        case MenuPage::LedActiveColorLeftBlue:
+            return colors.left.b;
+        case MenuPage::LedIdleColorRightRed:
+        case MenuPage::LedActiveColorRightRed:
+            return colors.right.r;
+        case MenuPage::LedIdleColorRightGreen:
+        case MenuPage::LedActiveColorRightGreen:
+            return colors.right.g;
+        case MenuPage::LedIdleColorRightBlue:
+        case MenuPage::LedActiveColorRightBlue:
+            return colors.right.b;
+        case MenuPage::LedIdleColorDownRed:
+        case MenuPage::LedActiveColorDownRed:
+            return colors.down.r;
+        case MenuPage::LedIdleColorDownGreen:
+        case MenuPage::LedActiveColorDownGreen:
+            return colors.down.g;
+        case MenuPage::LedIdleColorDownBlue:
+        case MenuPage::LedActiveColorDownBlue:
+            return colors.down.b;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 6 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorUpLeftRed:
+        case MenuPage::LedActiveColorUpLeftRed:
+            return colors.up_left.r;
+        case MenuPage::LedIdleColorUpLeftGreen:
+        case MenuPage::LedActiveColorUpLeftGreen:
+            return colors.up_left.g;
+        case MenuPage::LedIdleColorUpLeftBlue:
+        case MenuPage::LedActiveColorUpLeftBlue:
+            return colors.up_left.b;
+        case MenuPage::LedIdleColorUpRightRed:
+        case MenuPage::LedActiveColorUpRightRed:
+            return colors.up_right.r;
+        case MenuPage::LedIdleColorUpRightGreen:
+        case MenuPage::LedActiveColorUpRightGreen:
+            return colors.up_right.g;
+        case MenuPage::LedIdleColorUpRightBlue:
+        case MenuPage::LedActiveColorUpRightBlue:
+            return colors.up_right.b;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorDownLeftRed:
+        case MenuPage::LedActiveColorDownLeftRed:
+            return colors.down_left.r;
+        case MenuPage::LedIdleColorDownLeftGreen:
+        case MenuPage::LedActiveColorDownLeftGreen:
+            return colors.down_left.g;
+        case MenuPage::LedIdleColorDownLeftBlue:
+        case MenuPage::LedActiveColorDownLeftBlue:
+            return colors.down_left.b;
+        case MenuPage::LedIdleColorDownRightRed:
+        case MenuPage::LedActiveColorDownRightRed:
+            return colors.down_right.r;
+        case MenuPage::LedIdleColorDownRightGreen:
+        case MenuPage::LedActiveColorDownRightGreen:
+            return colors.down_right.g;
+        case MenuPage::LedIdleColorDownRightBlue:
+        case MenuPage::LedActiveColorDownRightBlue:
+            return colors.down_right.b;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorCenterRed:
+        case MenuPage::LedActiveColorCenterRed:
+            return colors.center.r;
+        case MenuPage::LedIdleColorCenterGreen:
+        case MenuPage::LedActiveColorCenterGreen:
+            return colors.center.g;
+        case MenuPage::LedIdleColorCenterBlue:
+        case MenuPage::LedActiveColorCenterBlue:
+            return colors.center.b;
+        default:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+template <size_t TPanelCount>
+void setThresholdValue(const MenuPage page, const uint16_t value,
+                       typename Peripherals::Pad<TPanelCount>::Config::Thresholds &thresholds) {
+    if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdUp:
+            thresholds.up = value;
+            return;
+        case MenuPage::PadTriggerThresholdLeft:
+            thresholds.left = value;
+            return;
+        case MenuPage::PadTriggerThresholdRight:
+            thresholds.right = value;
+            return;
+        case MenuPage::PadTriggerThresholdDown:
+            thresholds.down = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdUpLeft:
+            thresholds.up_left = value;
+            return;
+        case MenuPage::PadTriggerThresholdUpRight:
+            thresholds.up_right = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdDownLeft:
+            thresholds.down_left = value;
+            return;
+        case MenuPage::PadTriggerThresholdDownRight:
+            thresholds.down_right = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 9) {
+        switch (page) {
+        case MenuPage::PadTriggerThresholdCenter:
+            thresholds.center = value;
+            return;
+        default:
+            break;
+        }
+    }
+
+    return;
+}
+
+template <size_t TPanelLedsCount>
+void setLedColorValue(const MenuPage page, const uint8_t value,
+                      typename Peripherals::PanelLeds<TPanelLedsCount>::Config::PanelColors &colors) {
+    if constexpr (TPanelLedsCount == 4 || TPanelLedsCount == 6 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorUpRed:
+        case MenuPage::LedActiveColorUpRed:
+            colors.up.r = value;
+            return;
+        case MenuPage::LedIdleColorUpGreen:
+        case MenuPage::LedActiveColorUpGreen:
+            colors.up.g = value;
+            return;
+        case MenuPage::LedIdleColorUpBlue:
+        case MenuPage::LedActiveColorUpBlue:
+            colors.up.b = value;
+            return;
+        case MenuPage::LedIdleColorLeftRed:
+        case MenuPage::LedActiveColorLeftRed:
+            colors.left.r = value;
+            return;
+        case MenuPage::LedIdleColorLeftGreen:
+        case MenuPage::LedActiveColorLeftGreen:
+            colors.left.g = value;
+            return;
+        case MenuPage::LedIdleColorLeftBlue:
+        case MenuPage::LedActiveColorLeftBlue:
+            colors.left.b = value;
+            return;
+        case MenuPage::LedIdleColorRightRed:
+        case MenuPage::LedActiveColorRightRed:
+            colors.right.r = value;
+            return;
+        case MenuPage::LedIdleColorRightGreen:
+        case MenuPage::LedActiveColorRightGreen:
+            colors.right.g = value;
+            return;
+        case MenuPage::LedIdleColorRightBlue:
+        case MenuPage::LedActiveColorRightBlue:
+            colors.right.b = value;
+            return;
+        case MenuPage::LedIdleColorDownRed:
+        case MenuPage::LedActiveColorDownRed:
+            colors.down.r = value;
+            return;
+        case MenuPage::LedIdleColorDownGreen:
+        case MenuPage::LedActiveColorDownGreen:
+            colors.down.g = value;
+            return;
+        case MenuPage::LedIdleColorDownBlue:
+        case MenuPage::LedActiveColorDownBlue:
+            colors.down.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 6 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorUpLeftRed:
+        case MenuPage::LedActiveColorUpLeftRed:
+            colors.up_left.r = value;
+            return;
+        case MenuPage::LedIdleColorUpLeftGreen:
+        case MenuPage::LedActiveColorUpLeftGreen:
+            colors.up_left.g = value;
+            return;
+        case MenuPage::LedIdleColorUpLeftBlue:
+        case MenuPage::LedActiveColorUpLeftBlue:
+            colors.up_left.b = value;
+            return;
+        case MenuPage::LedIdleColorUpRightRed:
+        case MenuPage::LedActiveColorUpRightRed:
+            colors.up_right.r = value;
+            return;
+        case MenuPage::LedIdleColorUpRightGreen:
+        case MenuPage::LedActiveColorUpRightGreen:
+            colors.up_right.g = value;
+            return;
+        case MenuPage::LedIdleColorUpRightBlue:
+        case MenuPage::LedActiveColorUpRightBlue:
+            colors.up_right.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorDownLeftRed:
+        case MenuPage::LedActiveColorDownLeftRed:
+            colors.down_left.r = value;
+            return;
+        case MenuPage::LedIdleColorDownLeftGreen:
+        case MenuPage::LedActiveColorDownLeftGreen:
+            colors.down_left.g = value;
+            return;
+        case MenuPage::LedIdleColorDownLeftBlue:
+        case MenuPage::LedActiveColorDownLeftBlue:
+            colors.down_left.b = value;
+            return;
+        case MenuPage::LedIdleColorDownRightRed:
+        case MenuPage::LedActiveColorDownRightRed:
+            colors.down_right.r = value;
+            return;
+        case MenuPage::LedIdleColorDownRightGreen:
+        case MenuPage::LedActiveColorDownRightGreen:
+            colors.down_right.g = value;
+            return;
+        case MenuPage::LedIdleColorDownRightBlue:
+        case MenuPage::LedActiveColorDownRightBlue:
+            colors.down_right.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 9) {
+        switch (page) {
+        case MenuPage::LedIdleColorCenterRed:
+        case MenuPage::LedActiveColorCenterRed:
+            colors.center.r = value;
+            return;
+        case MenuPage::LedIdleColorCenterGreen:
+        case MenuPage::LedActiveColorCenterGreen:
+            colors.center.g = value;
+            return;
+        case MenuPage::LedIdleColorCenterBlue:
+        case MenuPage::LedActiveColorCenterBlue:
+            colors.center.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+
+    return;
+}
+
+template <size_t TPanelCount>
+void setThresholdValue(const MenuDescriptor::Action action, const uint16_t value,
+                       typename Peripherals::Pad<TPanelCount>::Config::Thresholds &thresholds) {
+    if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetPadTriggerThresholdUp:
+            thresholds.up = value;
+            return;
+        case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
+            thresholds.left = value;
+            return;
+        case MenuDescriptor::Action::SetPadTriggerThresholdRight:
+            thresholds.right = value;
+            return;
+        case MenuDescriptor::Action::SetPadTriggerThresholdDown:
+            thresholds.down = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
+            thresholds.up_left = value;
+            return;
+        case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
+            thresholds.up_right = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 8 || TPanelCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
+            thresholds.down_left = value;
+            return;
+        case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
+            thresholds.down_right = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelCount == 5 || TPanelCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetPadTriggerThresholdCenter:
+            thresholds.center = value;
+            return;
+        default:
+            break;
+        }
+    }
+
+    return;
+}
+
+template <size_t TPanelLedsCount>
+void setLedColorValue(const MenuDescriptor::Action action, const uint8_t value,
+                      typename Peripherals::PanelLeds<TPanelLedsCount>::Config::PanelColors &colors) {
+    if constexpr (TPanelLedsCount == 4 || TPanelLedsCount == 6 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetLedIdleColorUpRed:
+        case MenuDescriptor::Action::SetLedActiveColorUpRed:
+            colors.up.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorUpGreen:
+        case MenuDescriptor::Action::SetLedActiveColorUpGreen:
+            colors.up.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorUpBlue:
+        case MenuDescriptor::Action::SetLedActiveColorUpBlue:
+            colors.up.b = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorLeftRed:
+        case MenuDescriptor::Action::SetLedActiveColorLeftRed:
+            colors.left.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorLeftGreen:
+        case MenuDescriptor::Action::SetLedActiveColorLeftGreen:
+            colors.left.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorLeftBlue:
+        case MenuDescriptor::Action::SetLedActiveColorLeftBlue:
+            colors.left.b = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorRightRed:
+        case MenuDescriptor::Action::SetLedActiveColorRightRed:
+            colors.right.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorRightGreen:
+        case MenuDescriptor::Action::SetLedActiveColorRightGreen:
+            colors.right.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorRightBlue:
+        case MenuDescriptor::Action::SetLedActiveColorRightBlue:
+            colors.right.b = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownRed:
+        case MenuDescriptor::Action::SetLedActiveColorDownRed:
+            colors.down.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownGreen:
+        case MenuDescriptor::Action::SetLedActiveColorDownGreen:
+            colors.down.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownBlue:
+        case MenuDescriptor::Action::SetLedActiveColorDownBlue:
+            colors.down.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 6 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetLedIdleColorUpLeftRed:
+        case MenuDescriptor::Action::SetLedActiveColorUpLeftRed:
+            colors.up_left.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorUpLeftGreen:
+        case MenuDescriptor::Action::SetLedActiveColorUpLeftGreen:
+            colors.up_left.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorUpLeftBlue:
+        case MenuDescriptor::Action::SetLedActiveColorUpLeftBlue:
+            colors.up_left.b = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorUpRightRed:
+        case MenuDescriptor::Action::SetLedActiveColorUpRightRed:
+            colors.up_right.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorUpRightGreen:
+        case MenuDescriptor::Action::SetLedActiveColorUpRightGreen:
+            colors.up_right.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorUpRightBlue:
+        case MenuDescriptor::Action::SetLedActiveColorUpRightBlue:
+            colors.up_right.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 8 || TPanelLedsCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetLedIdleColorDownLeftRed:
+        case MenuDescriptor::Action::SetLedActiveColorDownLeftRed:
+            colors.down_left.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownLeftGreen:
+        case MenuDescriptor::Action::SetLedActiveColorDownLeftGreen:
+            colors.down_left.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownLeftBlue:
+        case MenuDescriptor::Action::SetLedActiveColorDownLeftBlue:
+            colors.down_left.b = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownRightRed:
+        case MenuDescriptor::Action::SetLedActiveColorDownRightRed:
+            colors.down_right.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownRightGreen:
+        case MenuDescriptor::Action::SetLedActiveColorDownRightGreen:
+            colors.down_right.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorDownRightBlue:
+        case MenuDescriptor::Action::SetLedActiveColorDownRightBlue:
+            colors.down_right.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+    if constexpr (TPanelLedsCount == 5 || TPanelLedsCount == 9) {
+        switch (action) {
+        case MenuDescriptor::Action::SetLedIdleColorCenterRed:
+        case MenuDescriptor::Action::SetLedActiveColorCenterRed:
+            colors.center.r = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorCenterGreen:
+        case MenuDescriptor::Action::SetLedActiveColorCenterGreen:
+            colors.center.g = value;
+            return;
+        case MenuDescriptor::Action::SetLedIdleColorCenterBlue:
+        case MenuDescriptor::Action::SetLedActiveColorCenterBlue:
+            colors.center.b = value;
+            return;
+        default:
+            break;
+        }
+    }
+
+    return;
+}
+
+InputState::Controller checkPressed(const InputState::Controller &controller_state) {
+    struct ButtonState {
+        enum State {
+            Idle,
+            RepeatDelay,
+            Repeat,
+            FastRepeat,
+        };
+        State state;
+        uint32_t pressed_since;
+        uint32_t last_repeat;
+    };
+
+    static const uint32_t repeat_delay = 1000;
+    static const uint32_t repeat_interval = 20;
+    static const uint32_t fast_repeat_delay = 5000;
+    static const uint32_t fast_repeat_interval = 2;
+
+    static ButtonState state_north = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_east = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_south = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_west = {ButtonState::State::Idle, 0, 0};
+
+    static ButtonState state_up = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_down = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_left = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_right = {ButtonState::State::Idle, 0, 0};
+
+    InputState::Controller result{{false, false, false, false},
+                                  {false, false, false, false, false, false, false, false, false, false}};
+
+    auto handle_button = [](ButtonState &button_state, bool input_state) {
+        bool result = false;
+        if (input_state) {
+            uint32_t now = to_ms_since_boot(get_absolute_time());
+            switch (button_state.state) {
+            case ButtonState::State::Idle:
+                result = true;
+                button_state.state = ButtonState::State::RepeatDelay;
+                button_state.pressed_since = now;
+                break;
+            case ButtonState::State::RepeatDelay:
+                if ((now - button_state.pressed_since) > repeat_delay) {
+                    result = true;
+                    button_state.state = ButtonState::State::Repeat;
+                    button_state.last_repeat = now;
+                } else {
+                    result = false;
+                }
+                break;
+            case ButtonState::State::Repeat:
+                if ((now - button_state.pressed_since) > fast_repeat_delay) {
+                    result = true;
+                    button_state.state = ButtonState::State::FastRepeat;
+                    button_state.last_repeat = now;
+                } else if ((now - button_state.last_repeat) > repeat_interval) {
+                    result = true;
+                    button_state.last_repeat = now;
+                } else {
+                    result = false;
+                }
+                break;
+            case ButtonState::State::FastRepeat:
+                if ((now - button_state.last_repeat) > fast_repeat_interval) {
+                    result = true;
+                    button_state.last_repeat = now;
+                } else {
+                    result = false;
+                }
+                break;
+            }
+        } else {
+            result = false;
+            button_state.state = ButtonState::State::Idle;
+        }
+
+        return result;
+    };
+
+    result.buttons.north = handle_button(state_north, controller_state.buttons.north);
+    result.buttons.east = handle_button(state_east, controller_state.buttons.east);
+    result.buttons.south = handle_button(state_south, controller_state.buttons.south);
+    result.buttons.west = handle_button(state_west, controller_state.buttons.west);
+
+    result.dpad.up = handle_button(state_up, controller_state.dpad.up);
+    result.dpad.down = handle_button(state_down, controller_state.dpad.down);
+    result.dpad.left = handle_button(state_left, controller_state.dpad.left);
+    result.dpad.right = handle_button(state_right, controller_state.dpad.right);
+
+    return result;
+}
+
+} // namespace
+
+template <size_t TPanelCount, size_t TPanelLedsCount>
+const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount, TPanelLedsCount>::descriptors = {
     {MenuPage::Main,
      {MenuDescriptor::Type::Menu,                               //
       "Settings",                                               //
@@ -243,7 +887,7 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
       {{"", MenuDescriptor::Action::SetPadDebounceDelay}}, //
       UINT8_MAX}},                                         //
 
-    {MenuPage::PadTriggerThresholds, thresholds_descriptor},
+    {MenuPage::PadTriggerThresholds, thresholds_descriptor<TPanelCount>},
 
     {MenuPage::PadTriggerThresholdUpLeft,                           //
      {MenuDescriptor::Type::Value,                                  //
@@ -333,7 +977,7 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
        {"Rainbow", MenuDescriptor::Action::SetLedIdleMode}}, //
       0}},                                                   //
 
-    {MenuPage::LedIdleColors, idle_colors_descriptor},
+    {MenuPage::LedIdleColors, idle_colors_descriptor<TPanelLedsCount>},
 
     {MenuPage::LedIdleColorUpLeft,                                         //
      {MenuDescriptor::Type::Menu,                                          //
@@ -552,7 +1196,7 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
        {"Actv Idle", MenuDescriptor::Action::SetLedActiveMode}}, //
       0}},                                                       //
 
-    {MenuPage::LedActiveColors, active_colors_descriptor},
+    {MenuPage::LedActiveColors, active_colors_descriptor<TPanelLedsCount>},
 
     {MenuPage::LedActiveColorUpLeft,                                         //
      {MenuDescriptor::Type::Menu,                                            //
@@ -793,663 +1437,20 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount>::descriptors = 
       0}},                                         //
 };
 
-template <size_t TPanelCount>
-Menu<TPanelCount>::Menu(const std::shared_ptr<SettingsStore<TPanelCount>> settings_store,
-                        const Menu<TPanelCount>::calibration_callback_t &calibration_callback)
+template <size_t TPanelCount, size_t TPanelLedsCount>
+Menu<TPanelCount, TPanelLedsCount>::Menu(
+    const std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> settings_store,
+    const Menu<TPanelCount, TPanelLedsCount>::calibration_callback_t &calibration_callback)
     : m_store(settings_store), m_active(false), m_state_stack({{MenuPage::Main, 0, 0}}),
       m_calibration_callback(calibration_callback){};
 
-template <size_t TPanelCount> void Menu<TPanelCount>::activate() {
+template <size_t TPanelCount, size_t TPanelLedsCount> void Menu<TPanelCount, TPanelLedsCount>::activate() {
     m_state_stack = std::stack<MenuState>({{MenuPage::Main, 0, 0}});
     m_active = true;
 }
 
-static InputState::Controller checkPressed(const InputState::Controller &controller_state) {
-    struct ButtonState {
-        enum State {
-            Idle,
-            RepeatDelay,
-            Repeat,
-            FastRepeat,
-        };
-        State state;
-        uint32_t pressed_since;
-        uint32_t last_repeat;
-    };
-
-    static const uint32_t repeat_delay = 1000;
-    static const uint32_t repeat_interval = 20;
-    static const uint32_t fast_repeat_delay = 5000;
-    static const uint32_t fast_repeat_interval = 2;
-
-    static ButtonState state_north = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_east = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_south = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_west = {ButtonState::State::Idle, 0, 0};
-
-    static ButtonState state_up = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_down = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_left = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_right = {ButtonState::State::Idle, 0, 0};
-
-    InputState::Controller result{{false, false, false, false},
-                                  {false, false, false, false, false, false, false, false, false, false}};
-
-    auto handle_button = [](ButtonState &button_state, bool input_state) {
-        bool result = false;
-        if (input_state) {
-            uint32_t now = to_ms_since_boot(get_absolute_time());
-            switch (button_state.state) {
-            case ButtonState::State::Idle:
-                result = true;
-                button_state.state = ButtonState::State::RepeatDelay;
-                button_state.pressed_since = now;
-                break;
-            case ButtonState::State::RepeatDelay:
-                if ((now - button_state.pressed_since) > repeat_delay) {
-                    result = true;
-                    button_state.state = ButtonState::State::Repeat;
-                    button_state.last_repeat = now;
-                } else {
-                    result = false;
-                }
-                break;
-            case ButtonState::State::Repeat:
-                if ((now - button_state.pressed_since) > fast_repeat_delay) {
-                    result = true;
-                    button_state.state = ButtonState::State::FastRepeat;
-                    button_state.last_repeat = now;
-                } else if ((now - button_state.last_repeat) > repeat_interval) {
-                    result = true;
-                    button_state.last_repeat = now;
-                } else {
-                    result = false;
-                }
-                break;
-            case ButtonState::State::FastRepeat:
-                if ((now - button_state.last_repeat) > fast_repeat_interval) {
-                    result = true;
-                    button_state.last_repeat = now;
-                } else {
-                    result = false;
-                }
-                break;
-            }
-        } else {
-            result = false;
-            button_state.state = ButtonState::State::Idle;
-        }
-
-        return result;
-    };
-
-    result.buttons.north = handle_button(state_north, controller_state.buttons.north);
-    result.buttons.east = handle_button(state_east, controller_state.buttons.east);
-    result.buttons.south = handle_button(state_south, controller_state.buttons.south);
-    result.buttons.west = handle_button(state_west, controller_state.buttons.west);
-
-    result.dpad.up = handle_button(state_up, controller_state.dpad.up);
-    result.dpad.down = handle_button(state_down, controller_state.dpad.down);
-    result.dpad.left = handle_button(state_left, controller_state.dpad.left);
-    result.dpad.right = handle_button(state_right, controller_state.dpad.right);
-
-    return result;
-}
-
-template <> uint16_t Menu<4>::getCurrentThresholdValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::PadTriggerThresholdUp:
-        return m_store->getTriggerThresholds().up;
-    case MenuPage::PadTriggerThresholdLeft:
-        return m_store->getTriggerThresholds().left;
-    case MenuPage::PadTriggerThresholdRight:
-        return m_store->getTriggerThresholds().right;
-    case MenuPage::PadTriggerThresholdDown:
-        return m_store->getTriggerThresholds().down;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<5>::getCurrentThresholdValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        return m_store->getTriggerThresholds().up_left;
-    case MenuPage::PadTriggerThresholdUpRight:
-        return m_store->getTriggerThresholds().up_right;
-    case MenuPage::PadTriggerThresholdCenter:
-        return m_store->getTriggerThresholds().center;
-    case MenuPage::PadTriggerThresholdDownLeft:
-        return m_store->getTriggerThresholds().down_left;
-    case MenuPage::PadTriggerThresholdDownRight:
-        return m_store->getTriggerThresholds().down_right;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<6>::getCurrentThresholdValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        return m_store->getTriggerThresholds().up_left;
-    case MenuPage::PadTriggerThresholdUp:
-        return m_store->getTriggerThresholds().up;
-    case MenuPage::PadTriggerThresholdUpRight:
-        return m_store->getTriggerThresholds().up_right;
-    case MenuPage::PadTriggerThresholdLeft:
-        return m_store->getTriggerThresholds().left;
-    case MenuPage::PadTriggerThresholdRight:
-        return m_store->getTriggerThresholds().right;
-    case MenuPage::PadTriggerThresholdDown:
-        return m_store->getTriggerThresholds().down;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<8>::getCurrentThresholdValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        return m_store->getTriggerThresholds().up_left;
-    case MenuPage::PadTriggerThresholdUp:
-        return m_store->getTriggerThresholds().up;
-    case MenuPage::PadTriggerThresholdUpRight:
-        return m_store->getTriggerThresholds().up_right;
-    case MenuPage::PadTriggerThresholdLeft:
-        return m_store->getTriggerThresholds().left;
-    case MenuPage::PadTriggerThresholdRight:
-        return m_store->getTriggerThresholds().right;
-    case MenuPage::PadTriggerThresholdDownLeft:
-        return m_store->getTriggerThresholds().down_left;
-    case MenuPage::PadTriggerThresholdDown:
-        return m_store->getTriggerThresholds().down;
-    case MenuPage::PadTriggerThresholdDownRight:
-        return m_store->getTriggerThresholds().down_right;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<9>::getCurrentThresholdValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        return m_store->getTriggerThresholds().up_left;
-    case MenuPage::PadTriggerThresholdUp:
-        return m_store->getTriggerThresholds().up;
-    case MenuPage::PadTriggerThresholdUpRight:
-        return m_store->getTriggerThresholds().up_right;
-    case MenuPage::PadTriggerThresholdLeft:
-        return m_store->getTriggerThresholds().left;
-    case MenuPage::PadTriggerThresholdRight:
-        return m_store->getTriggerThresholds().center;
-    case MenuPage::PadTriggerThresholdCenter:
-        return m_store->getTriggerThresholds().right;
-    case MenuPage::PadTriggerThresholdDownLeft:
-        return m_store->getTriggerThresholds().down_left;
-    case MenuPage::PadTriggerThresholdDown:
-        return m_store->getTriggerThresholds().down;
-    case MenuPage::PadTriggerThresholdDownRight:
-        return m_store->getTriggerThresholds().down_right;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<4>::getCurrentLedIdleColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedIdleColorUpRed:
-        return m_store->getLedIdleColors().up.r;
-    case MenuPage::LedIdleColorUpGreen:
-        return m_store->getLedIdleColors().up.g;
-    case MenuPage::LedIdleColorUpBlue:
-        return m_store->getLedIdleColors().up.b;
-    case MenuPage::LedIdleColorLeftRed:
-        return m_store->getLedIdleColors().left.r;
-    case MenuPage::LedIdleColorLeftGreen:
-        return m_store->getLedIdleColors().left.g;
-    case MenuPage::LedIdleColorLeftBlue:
-        return m_store->getLedIdleColors().left.b;
-    case MenuPage::LedIdleColorRightRed:
-        return m_store->getLedIdleColors().right.r;
-    case MenuPage::LedIdleColorRightGreen:
-        return m_store->getLedIdleColors().right.g;
-    case MenuPage::LedIdleColorRightBlue:
-        return m_store->getLedIdleColors().right.b;
-    case MenuPage::LedIdleColorDownRed:
-        return m_store->getLedIdleColors().down.r;
-    case MenuPage::LedIdleColorDownGreen:
-        return m_store->getLedIdleColors().down.g;
-    case MenuPage::LedIdleColorDownBlue:
-        return m_store->getLedIdleColors().down.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<5>::getCurrentLedIdleColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        return m_store->getLedIdleColors().up_left.r;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        return m_store->getLedIdleColors().up_left.g;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        return m_store->getLedIdleColors().up_left.b;
-    case MenuPage::LedIdleColorUpRightRed:
-        return m_store->getLedIdleColors().up_right.r;
-    case MenuPage::LedIdleColorUpRightGreen:
-        return m_store->getLedIdleColors().up_right.g;
-    case MenuPage::LedIdleColorUpRightBlue:
-        return m_store->getLedIdleColors().up_right.b;
-    case MenuPage::LedIdleColorCenterRed:
-        return m_store->getLedIdleColors().center.r;
-    case MenuPage::LedIdleColorCenterGreen:
-        return m_store->getLedIdleColors().center.g;
-    case MenuPage::LedIdleColorCenterBlue:
-        return m_store->getLedIdleColors().center.b;
-    case MenuPage::LedIdleColorDownLeftRed:
-        return m_store->getLedIdleColors().down_left.r;
-    case MenuPage::LedIdleColorDownLeftGreen:
-        return m_store->getLedIdleColors().down_left.g;
-    case MenuPage::LedIdleColorDownLeftBlue:
-        return m_store->getLedIdleColors().down_left.b;
-    case MenuPage::LedIdleColorDownRightRed:
-        return m_store->getLedIdleColors().down_right.r;
-    case MenuPage::LedIdleColorDownRightGreen:
-        return m_store->getLedIdleColors().down_right.g;
-    case MenuPage::LedIdleColorDownRightBlue:
-        return m_store->getLedIdleColors().down_right.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<6>::getCurrentLedIdleColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        return m_store->getLedIdleColors().up_left.r;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        return m_store->getLedIdleColors().up_left.g;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        return m_store->getLedIdleColors().up_left.b;
-    case MenuPage::LedIdleColorUpRed:
-        return m_store->getLedIdleColors().up.r;
-    case MenuPage::LedIdleColorUpGreen:
-        return m_store->getLedIdleColors().up.g;
-    case MenuPage::LedIdleColorUpBlue:
-        return m_store->getLedIdleColors().up.b;
-    case MenuPage::LedIdleColorUpRightRed:
-        return m_store->getLedIdleColors().up_right.r;
-    case MenuPage::LedIdleColorUpRightGreen:
-        return m_store->getLedIdleColors().up_right.g;
-    case MenuPage::LedIdleColorUpRightBlue:
-        return m_store->getLedIdleColors().up_right.b;
-    case MenuPage::LedIdleColorLeftRed:
-        return m_store->getLedIdleColors().left.r;
-    case MenuPage::LedIdleColorLeftGreen:
-        return m_store->getLedIdleColors().left.g;
-    case MenuPage::LedIdleColorLeftBlue:
-        return m_store->getLedIdleColors().left.b;
-    case MenuPage::LedIdleColorRightRed:
-        return m_store->getLedIdleColors().right.r;
-    case MenuPage::LedIdleColorRightGreen:
-        return m_store->getLedIdleColors().right.g;
-    case MenuPage::LedIdleColorRightBlue:
-        return m_store->getLedIdleColors().right.b;
-    case MenuPage::LedIdleColorDownRed:
-        return m_store->getLedIdleColors().down.r;
-    case MenuPage::LedIdleColorDownGreen:
-        return m_store->getLedIdleColors().down.g;
-    case MenuPage::LedIdleColorDownBlue:
-        return m_store->getLedIdleColors().down.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<8>::getCurrentLedIdleColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        return m_store->getLedIdleColors().up_left.r;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        return m_store->getLedIdleColors().up_left.g;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        return m_store->getLedIdleColors().up_left.b;
-    case MenuPage::LedIdleColorUpRed:
-        return m_store->getLedIdleColors().up.r;
-    case MenuPage::LedIdleColorUpGreen:
-        return m_store->getLedIdleColors().up.g;
-    case MenuPage::LedIdleColorUpBlue:
-        return m_store->getLedIdleColors().up.b;
-    case MenuPage::LedIdleColorUpRightRed:
-        return m_store->getLedIdleColors().up_right.r;
-    case MenuPage::LedIdleColorUpRightGreen:
-        return m_store->getLedIdleColors().up_right.g;
-    case MenuPage::LedIdleColorUpRightBlue:
-        return m_store->getLedIdleColors().up_right.b;
-    case MenuPage::LedIdleColorLeftRed:
-        return m_store->getLedIdleColors().left.r;
-    case MenuPage::LedIdleColorLeftGreen:
-        return m_store->getLedIdleColors().left.g;
-    case MenuPage::LedIdleColorLeftBlue:
-        return m_store->getLedIdleColors().left.b;
-    case MenuPage::LedIdleColorRightRed:
-        return m_store->getLedIdleColors().right.r;
-    case MenuPage::LedIdleColorRightGreen:
-        return m_store->getLedIdleColors().right.g;
-    case MenuPage::LedIdleColorRightBlue:
-        return m_store->getLedIdleColors().right.b;
-    case MenuPage::LedIdleColorDownLeftRed:
-        return m_store->getLedIdleColors().down_left.r;
-    case MenuPage::LedIdleColorDownLeftGreen:
-        return m_store->getLedIdleColors().down_left.g;
-    case MenuPage::LedIdleColorDownLeftBlue:
-        return m_store->getLedIdleColors().down_left.b;
-    case MenuPage::LedIdleColorDownRed:
-        return m_store->getLedIdleColors().down.r;
-    case MenuPage::LedIdleColorDownGreen:
-        return m_store->getLedIdleColors().down.g;
-    case MenuPage::LedIdleColorDownBlue:
-        return m_store->getLedIdleColors().down.b;
-    case MenuPage::LedIdleColorDownRightRed:
-        return m_store->getLedIdleColors().down_right.r;
-    case MenuPage::LedIdleColorDownRightGreen:
-        return m_store->getLedIdleColors().down_right.g;
-    case MenuPage::LedIdleColorDownRightBlue:
-        return m_store->getLedIdleColors().down_right.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<9>::getCurrentLedIdleColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        return m_store->getLedIdleColors().up_left.r;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        return m_store->getLedIdleColors().up_left.g;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        return m_store->getLedIdleColors().up_left.b;
-    case MenuPage::LedIdleColorUpRed:
-        return m_store->getLedIdleColors().up.r;
-    case MenuPage::LedIdleColorUpGreen:
-        return m_store->getLedIdleColors().up.g;
-    case MenuPage::LedIdleColorUpBlue:
-        return m_store->getLedIdleColors().up.b;
-    case MenuPage::LedIdleColorUpRightRed:
-        return m_store->getLedIdleColors().up_right.r;
-    case MenuPage::LedIdleColorUpRightGreen:
-        return m_store->getLedIdleColors().up_right.g;
-    case MenuPage::LedIdleColorUpRightBlue:
-        return m_store->getLedIdleColors().up_right.b;
-    case MenuPage::LedIdleColorLeftRed:
-        return m_store->getLedIdleColors().left.r;
-    case MenuPage::LedIdleColorLeftGreen:
-        return m_store->getLedIdleColors().left.g;
-    case MenuPage::LedIdleColorLeftBlue:
-        return m_store->getLedIdleColors().left.b;
-    case MenuPage::LedIdleColorCenterRed:
-        return m_store->getLedIdleColors().center.r;
-    case MenuPage::LedIdleColorCenterGreen:
-        return m_store->getLedIdleColors().center.g;
-    case MenuPage::LedIdleColorCenterBlue:
-        return m_store->getLedIdleColors().center.b;
-    case MenuPage::LedIdleColorRightRed:
-        return m_store->getLedIdleColors().right.r;
-    case MenuPage::LedIdleColorRightGreen:
-        return m_store->getLedIdleColors().right.g;
-    case MenuPage::LedIdleColorRightBlue:
-        return m_store->getLedIdleColors().right.b;
-    case MenuPage::LedIdleColorDownLeftRed:
-        return m_store->getLedIdleColors().down_left.r;
-    case MenuPage::LedIdleColorDownLeftGreen:
-        return m_store->getLedIdleColors().down_left.g;
-    case MenuPage::LedIdleColorDownLeftBlue:
-        return m_store->getLedIdleColors().down_left.b;
-    case MenuPage::LedIdleColorDownRed:
-        return m_store->getLedIdleColors().down.r;
-    case MenuPage::LedIdleColorDownGreen:
-        return m_store->getLedIdleColors().down.g;
-    case MenuPage::LedIdleColorDownBlue:
-        return m_store->getLedIdleColors().down.b;
-    case MenuPage::LedIdleColorDownRightRed:
-        return m_store->getLedIdleColors().down_right.r;
-    case MenuPage::LedIdleColorDownRightGreen:
-        return m_store->getLedIdleColors().down_right.g;
-    case MenuPage::LedIdleColorDownRightBlue:
-        return m_store->getLedIdleColors().down_right.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<4>::getCurrentLedActiveColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedActiveColorUpRed:
-        return m_store->getLedActiveColors().up.r;
-    case MenuPage::LedActiveColorUpGreen:
-        return m_store->getLedActiveColors().up.g;
-    case MenuPage::LedActiveColorUpBlue:
-        return m_store->getLedActiveColors().up.b;
-    case MenuPage::LedActiveColorLeftRed:
-        return m_store->getLedActiveColors().left.r;
-    case MenuPage::LedActiveColorLeftGreen:
-        return m_store->getLedActiveColors().left.g;
-    case MenuPage::LedActiveColorLeftBlue:
-        return m_store->getLedActiveColors().left.b;
-    case MenuPage::LedActiveColorRightRed:
-        return m_store->getLedActiveColors().right.r;
-    case MenuPage::LedActiveColorRightGreen:
-        return m_store->getLedActiveColors().right.g;
-    case MenuPage::LedActiveColorRightBlue:
-        return m_store->getLedActiveColors().right.b;
-    case MenuPage::LedActiveColorDownRed:
-        return m_store->getLedActiveColors().down.r;
-    case MenuPage::LedActiveColorDownGreen:
-        return m_store->getLedActiveColors().down.g;
-    case MenuPage::LedActiveColorDownBlue:
-        return m_store->getLedActiveColors().down.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<5>::getCurrentLedActiveColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        return m_store->getLedActiveColors().up_left.r;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        return m_store->getLedActiveColors().up_left.g;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        return m_store->getLedActiveColors().up_left.b;
-    case MenuPage::LedActiveColorUpRightRed:
-        return m_store->getLedActiveColors().up_right.r;
-    case MenuPage::LedActiveColorUpRightGreen:
-        return m_store->getLedActiveColors().up_right.g;
-    case MenuPage::LedActiveColorUpRightBlue:
-        return m_store->getLedActiveColors().up_right.b;
-    case MenuPage::LedActiveColorCenterRed:
-        return m_store->getLedActiveColors().center.r;
-    case MenuPage::LedActiveColorCenterGreen:
-        return m_store->getLedActiveColors().center.g;
-    case MenuPage::LedActiveColorCenterBlue:
-        return m_store->getLedActiveColors().center.b;
-    case MenuPage::LedActiveColorDownLeftRed:
-        return m_store->getLedActiveColors().down_left.r;
-    case MenuPage::LedActiveColorDownLeftGreen:
-        return m_store->getLedActiveColors().down_left.g;
-    case MenuPage::LedActiveColorDownLeftBlue:
-        return m_store->getLedActiveColors().down_left.b;
-    case MenuPage::LedActiveColorDownRightRed:
-        return m_store->getLedActiveColors().down_right.r;
-    case MenuPage::LedActiveColorDownRightGreen:
-        return m_store->getLedActiveColors().down_right.g;
-    case MenuPage::LedActiveColorDownRightBlue:
-        return m_store->getLedActiveColors().down_right.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<6>::getCurrentLedActiveColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        return m_store->getLedActiveColors().up_left.r;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        return m_store->getLedActiveColors().up_left.g;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        return m_store->getLedActiveColors().up_left.b;
-    case MenuPage::LedActiveColorUpRed:
-        return m_store->getLedActiveColors().up.r;
-    case MenuPage::LedActiveColorUpGreen:
-        return m_store->getLedActiveColors().up.g;
-    case MenuPage::LedActiveColorUpBlue:
-        return m_store->getLedActiveColors().up.b;
-    case MenuPage::LedActiveColorUpRightRed:
-        return m_store->getLedActiveColors().up_right.r;
-    case MenuPage::LedActiveColorUpRightGreen:
-        return m_store->getLedActiveColors().up_right.g;
-    case MenuPage::LedActiveColorUpRightBlue:
-        return m_store->getLedActiveColors().up_right.b;
-    case MenuPage::LedActiveColorLeftRed:
-        return m_store->getLedActiveColors().left.r;
-    case MenuPage::LedActiveColorLeftGreen:
-        return m_store->getLedActiveColors().left.g;
-    case MenuPage::LedActiveColorLeftBlue:
-        return m_store->getLedActiveColors().left.b;
-    case MenuPage::LedActiveColorRightRed:
-        return m_store->getLedActiveColors().right.r;
-    case MenuPage::LedActiveColorRightGreen:
-        return m_store->getLedActiveColors().right.g;
-    case MenuPage::LedActiveColorRightBlue:
-        return m_store->getLedActiveColors().right.b;
-    case MenuPage::LedActiveColorDownRed:
-        return m_store->getLedActiveColors().down.r;
-    case MenuPage::LedActiveColorDownGreen:
-        return m_store->getLedActiveColors().down.g;
-    case MenuPage::LedActiveColorDownBlue:
-        return m_store->getLedActiveColors().down.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<8>::getCurrentLedActiveColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        return m_store->getLedActiveColors().up_left.r;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        return m_store->getLedActiveColors().up_left.g;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        return m_store->getLedActiveColors().up_left.b;
-    case MenuPage::LedActiveColorUpRed:
-        return m_store->getLedActiveColors().up.r;
-    case MenuPage::LedActiveColorUpGreen:
-        return m_store->getLedActiveColors().up.g;
-    case MenuPage::LedActiveColorUpBlue:
-        return m_store->getLedActiveColors().up.b;
-    case MenuPage::LedActiveColorUpRightRed:
-        return m_store->getLedActiveColors().up_right.r;
-    case MenuPage::LedActiveColorUpRightGreen:
-        return m_store->getLedActiveColors().up_right.g;
-    case MenuPage::LedActiveColorUpRightBlue:
-        return m_store->getLedActiveColors().up_right.b;
-    case MenuPage::LedActiveColorLeftRed:
-        return m_store->getLedActiveColors().left.r;
-    case MenuPage::LedActiveColorLeftGreen:
-        return m_store->getLedActiveColors().left.g;
-    case MenuPage::LedActiveColorLeftBlue:
-        return m_store->getLedActiveColors().left.b;
-    case MenuPage::LedActiveColorRightRed:
-        return m_store->getLedActiveColors().right.r;
-    case MenuPage::LedActiveColorRightGreen:
-        return m_store->getLedActiveColors().right.g;
-    case MenuPage::LedActiveColorRightBlue:
-        return m_store->getLedActiveColors().right.b;
-    case MenuPage::LedActiveColorDownLeftRed:
-        return m_store->getLedActiveColors().down_left.r;
-    case MenuPage::LedActiveColorDownLeftGreen:
-        return m_store->getLedActiveColors().down_left.g;
-    case MenuPage::LedActiveColorDownLeftBlue:
-        return m_store->getLedActiveColors().down_left.b;
-    case MenuPage::LedActiveColorDownRed:
-        return m_store->getLedActiveColors().down.r;
-    case MenuPage::LedActiveColorDownGreen:
-        return m_store->getLedActiveColors().down.g;
-    case MenuPage::LedActiveColorDownBlue:
-        return m_store->getLedActiveColors().down.b;
-    case MenuPage::LedActiveColorDownRightRed:
-        return m_store->getLedActiveColors().down_right.r;
-    case MenuPage::LedActiveColorDownRightGreen:
-        return m_store->getLedActiveColors().down_right.g;
-    case MenuPage::LedActiveColorDownRightBlue:
-        return m_store->getLedActiveColors().down_right.b;
-    default:
-        return 0;
-    }
-}
-
-template <> uint16_t Menu<9>::getCurrentLedActiveColorValue(MenuPage page) {
-    switch (page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        return m_store->getLedActiveColors().up_left.r;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        return m_store->getLedActiveColors().up_left.g;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        return m_store->getLedActiveColors().up_left.b;
-    case MenuPage::LedActiveColorUpRed:
-        return m_store->getLedActiveColors().up.r;
-    case MenuPage::LedActiveColorUpGreen:
-        return m_store->getLedActiveColors().up.g;
-    case MenuPage::LedActiveColorUpBlue:
-        return m_store->getLedActiveColors().up.b;
-    case MenuPage::LedActiveColorUpRightRed:
-        return m_store->getLedActiveColors().up_right.r;
-    case MenuPage::LedActiveColorUpRightGreen:
-        return m_store->getLedActiveColors().up_right.g;
-    case MenuPage::LedActiveColorUpRightBlue:
-        return m_store->getLedActiveColors().up_right.b;
-    case MenuPage::LedActiveColorLeftRed:
-        return m_store->getLedActiveColors().left.r;
-    case MenuPage::LedActiveColorLeftGreen:
-        return m_store->getLedActiveColors().left.g;
-    case MenuPage::LedActiveColorLeftBlue:
-        return m_store->getLedActiveColors().left.b;
-    case MenuPage::LedActiveColorCenterRed:
-        return m_store->getLedActiveColors().center.r;
-    case MenuPage::LedActiveColorCenterGreen:
-        return m_store->getLedActiveColors().center.g;
-    case MenuPage::LedActiveColorCenterBlue:
-        return m_store->getLedActiveColors().center.b;
-    case MenuPage::LedActiveColorRightRed:
-        return m_store->getLedActiveColors().right.r;
-    case MenuPage::LedActiveColorRightGreen:
-        return m_store->getLedActiveColors().right.g;
-    case MenuPage::LedActiveColorRightBlue:
-        return m_store->getLedActiveColors().right.b;
-    case MenuPage::LedActiveColorDownLeftRed:
-        return m_store->getLedActiveColors().down_left.r;
-    case MenuPage::LedActiveColorDownLeftGreen:
-        return m_store->getLedActiveColors().down_left.g;
-    case MenuPage::LedActiveColorDownLeftBlue:
-        return m_store->getLedActiveColors().down_left.b;
-    case MenuPage::LedActiveColorDownRed:
-        return m_store->getLedActiveColors().down.r;
-    case MenuPage::LedActiveColorDownGreen:
-        return m_store->getLedActiveColors().down.g;
-    case MenuPage::LedActiveColorDownBlue:
-        return m_store->getLedActiveColors().down.b;
-    case MenuPage::LedActiveColorDownRightRed:
-        return m_store->getLedActiveColors().down_right.r;
-    case MenuPage::LedActiveColorDownRightGreen:
-        return m_store->getLedActiveColors().down_right.g;
-    case MenuPage::LedActiveColorDownRightBlue:
-        return m_store->getLedActiveColors().down_right.b;
-    default:
-        return 0;
-    }
-}
-
-template <size_t TPanelCount> uint16_t Menu<TPanelCount>::getCurrentValue(MenuPage page) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+uint16_t Menu<TPanelCount, TPanelLedsCount>::getCurrentValue(MenuPage page) {
     switch (page) {
     case MenuPage::DeviceMode:
         return static_cast<uint16_t>(m_store->getUsbMode());
@@ -1464,7 +1465,7 @@ template <size_t TPanelCount> uint16_t Menu<TPanelCount>::getCurrentValue(MenuPa
     case MenuPage::PadTriggerThresholdDownLeft:
     case MenuPage::PadTriggerThresholdDown:
     case MenuPage::PadTriggerThresholdDownRight:
-        return getCurrentThresholdValue(page);
+        return getThresholdValue<TPanelCount>(page, m_store->getTriggerThresholds());
     case MenuPage::LedBrightness:
         return m_store->getLedBrightness();
     case MenuPage::LedAnimationSpeed:
@@ -1513,7 +1514,7 @@ template <size_t TPanelCount> uint16_t Menu<TPanelCount>::getCurrentValue(MenuPa
     case MenuPage::LedIdleColorDownRightRed:
     case MenuPage::LedIdleColorDownRightGreen:
     case MenuPage::LedIdleColorDownRightBlue:
-        return getCurrentLedIdleColorValue(page);
+        return getLedColorValue<TPanelLedsCount>(page, m_store->getLedIdleColors());
     case MenuPage::LedActiveMode:
         return static_cast<uint16_t>(m_store->getLedActiveMode());
     case MenuPage::LedActiveColors:
@@ -1554,7 +1555,7 @@ template <size_t TPanelCount> uint16_t Menu<TPanelCount>::getCurrentValue(MenuPa
     case MenuPage::LedActiveColorDownRightRed:
     case MenuPage::LedActiveColorDownRightGreen:
     case MenuPage::LedActiveColorDownRightBlue:
-        return getCurrentLedActiveColorValue(page);
+        return getLedColorValue<TPanelLedsCount>(page, m_store->getLedActiveColors());
     case MenuPage::Main:
     case MenuPage::Pad:
     case MenuPage::PadCalibrate:
@@ -1569,855 +1570,14 @@ template <size_t TPanelCount> uint16_t Menu<TPanelCount>::getCurrentValue(MenuPa
     return 0;
 }
 
-template <size_t TPanelCount> void Menu<TPanelCount>::gotoPage(MenuPage page) {
+template <size_t TPanelCount, size_t TPanelLedsCount> void Menu<TPanelCount, TPanelLedsCount>::gotoPage(MenuPage page) {
     const auto current_value = getCurrentValue(page);
 
     m_state_stack.push({page, current_value, current_value});
 }
 
-template <> void Menu<4>::restoreThresholdValue() {
-    const auto current_state = m_state_stack.top();
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (current_state.page) {
-    case MenuPage::PadTriggerThresholdUp:
-        thresholds.up = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdLeft:
-        thresholds.left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdRight:
-        thresholds.right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDown:
-        thresholds.down = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<5>::restoreThresholdValue() {
-    const auto current_state = m_state_stack.top();
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (current_state.page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        thresholds.up_left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdUpRight:
-        thresholds.up_right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdCenter:
-        thresholds.center = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDownLeft:
-        thresholds.down_left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDownRight:
-        thresholds.down_right = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<6>::restoreThresholdValue() {
-    const auto current_state = m_state_stack.top();
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (current_state.page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        thresholds.up_left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdUp:
-        thresholds.up = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdUpRight:
-        thresholds.up_right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdLeft:
-        thresholds.left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdRight:
-        thresholds.right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDown:
-        thresholds.down = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<8>::restoreThresholdValue() {
-    const auto current_state = m_state_stack.top();
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (current_state.page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        thresholds.up_left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdUp:
-        thresholds.up = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdUpRight:
-        thresholds.up_right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdLeft:
-        thresholds.left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdRight:
-        thresholds.right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDownLeft:
-        thresholds.down_left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDown:
-        thresholds.down = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDownRight:
-        thresholds.down_right = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<9>::restoreThresholdValue() {
-    const auto current_state = m_state_stack.top();
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (current_state.page) {
-    case MenuPage::PadTriggerThresholdUpLeft:
-        thresholds.up_left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdUp:
-        thresholds.up = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdUpRight:
-        thresholds.up_right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdLeft:
-        thresholds.left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdCenter:
-        thresholds.center = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdRight:
-        thresholds.right = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDownLeft:
-        thresholds.down_left = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDown:
-        thresholds.down = current_state.original_value;
-        break;
-    case MenuPage::PadTriggerThresholdDownRight:
-        thresholds.down_right = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<4>::restoreLedIdleColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedIdleColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedIdleColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<5>::restoreLedIdleColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedIdleColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorCenterRed:
-        colors.center.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorCenterGreen:
-        colors.center.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorCenterBlue:
-        colors.center.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftRed:
-        colors.down_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftGreen:
-        colors.down_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftBlue:
-        colors.down_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightRed:
-        colors.down_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightGreen:
-        colors.down_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightBlue:
-        colors.down_right.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<6>::restoreLedIdleColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedIdleColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<8>::restoreLedIdleColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedIdleColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftRed:
-        colors.down_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftGreen:
-        colors.down_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftBlue:
-        colors.down_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightRed:
-        colors.down_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightGreen:
-        colors.down_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightBlue:
-        colors.down_right.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<9>::restoreLedIdleColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedIdleColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedIdleColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorCenterRed:
-        colors.center.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorCenterGreen:
-        colors.center.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorCenterBlue:
-        colors.center.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftRed:
-        colors.down_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftGreen:
-        colors.down_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownLeftBlue:
-        colors.down_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightRed:
-        colors.down_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightGreen:
-        colors.down_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedIdleColorDownRightBlue:
-        colors.down_right.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<4>::restoreLedActiveColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedActiveColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedActiveColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<5>::restoreLedActiveColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedActiveColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorCenterRed:
-        colors.center.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorCenterGreen:
-        colors.center.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorCenterBlue:
-        colors.center.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftRed:
-        colors.down_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftGreen:
-        colors.down_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftBlue:
-        colors.down_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightRed:
-        colors.down_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightGreen:
-        colors.down_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightBlue:
-        colors.down_right.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<6>::restoreLedActiveColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedActiveColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<8>::restoreLedActiveColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedActiveColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftRed:
-        colors.down_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftGreen:
-        colors.down_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftBlue:
-        colors.down_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightRed:
-        colors.down_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightGreen:
-        colors.down_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightBlue:
-        colors.down_right.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<9>::restoreLedActiveColorValue() {
-    const auto current_state = m_state_stack.top();
-    auto colors = m_store->getLedActiveColors();
-
-    switch (current_state.page) {
-    case MenuPage::LedActiveColorUpLeftRed:
-        colors.up_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftGreen:
-        colors.up_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpLeftBlue:
-        colors.up_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRed:
-        colors.up.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpGreen:
-        colors.up.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpBlue:
-        colors.up.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightRed:
-        colors.up_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightGreen:
-        colors.up_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorUpRightBlue:
-        colors.up_right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftRed:
-        colors.left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftGreen:
-        colors.left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorLeftBlue:
-        colors.left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorCenterRed:
-        colors.center.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorCenterGreen:
-        colors.center.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorCenterBlue:
-        colors.center.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightRed:
-        colors.right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightGreen:
-        colors.right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorRightBlue:
-        colors.right.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftRed:
-        colors.down_left.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftGreen:
-        colors.down_left.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownLeftBlue:
-        colors.down_left.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRed:
-        colors.down.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownGreen:
-        colors.down.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownBlue:
-        colors.down.b = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightRed:
-        colors.down_right.r = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightGreen:
-        colors.down_right.g = current_state.original_value;
-        break;
-    case MenuPage::LedActiveColorDownRightBlue:
-        colors.down_right.b = current_state.original_value;
-        break;
-    default:
-        break;
-    }
-    m_store->setLedActiveColors(colors);
-}
-
-template <size_t TPanelCount> void Menu<TPanelCount>::gotoParent(bool do_restore) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void Menu<TPanelCount, TPanelLedsCount>::gotoParent(bool do_restore) {
     const auto current_state = m_state_stack.top();
 
     if (current_state.page == MenuPage::Main) {
@@ -2440,9 +1600,11 @@ template <size_t TPanelCount> void Menu<TPanelCount>::gotoParent(bool do_restore
         case MenuPage::PadTriggerThresholdRight:
         case MenuPage::PadTriggerThresholdDownLeft:
         case MenuPage::PadTriggerThresholdDown:
-        case MenuPage::PadTriggerThresholdDownRight:
-            restoreThresholdValue();
-            break;
+        case MenuPage::PadTriggerThresholdDownRight: {
+            auto thresholds = m_store->getTriggerThresholds();
+            setThresholdValue<TPanelCount>(current_state.page, current_state.original_value, thresholds);
+            m_store->setTriggerThresholds(thresholds);
+        } break;
         case MenuPage::LedBrightness:
             m_store->setLedBrightness(current_state.original_value);
             break;
@@ -2457,7 +1619,7 @@ template <size_t TPanelCount> void Menu<TPanelCount>::gotoParent(bool do_restore
             break;
         case MenuPage::LedIdleMode:
             m_store->setLedIdleMode(
-                static_cast<Peripherals::PanelLeds<TPanelCount>::Config::IdleMode>(current_state.original_value));
+                static_cast<Peripherals::PanelLeds<TPanelLedsCount>::Config::IdleMode>(current_state.original_value));
             break;
         case MenuPage::LedIdleColors:
         case MenuPage::LedIdleColorUpLeft:
@@ -2496,12 +1658,14 @@ template <size_t TPanelCount> void Menu<TPanelCount>::gotoParent(bool do_restore
         case MenuPage::LedIdleColorDownBlue:
         case MenuPage::LedIdleColorDownRightRed:
         case MenuPage::LedIdleColorDownRightGreen:
-        case MenuPage::LedIdleColorDownRightBlue:
-            restoreLedIdleColorValue();
-            break;
+        case MenuPage::LedIdleColorDownRightBlue: {
+            auto colors = m_store->getLedIdleColors();
+            setLedColorValue<TPanelLedsCount>(current_state.page, current_state.original_value, colors);
+            m_store->setLedIdleColors(colors);
+        } break;
         case MenuPage::LedActiveMode:
             m_store->setLedActiveMode(
-                static_cast<Peripherals::PanelLeds<TPanelCount>::Config::ActiveMode>(current_state.original_value));
+                static_cast<Peripherals::PanelLeds<TPanelLedsCount>::Config::ActiveMode>(current_state.original_value));
             break;
         case MenuPage::LedActiveColors:
         case MenuPage::LedActiveColorUpLeft:
@@ -2540,9 +1704,11 @@ template <size_t TPanelCount> void Menu<TPanelCount>::gotoParent(bool do_restore
         case MenuPage::LedActiveColorDownBlue:
         case MenuPage::LedActiveColorDownRightRed:
         case MenuPage::LedActiveColorDownRightGreen:
-        case MenuPage::LedActiveColorDownRightBlue:
-            restoreLedActiveColorValue();
-            break;
+        case MenuPage::LedActiveColorDownRightBlue: {
+            auto colors = m_store->getLedActiveColors();
+            setLedColorValue<TPanelLedsCount>(current_state.page, current_state.original_value, colors);
+            m_store->setLedActiveColors(colors);
+        } break;
         case MenuPage::Main:
         case MenuPage::Pad:
         case MenuPage::PadCalibrate:
@@ -2558,844 +1724,8 @@ template <size_t TPanelCount> void Menu<TPanelCount>::gotoParent(bool do_restore
     m_state_stack.pop();
 }
 
-template <> void Menu<4>::performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value) {
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
-        thresholds.up = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
-        thresholds.left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
-        thresholds.right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
-        thresholds.down = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<5>::performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value) {
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
-        thresholds.up_left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
-        thresholds.up_right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdCenter:
-        thresholds.center = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
-        thresholds.down_left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
-        thresholds.down_right = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<6>::performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value) {
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
-        thresholds.up_left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
-        thresholds.up = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
-        thresholds.up_right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
-        thresholds.left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
-        thresholds.right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
-        thresholds.down = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<8>::performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value) {
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
-        thresholds.up_left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
-        thresholds.up = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
-        thresholds.up_right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
-        thresholds.left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
-        thresholds.right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
-        thresholds.down_left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
-        thresholds.down = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
-        thresholds.down_right = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<9>::performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value) {
-    auto thresholds = m_store->getTriggerThresholds();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
-        thresholds.up_left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdUp:
-        thresholds.up = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdUpRight:
-        thresholds.up_right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdLeft:
-        thresholds.left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdCenter:
-        thresholds.center = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdRight:
-        thresholds.right = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
-        thresholds.down_left = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDown:
-        thresholds.down = value;
-        break;
-    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
-        thresholds.down_right = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setTriggerThresholds(thresholds);
-}
-
-template <> void Menu<4>::performActionSetLedIdleColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedIdleColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedIdleColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownBlue:
-        colors.down.r = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<5>::performActionSetLedIdleColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedIdleColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorCenterRed:
-        colors.center.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorCenterGreen:
-        colors.center.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorCenterBlue:
-        colors.center.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftRed:
-        colors.down_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftGreen:
-        colors.down_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftBlue:
-        colors.down_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightRed:
-        colors.down_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightGreen:
-        colors.down_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightBlue:
-        colors.down_right.b = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<6>::performActionSetLedIdleColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedIdleColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownBlue:
-        colors.down.r = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<8>::performActionSetLedIdleColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedIdleColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftRed:
-        colors.down_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftGreen:
-        colors.down_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftBlue:
-        colors.down_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownBlue:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightRed:
-        colors.down_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightGreen:
-        colors.down_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightBlue:
-        colors.down_right.b = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<9>::performActionSetLedIdleColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedIdleColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorCenterRed:
-        colors.center.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorCenterGreen:
-        colors.center.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorCenterBlue:
-        colors.center.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftRed:
-        colors.down_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftGreen:
-        colors.down_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownLeftBlue:
-        colors.down_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownBlue:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightRed:
-        colors.down_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightGreen:
-        colors.down_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedIdleColorDownRightBlue:
-        colors.down_right.b = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedIdleColors(colors);
-}
-
-template <> void Menu<4>::performActionSetLedActiveColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedActiveColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedActiveColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownBlue:
-        colors.down.r = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<5>::performActionSetLedActiveColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedActiveColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorCenterRed:
-        colors.center.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorCenterGreen:
-        colors.center.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorCenterBlue:
-        colors.center.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftRed:
-        colors.down_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftGreen:
-        colors.down_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftBlue:
-        colors.down_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightRed:
-        colors.down_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightGreen:
-        colors.down_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightBlue:
-        colors.down_right.b = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<6>::performActionSetLedActiveColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedActiveColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownBlue:
-        colors.down.r = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<8>::performActionSetLedActiveColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedActiveColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftRed:
-        colors.down_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftGreen:
-        colors.down_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftBlue:
-        colors.down_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownBlue:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightRed:
-        colors.down_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightGreen:
-        colors.down_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightBlue:
-        colors.down_right.b = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedActiveColors(colors);
-}
-
-template <> void Menu<9>::performActionSetLedActiveColorValue(MenuDescriptor::Action action, uint16_t value) {
-    auto colors = m_store->getLedActiveColors();
-
-    switch (action) {
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftRed:
-        colors.up_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftGreen:
-        colors.up_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpLeftBlue:
-        colors.up_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRed:
-        colors.up.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpGreen:
-        colors.up.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpBlue:
-        colors.up.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightRed:
-        colors.up_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightGreen:
-        colors.up_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorUpRightBlue:
-        colors.up_right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftRed:
-        colors.left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftGreen:
-        colors.left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorLeftBlue:
-        colors.left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorCenterRed:
-        colors.center.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorCenterGreen:
-        colors.center.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorCenterBlue:
-        colors.center.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightRed:
-        colors.right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightGreen:
-        colors.right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorRightBlue:
-        colors.right.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftRed:
-        colors.down_left.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftGreen:
-        colors.down_left.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownLeftBlue:
-        colors.down_left.b = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRed:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownGreen:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownBlue:
-        colors.down.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightRed:
-        colors.down_right.r = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightGreen:
-        colors.down_right.g = value;
-        break;
-    case MenuDescriptor::Action::SetLedActiveColorDownRightBlue:
-        colors.down_right.b = value;
-        break;
-    default:
-        break;
-    }
-
-    m_store->setLedActiveColors(colors);
-}
-
-template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescriptor::Action action, uint16_t value) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void Menu<TPanelCount, TPanelLedsCount>::performAction(MenuDescriptor::Action action, uint16_t value) {
     switch (action) {
     case MenuDescriptor::Action::None:
         break;
@@ -3707,9 +2037,11 @@ template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescript
     case MenuDescriptor::Action::SetPadTriggerThresholdRight:
     case MenuDescriptor::Action::SetPadTriggerThresholdDownLeft:
     case MenuDescriptor::Action::SetPadTriggerThresholdDown:
-    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight:
-        performActionSetThresholdValue(action, value);
-        break;
+    case MenuDescriptor::Action::SetPadTriggerThresholdDownRight: {
+        auto thresholds = m_store->getTriggerThresholds();
+        setThresholdValue<TPanelCount>(action, value, thresholds);
+        m_store->setTriggerThresholds(thresholds);
+    } break;
     case MenuDescriptor::Action::SetLedBrightness:
         m_store->setLedBrightness(value);
         break;
@@ -3717,7 +2049,7 @@ template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescript
         m_store->setLedAnimationSpeed(value);
         break;
     case MenuDescriptor::Action::SetLedIdleMode:
-        m_store->setLedIdleMode(static_cast<Peripherals::PanelLeds<TPanelCount>::Config::IdleMode>(value));
+        m_store->setLedIdleMode(static_cast<Peripherals::PanelLeds<TPanelLedsCount>::Config::IdleMode>(value));
         break;
     case MenuDescriptor::Action::SetLedIdleColorUpLeftRed:
     case MenuDescriptor::Action::SetLedIdleColorUpLeftGreen:
@@ -3745,9 +2077,11 @@ template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescript
     case MenuDescriptor::Action::SetLedIdleColorDownBlue:
     case MenuDescriptor::Action::SetLedIdleColorDownRightRed:
     case MenuDescriptor::Action::SetLedIdleColorDownRightGreen:
-    case MenuDescriptor::Action::SetLedIdleColorDownRightBlue:
-        performActionSetLedIdleColorValue(action, value);
-        break;
+    case MenuDescriptor::Action::SetLedIdleColorDownRightBlue: {
+        auto colors = m_store->getLedIdleColors();
+        setLedColorValue<TPanelLedsCount>(action, value, colors);
+        m_store->setLedIdleColors(colors);
+    } break;
     case MenuDescriptor::Action::SetLedActiveColorUpLeftRed:
     case MenuDescriptor::Action::SetLedActiveColorUpLeftGreen:
     case MenuDescriptor::Action::SetLedActiveColorUpLeftBlue:
@@ -3774,11 +2108,13 @@ template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescript
     case MenuDescriptor::Action::SetLedActiveColorDownBlue:
     case MenuDescriptor::Action::SetLedActiveColorDownRightRed:
     case MenuDescriptor::Action::SetLedActiveColorDownRightGreen:
-    case MenuDescriptor::Action::SetLedActiveColorDownRightBlue:
-        performActionSetLedActiveColorValue(action, value);
-        break;
+    case MenuDescriptor::Action::SetLedActiveColorDownRightBlue: {
+        auto colors = m_store->getLedActiveColors();
+        setLedColorValue<TPanelLedsCount>(action, value, colors);
+        m_store->setLedActiveColors(colors);
+    } break;
     case MenuDescriptor::Action::SetLedActiveMode:
-        m_store->setLedActiveMode(static_cast<Peripherals::PanelLeds<TPanelCount>::Config::ActiveMode>(value));
+        m_store->setLedActiveMode(static_cast<Peripherals::PanelLeds<TPanelLedsCount>::Config::ActiveMode>(value));
         break;
     case MenuDescriptor::Action::SetLedEnablePlayerColor:
         m_store->setLedEnablePlayerColor(static_cast<bool>(value));
@@ -3802,7 +2138,8 @@ template <size_t TPanelCount> void Menu<TPanelCount>::performAction(MenuDescript
     return;
 }
 
-template <size_t TPanelCount> void Menu<TPanelCount>::update(const InputState::Controller &controller_state) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void Menu<TPanelCount, TPanelLedsCount>::update(const InputState::Controller &controller_state) {
     InputState::Controller pressed = checkPressed(controller_state);
     auto &current_state = m_state_stack.top();
 
@@ -3924,8 +2261,12 @@ template <size_t TPanelCount> void Menu<TPanelCount>::update(const InputState::C
     }
 }
 
-template <size_t TPanelCount> bool Menu<TPanelCount>::active() { return m_active; }
+template <size_t TPanelCount, size_t TPanelLedsCount> bool Menu<TPanelCount, TPanelLedsCount>::active() {
+    return m_active;
+}
 
-template <size_t TPanelCount> MenuState Menu<TPanelCount>::getState() { return m_state_stack.top(); }
+template <size_t TPanelCount, size_t TPanelLedsCount> MenuState Menu<TPanelCount, TPanelLedsCount>::getState() {
+    return m_state_stack.top();
+}
 
 } // namespace Dancecon::Utils

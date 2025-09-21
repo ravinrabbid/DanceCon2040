@@ -379,41 +379,26 @@ struct MenuDescriptor {
     uint16_t max_value;
 };
 
-template <size_t TPanelCount> class Menu {
+template <size_t TPanelCount, size_t TPanelLedsCount> class Menu {
   public:
     using calibration_callback_t = std::function<void(void)>;
 
-    const static MenuDescriptor thresholds_descriptor;
-    const static MenuDescriptor idle_colors_descriptor;
-    const static MenuDescriptor active_colors_descriptor;
     const static std::map<MenuPage, const MenuDescriptor> descriptors;
 
   private:
-    std::shared_ptr<SettingsStore<TPanelCount>> m_store;
+    std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> m_store;
     bool m_active;
     std::stack<MenuState> m_state_stack;
 
     calibration_callback_t m_calibration_callback;
 
-    uint16_t getCurrentThresholdValue(MenuPage page);
-    uint16_t getCurrentLedIdleColorValue(MenuPage page);
-    uint16_t getCurrentLedActiveColorValue(MenuPage page);
     uint16_t getCurrentValue(MenuPage page);
-
     void gotoPage(MenuPage page);
-
-    void restoreThresholdValue();
-    void restoreLedIdleColorValue();
-    void restoreLedActiveColorValue();
     void gotoParent(bool do_restore);
-
-    void performActionSetThresholdValue(MenuDescriptor::Action action, uint16_t value);
-    void performActionSetLedIdleColorValue(MenuDescriptor::Action action, uint16_t value);
-    void performActionSetLedActiveColorValue(MenuDescriptor::Action action, uint16_t value);
     void performAction(MenuDescriptor::Action action, uint16_t value);
 
   public:
-    Menu(const std::shared_ptr<SettingsStore<TPanelCount>> settings_store,
+    Menu(const std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> settings_store,
          const calibration_callback_t &calibration_callback);
 
     void activate();

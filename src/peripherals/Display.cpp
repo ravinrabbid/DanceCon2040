@@ -158,9 +158,11 @@ void Display::drawIdleScreen() {
 }
 
 void Display::drawMenuScreen() {
-    auto descriptor_it =
-        Utils::Menu<Dancecon::Config::Default::pad_config.PANEL_COUNT>::descriptors.find(m_menu_state.page);
-    if (descriptor_it == Utils::Menu<Dancecon::Config::Default::pad_config.PANEL_COUNT>::descriptors.end()) {
+    using menu_t = Utils::Menu<Dancecon::Config::Default::pad_config.PANEL_COUNT,
+                               Dancecon::Config::Default::led_config.PANEL_COUNT>;
+
+    auto descriptor_it = menu_t::descriptors.find(m_menu_state.page);
+    if (descriptor_it == menu_t::descriptors.end()) {
         return;
     }
 

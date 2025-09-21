@@ -121,7 +121,9 @@ const Peripherals::Pad<4>::Config pad_config = {
     //     },
 };
 
-const Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config led_config =
+// Either PanelLeds<4>, PanelLeds<5>, PanelLeds<6>, PanelLeds<8>, PanelLeds<9> according to panel count.
+// Adjust .idle_colors, .active_colors and .panel_order accordingly.
+const Peripherals::PanelLeds<4>::Config led_config =
     {
         .idle_colors =
             {
@@ -152,8 +154,8 @@ const Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config led_config =
 
         .brightness = 64,
         .animation_speed = 128,
-        .idle_mode = Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config::IdleMode::Static,
-        .active_mode = Peripherals::PanelLeds<pad_config.PANEL_COUNT>::Config::ActiveMode::ActiveFade,
+        .idle_mode = Peripherals::PanelLeds<led_config.PANEL_COUNT>::Config::IdleMode::Static,
+        .active_mode = Peripherals::PanelLeds<led_config.PANEL_COUNT>::Config::ActiveMode::ActiveFade,
 
         .enable_player_color = true,
         .enable_hid_lights = true,

@@ -9,12 +9,12 @@
 
 namespace Dancecon::Utils {
 
-template <size_t TPanelCount> class SettingsStore {
+template <size_t TPanelCount, size_t TPanelLedsCount> class SettingsStore {
   private:
     using thresholds_t = Peripherals::Pad<TPanelCount>::Config::Thresholds;
-    using led_colors_t = Peripherals::PanelLeds<TPanelCount>::Config::PanelColors;
-    using idle_mode_t = Peripherals::PanelLeds<TPanelCount>::Config::IdleMode;
-    using active_mode_t = Peripherals::PanelLeds<TPanelCount>::Config::ActiveMode;
+    using led_colors_t = Peripherals::PanelLeds<TPanelLedsCount>::Config::PanelColors;
+    using idle_mode_t = Peripherals::PanelLeds<TPanelLedsCount>::Config::IdleMode;
+    using active_mode_t = Peripherals::PanelLeds<TPanelLedsCount>::Config::ActiveMode;
 
     const static uint32_t m_flash_size = FLASH_SECTOR_SIZE;
     const static uint32_t m_flash_offset = PICO_FLASH_SIZE_BYTES - m_flash_size;
