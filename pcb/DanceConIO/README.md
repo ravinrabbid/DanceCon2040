@@ -17,6 +17,20 @@ Other sensors might need adjustment of the ADC's amplifier gain within the firmw
   - 5- and 6-Panel Pads can use 2 or 3 ADCs, using 3 will increase the sample rate.
   - 8- and 9-Panel Pads need 3 ADCs.
 - Populated ADCs must be configured in firmware, otherwise they will interfere with the SPI bus and prevent the other ADCs from working properly.
+- If readings are too noisy you can try lowering the sample rate or using the ADC's Sinc3 filter. See table below for the example sample rates of a full scan of all panels.
+
+### Expected Sample Rates
+
+| Configuration<br>Filter | 2 ADCs w/ 4 Panels or 3 ADCs w/ 6 Panels ADC<br>LowLatency / Sinc3 | 2 ADCs w/ 6 Panels or 3 ADCs w/ 9 Panels ADC<br>LowLatency / Sinc3 |
+| ----------------------: | :----------------------------------------------------------------: | :----------------------------------------------------------------: |
+|                4000kSPS |                           1020Hz / 512Hz                           |                           680Hz / 342Hz                            |
+|                2000kSPS |                           675Hz / 290Hz                            |                           450Hz / 194Hz                            |
+|                1000kSPS |                           403Hz / 155Hz                            |                           270Hz / 103Hz                            |
+|                 800kSPS |                           335Hz / 122Hz                            |                            223Hz / 82Hz                            |
+|                 400kSPS |                            182Hz / 64Hz                            |                            122Hz / 42Hz                            |
+|                 200kSPS |                            95Hz / 32Hz                             |                            63Hz / 22Hz                             |
+|                 100kSPS |                            48Hz / 16Hz                             |                              32Hz / -                              |
+
 
 ## Bill of Materials
 
