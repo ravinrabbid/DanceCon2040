@@ -181,6 +181,11 @@ template <size_t TPanelCount> class Pad {
             };
 
             Spi spi;
+
+            Ads124S0x::SampleRate sample_rate;
+            Ads124S0x::Gain gain;
+            Ads124S0x::Filter filter;
+
             std::array<Ads124s06, TAdcCount> adcs;
         };
 

@@ -82,6 +82,10 @@ const Peripherals::Pad<4>::Config pad_config = {
                     .speed_hz = 10000000,
                 },
 
+            .sample_rate = Ads124S0x::SampleRate::R4000,
+            .gain = Ads124S0x::Gain::G128,
+            .filter = Ads124S0x::Filter::LowLatency,
+
             .adcs = {{
                 {
                     .scsn_pin = 14,
@@ -103,7 +107,11 @@ const Peripherals::Pad<4>::Config pad_config = {
     //                 .block = spi1,
     //                 .speed_hz = 10000000,
     //             },
-
+    //
+    //         .sample_rate = Ads124S0x::SampleRate::R4000,
+    //         .gain = Ads124S0x::Gain::G128,
+    //         .filter = Ads124S0x::Filter::LowLatency,
+    //
     //         .adcs = {{
     //             {
     //                 .scsn_pin = 14,

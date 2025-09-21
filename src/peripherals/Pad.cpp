@@ -87,9 +87,9 @@ Pad<TPanelCount>::ExternalAdc<TAdcCount>::ExternalAdc(const typename Config::Ext
         adc->reset();
 
         adc->setConversionMode(Ads124S0x::ConversionMode::Single);
-        adc->setFilter(Ads124S0x::Filter::LowLatency);
-        adc->setGain(Ads124S0x::Gain::G128);
-        adc->setSampleRate(Ads124S0x::SampleRate::R4000);
+        adc->setFilter(config.filter);
+        adc->setGain(config.gain);
+        adc->setSampleRate(config.sample_rate);
         adc->setConversionDelay(Ads124S0x::ConversionDelay::D14);
         adc->setReferenceInput(Ads124S0x::ReferenceInput::External0);
         adc->setPositiveReferenceBuffer(false);
