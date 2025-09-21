@@ -178,6 +178,50 @@ const uint8_t spice2x_desc_hid_report[] = {
     0x91, 0x02, //       Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
     0xC0,       //     End Collection
 
+    0xC0, //     End Collection
+
+    0xA1, 0x02, //   Collection (Logical)
+    0x85, 0x03, //     Report ID (3)
+    0x15, 0x00, //     Logical Minimum (0)
+    0x26, 0xFF, //
+    0x00,       //     Logical Maximum (255)
+    0x35, 0x00, //     Physical Minimum (0)
+    0x46, 0xFF, //
+    0x00,       //     Physical Maximum (1)
+
+    0x05, 0x0A,                    //     Usage Page (Ordinal)
+    0x09, 0x01,                    //     Usage (0x01)
+    0xA1, 0x02,                    //     Collection (Logical)
+    0x05, 0x08,                    //       Usage Page (LEDs)
+    0x09, 0x4B,                    //       Usage (Generic Indicator)
+    0x79, USBD_STR_LED_STATUS_RED, //       String Index
+    0x75, 0x08,                    //       Report Size (8)
+    0x95, 0x01,                    //       Report Count (1)
+    0x91, 0x02, //       Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
+    0xC0,       //     End Collection
+
+    0x05, 0x0A,                      //     Usage Page (Ordinal)
+    0x09, 0x02,                      //     Usage (0x02)
+    0xA1, 0x02,                      //     Collection (Logical)
+    0x05, 0x08,                      //       Usage Page (LEDs)
+    0x09, 0x4B,                      //       Usage (Generic Indicator)
+    0x79, USBD_STR_LED_STATUS_GREEN, //       String Index
+    0x75, 0x08,                      //       Report Size (8)
+    0x95, 0x01,                      //       Report Count (1)
+    0x91, 0x02, //       Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
+    0xC0,       //     End Collection
+
+    0x05, 0x0A,                     //     Usage Page (Ordinal)
+    0x09, 0x03,                     //     Usage (0x03)
+    0xA1, 0x02,                     //     Collection (Logical)
+    0x05, 0x08,                     //       Usage Page (LEDs)
+    0x09, 0x4B,                     //       Usage (Generic Indicator)
+    0x79, USBD_STR_LED_STATUS_BLUE, //       String Index
+    0x75, 0x08,                     //       Report Size (8)
+    0x95, 0x01,                     //       Report Count (1)
+    0x91, 0x02, //       Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
+    0xC0,       //     End Collection
+
     0xC0, //   End Collection
     0xC0, // End Collection
 };
@@ -216,16 +260,22 @@ uint16_t hid_spice2x_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_ty
 }
 
 typedef struct __attribute((packed, aligned(1))) {
-    uint8_t led_up_left;
-    uint8_t led_up;
-    uint8_t led_up_right;
-    uint8_t led_left;
-    uint8_t led_center;
-    uint8_t led_right;
-    uint8_t led_down_left;
-    uint8_t led_down;
-    uint8_t led_down_right;
-} hid_spice2x_ouput_report_t;
+    uint8_t up_left;
+    uint8_t up;
+    uint8_t up_right;
+    uint8_t left;
+    uint8_t center;
+    uint8_t right;
+    uint8_t down_left;
+    uint8_t down;
+    uint8_t down_right;
+} hid_spice2x_panel_led_ouput_report_t;
+
+typedef struct __attribute((packed, aligned(1))) {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+} hid_spice2x_status_led_ouput_report_t;
 
 void hid_spice2x_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer,
                                uint16_t bufsize) {
@@ -239,23 +289,32 @@ void hid_spice2x_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
         }
 
         switch (report_id) {
-        case 0x02: // HID Lights
-            if (bufsize == sizeof(hid_spice2x_ouput_report_t)) {
-                hid_spice2x_ouput_report_t *report = (hid_spice2x_ouput_report_t *)buffer;
+        case 0x02: // HID Panel Lights
+            if (bufsize == sizeof(hid_spice2x_panel_led_ouput_report_t)) {
+                hid_spice2x_panel_led_ouput_report_t *report = (hid_spice2x_panel_led_ouput_report_t *)buffer;
 
                 const usb_panel_led_t panel_led = {
-                    .up_left = report->led_up_left,
-                    .up = report->led_up,
-                    .up_right = report->led_up_right,
-                    .left = report->led_left,
-                    .center = report->led_center,
-                    .right = report->led_right,
-                    .down_left = report->led_down_left,
-                    .down = report->led_down,
-                    .down_right = report->led_down_right,
+                    .up_left = report->up_left,
+                    .up = report->up,
+                    .up_right = report->up_right,
+                    .left = report->left,
+                    .center = report->center,
+                    .right = report->right,
+                    .down_left = report->down_left,
+                    .down = report->down,
+                    .down_right = report->down_right,
                 };
 
                 usbd_driver_get_panel_led_cb()(panel_led);
+            }
+            break;
+        case 0x03: // HID Status Led
+            if (bufsize == sizeof(hid_spice2x_status_led_ouput_report_t)) {
+                hid_spice2x_status_led_ouput_report_t *report = (hid_spice2x_status_led_ouput_report_t *)buffer;
+
+                usb_player_led_t player_led = {
+                    .type = USB_PLAYER_LED_COLOR, .red = report->red, .green = report->green, .blue = report->blue};
+                usbd_driver_get_player_led_cb()(player_led);
             }
             break;
         default:

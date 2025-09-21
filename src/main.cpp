@@ -22,6 +22,7 @@ queue_t control_queue;
 queue_t menu_display_queue;
 queue_t pad_input_queue;
 queue_t controller_input_queue;
+queue_t panel_led_queue;
 
 queue_t auth_challenge_queue;
 queue_t auth_signed_challenge_queue;
@@ -29,7 +30,6 @@ queue_t auth_signed_challenge_queue;
 enum class ControlCommand {
     SetUsbMode,
     SetPlayerLed,
-    SetPanelLed,
     SetLedBrightness,
     SetLedAnimationSpeed,
     SetLedIdleMode,
@@ -46,7 +46,6 @@ struct ControlMessage {
     union {
         usb_mode_t usb_mode;
         usb_player_led_t player_led;
-        usb_panel_led_t panel_led;
         uint8_t led_brightness;
         uint8_t led_animation_speed;
         Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT>::Config::IdleMode led_idle_mode;
@@ -79,12 +78,17 @@ void core1_task() {
     Utils::InputState input_state;
     Utils::MenuState menu_display_msg;
     ControlMessage control_msg;
+    usb_panel_led_t panel_led;
 
     while (true) {
         controller.updateInputState(input_state);
 
         queue_try_add(&controller_input_queue, &input_state.controller);
         queue_try_remove(&pad_input_queue, &input_state.pad);
+
+        if (queue_try_remove(&panel_led_queue, &panel_led)) {
+            led.update(panel_led);
+        }
 
         if (queue_try_remove(&control_queue, &control_msg)) {
             switch (control_msg.command) {
@@ -103,9 +107,6 @@ void core1_task() {
                                         control_msg.data.player_led.blue});
                     break;
                 }
-                break;
-            case ControlCommand::SetPanelLed:
-                led.update(control_msg.data.panel_led);
                 break;
             case ControlCommand::SetLedBrightness:
                 led.setBrightness(control_msg.data.led_brightness);
@@ -158,6 +159,7 @@ int main() {
     queue_init(&menu_display_queue, sizeof(Utils::MenuState), 1);
     queue_init(&pad_input_queue, sizeof(Utils::InputState::Pad), 1);
     queue_init(&controller_input_queue, sizeof(Utils::InputState::Controller), 1);
+    queue_init(&panel_led_queue, sizeof(usb_panel_led_t), 1);
     queue_init(&auth_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
     queue_init(&auth_signed_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
 
@@ -179,10 +181,7 @@ int main() {
         const auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
         queue_try_add(&control_queue, &ctrl_message);
     });
-    usbd_driver_set_panel_led_cb([](usb_panel_led_t panel_led) {
-        const auto ctrl_message = ControlMessage{ControlCommand::SetPanelLed, {.panel_led = panel_led}};
-        queue_try_add(&control_queue, &ctrl_message);
-    });
+    usbd_driver_set_panel_led_cb([](usb_panel_led_t panel_led) { queue_try_add(&panel_led_queue, &panel_led); });
 
     if (Config::PS4Auth::config.enabled) {
         ps4_auth_init(Config::PS4Auth::config.key_pem.c_str(), Config::PS4Auth::config.key_pem.size() + 1,

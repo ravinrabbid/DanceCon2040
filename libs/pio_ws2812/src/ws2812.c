@@ -41,8 +41,12 @@ uint32_t ws2812_rgb_to_gamma_corrected_u32pixel(uint8_t r, uint8_t g, uint8_t b)
 void ws2812_put_pixel(PIO pio, uint32_t pixel_grb) { pio_sm_put_blocking(pio, 0, pixel_grb << 8u); }
 
 void ws2812_put_frame(PIO pio, uint32_t *frame, size_t length) {
+   // Latch any previous data
+    while (!pio_sm_is_tx_fifo_empty(pio, 0)) {
+    }
+    sleep_us(100);
+
     for (size_t i = 0; i < length; ++i) {
         ws2812_put_pixel(pio, frame[i]);
     }
-    sleep_us(60);
 }

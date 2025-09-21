@@ -39,6 +39,9 @@ char *const usbd_desc_str[] = {
     [USBD_STR_LED_DOWN_LEFT] = "Panel LED Down Left",   //
     [USBD_STR_LED_DOWN] = "Panel LED Down",             //
     [USBD_STR_LED_DOWN_RIGHT] = "Panel LED Down Right", //
+    [USBD_STR_LED_STATUS_RED] = "Status LED Red",       //
+    [USBD_STR_LED_STATUS_GREEN] = "Status LED Green",   //
+    [USBD_STR_LED_STATUS_BLUE] = "Status LED Blue",     //
 };
 
 void usbd_driver_init(usb_mode_t mode) {
