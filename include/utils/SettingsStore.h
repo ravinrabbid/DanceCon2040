@@ -26,6 +26,7 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class SettingsStore {
         uint8_t in_use;
         usb_mode_t usb_mode;
         thresholds_t trigger_thresholds;
+        uint16_t hysteresis;
         uint16_t debounce_delay;
         led_colors_t led_idle_colors;
         led_colors_t led_active_colors;
@@ -37,8 +38,8 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class SettingsStore {
         bool led_enable_hid_lights;
 
         uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(thresholds_t) - sizeof(uint16_t) -
-                         sizeof(led_colors_t) - sizeof(led_colors_t) - sizeof(uint8_t) - sizeof(uint8_t) -
-                         sizeof(idle_mode_t) - sizeof(active_mode_t) - sizeof(bool) - sizeof(bool)];
+                         sizeof(uint16_t) - sizeof(led_colors_t) - sizeof(led_colors_t) - sizeof(uint8_t) -
+                         sizeof(uint8_t) - sizeof(idle_mode_t) - sizeof(active_mode_t) - sizeof(bool) - sizeof(bool)];
     };
     static_assert(sizeof(Storecache) == m_store_size);
 
@@ -64,6 +65,9 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class SettingsStore {
 
     void setTriggerThresholds(const thresholds_t &thresholds);
     thresholds_t getTriggerThresholds();
+
+    void setHysteresis(const uint16_t hysteresis);
+    uint16_t getHysteresis();
 
     void setLedIdleColors(const led_colors_t &colors);
     led_colors_t getLedIdleColors();

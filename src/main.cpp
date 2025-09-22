@@ -208,6 +208,7 @@ int main() {
 
         pad.setDebounceDelay(settings_store->getDebounceDelay());
         pad.setThresholds(settings_store->getTriggerThresholds());
+        pad.setHysteresis(settings_store->getHysteresis());
     };
 
     readSettings();

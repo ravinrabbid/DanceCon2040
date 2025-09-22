@@ -24,6 +24,7 @@ enum class MenuPage {
 
     PadCalibrate,
     PadDebounceDelay,
+    PadHysteresis,
     PadTriggerThresholds,
 
     PadTriggerThresholdUpLeft,
@@ -165,6 +166,7 @@ struct MenuDescriptor {
 
         GotoPagePadCalibrate,
         GotoPagePadDebounceDelay,
+        GotoPagePadHysteresis,
         GotoPagePadTriggerThresholds,
 
         GotoPagePadTriggerThresholdUpLeft,
@@ -279,6 +281,7 @@ struct MenuDescriptor {
         SetUsbMode,
 
         SetPadDebounceDelay,
+        SetPadHysteresis,
         SetPadTriggerThresholdUpLeft,
         SetPadTriggerThresholdUp,
         SetPadTriggerThresholdUpRight,

@@ -44,6 +44,7 @@ const Peripherals::Pad<4>::Config pad_config = {
             // .down_right = 50,
         },
 
+    .hysteresis = 8,
     .debounce_delay_ms = 10,
 
     .adc_channels =

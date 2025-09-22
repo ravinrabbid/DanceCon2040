@@ -203,6 +203,7 @@ template <size_t TPanelCount> class Pad {
                         >::type>::type>::type;
 
         Thresholds thresholds;
+        uint16_t hysteresis;
         uint16_t debounce_delay_ms;
 
         AdcChannels adc_channels;
@@ -273,6 +274,7 @@ template <size_t TPanelCount> class Pad {
 
     void setDebounceDelay(const uint16_t delay);
     void setThresholds(const Config::Thresholds &thresholds);
+    void setHysteresis(const uint16_t hysteresis);
 };
 
 } // namespace Dancecon::Peripherals

@@ -53,9 +53,8 @@ template <> std::array<uint16_t, 4> Pad<4>::InternalAdc::read() {
 
     // Take average of all samples
     std::array<uint16_t, 4> result{};
-    for (size_t idx = 0; idx < values.size(); ++idx) {
-        result[idx] = values[idx] / m_config.sample_count;
-    }
+    std::transform(values.cbegin(), values.cend(), result.begin(),
+                   [&](const auto &sample) { return sample / m_config.sample_count; });
 
     return result;
 }
@@ -262,7 +261,7 @@ Pad<TPanelCount>::Pad(const Config &config) : m_config(config), m_panels({}), m_
 }
 
 template <size_t TPanelCount> void Pad<TPanelCount>::calibrate() {
-    static const size_t sample_count = 100;
+    static const size_t sample_count = 50;
 
     std::array<uint32_t, TPanelCount> samples = {};
 
@@ -274,7 +273,7 @@ template <size_t TPanelCount> void Pad<TPanelCount>::calibrate() {
     }
 
     std::transform(samples.cbegin(), samples.cend(), m_panel_offsets.begin(),
-                   [](const auto &sample) { return sample / 100; });
+                   [](const auto &sample) { return sample / sample_count; });
 }
 
 template <size_t TPanelCount> void Pad<TPanelCount>::updateInputState(Utils::InputState &input_state) {
@@ -284,7 +283,16 @@ template <size_t TPanelCount> void Pad<TPanelCount>::updateInputState(Utils::Inp
         const auto value =
             adc_values[channel] > m_panel_offsets[channel] ? adc_values[channel] - m_panel_offsets[channel] : 0;
         input.raw = value;
-        m_panels[channel].setState(value > threshold, m_config.debounce_delay_ms);
+
+        if (m_panels[channel].getState()) {
+            const auto lower_threshold = m_config.hysteresis > threshold ? 0 : threshold - m_config.hysteresis;
+            m_panels[channel].setState(value > lower_threshold, m_config.debounce_delay_ms);
+        } else {
+            const auto upper_threshold =
+                m_config.hysteresis > (UINT16_MAX - threshold) ? UINT16_MAX : threshold + m_config.hysteresis;
+            m_panels[channel].setState(value > upper_threshold, m_config.debounce_delay_ms);
+        }
+
         input.triggered = m_panels[channel].getState();
     };
 
@@ -313,6 +321,10 @@ template <size_t TPanelCount> void Pad<TPanelCount>::setDebounceDelay(const uint
 
 template <size_t TPanelCount> void Pad<TPanelCount>::setThresholds(const Config::Thresholds &thresholds) {
     m_config.thresholds = thresholds;
+}
+
+template <size_t TPanelCount> void Pad<TPanelCount>::setHysteresis(const uint16_t hysteresis) {
+    m_config.hysteresis = hysteresis;
 }
 
 } // namespace Dancecon::Peripherals

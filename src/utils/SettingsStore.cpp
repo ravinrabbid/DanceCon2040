@@ -22,6 +22,7 @@ SettingsStore<TPanelCount, TPanelLedsCount>::SettingsStore()
                      Config::Default::usb_mode,
                      Config::Default::pad_config.thresholds,
                      Config::Default::pad_config.debounce_delay_ms,
+                     Config::Default::pad_config.hysteresis,
                      Config::Default::led_config.idle_colors,
                      Config::Default::led_config.active_colors,
                      Config::Default::led_config.brightness,
@@ -74,6 +75,18 @@ template <size_t TPanelCount, size_t TPanelLedsCount>
 SettingsStore<TPanelCount, TPanelLedsCount>::thresholds_t
 SettingsStore<TPanelCount, TPanelLedsCount>::getTriggerThresholds() {
     return m_store_cache.trigger_thresholds;
+}
+
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setHysteresis(const uint16_t hysteresis) {
+    if (m_store_cache.hysteresis != hysteresis) {
+        m_store_cache.hysteresis = hysteresis;
+        m_dirty = true;
+    }
+}
+template <size_t TPanelCount, size_t TPanelLedsCount>
+uint16_t SettingsStore<TPanelCount, TPanelLedsCount>::getHysteresis() {
+    return m_store_cache.hysteresis;
 }
 
 template <size_t TPanelCount, size_t TPanelLedsCount>

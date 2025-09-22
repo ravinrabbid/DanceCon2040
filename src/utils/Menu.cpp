@@ -872,6 +872,7 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount, TPanelLedsCount
       "Pad Settings",                                                         //
       {{"Calibrate", MenuDescriptor::Action::GotoPagePadCalibrate},           //
        {"Hold Time", MenuDescriptor::Action::GotoPagePadDebounceDelay},       //
+       {"Hysteresis", MenuDescriptor::Action::GotoPagePadHysteresis},         //
        {"Thresholds", MenuDescriptor::Action::GotoPagePadTriggerThresholds}}, //
       0}},                                                                    //
 
@@ -886,6 +887,12 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount, TPanelLedsCount
       "Step Hold Time (ms)",                               //
       {{"", MenuDescriptor::Action::SetPadDebounceDelay}}, //
       UINT8_MAX}},                                         //
+
+    {MenuPage::PadHysteresis,
+     {MenuDescriptor::Type::Value,                      //
+      "Hysteresis Offset",                              //
+      {{"", MenuDescriptor::Action::SetPadHysteresis}}, //
+      UINT16_MAX}},                                     //
 
     {MenuPage::PadTriggerThresholds, thresholds_descriptor<TPanelCount>},
 
@@ -1456,6 +1463,8 @@ uint16_t Menu<TPanelCount, TPanelLedsCount>::getCurrentValue(MenuPage page) {
         return static_cast<uint16_t>(m_store->getUsbMode());
     case MenuPage::PadDebounceDelay:
         return m_store->getDebounceDelay();
+    case MenuPage::PadHysteresis:
+        return m_store->getHysteresis();
     case MenuPage::PadTriggerThresholdUpLeft:
     case MenuPage::PadTriggerThresholdUp:
     case MenuPage::PadTriggerThresholdUpRight:
@@ -1591,6 +1600,9 @@ void Menu<TPanelCount, TPanelLedsCount>::gotoParent(bool do_restore) {
             break;
         case MenuPage::PadDebounceDelay:
             m_store->setDebounceDelay(current_state.original_value);
+            break;
+        case MenuPage::PadHysteresis:
+            m_store->setHysteresis(current_state.original_value);
             break;
         case MenuPage::PadTriggerThresholdUpLeft:
         case MenuPage::PadTriggerThresholdUp:
@@ -1752,6 +1764,9 @@ void Menu<TPanelCount, TPanelLedsCount>::performAction(MenuDescriptor::Action ac
         break;
     case MenuDescriptor::Action::GotoPagePadDebounceDelay:
         gotoPage(MenuPage::PadDebounceDelay);
+        break;
+    case MenuDescriptor::Action::GotoPagePadHysteresis:
+        gotoPage(MenuPage::PadHysteresis);
         break;
     case MenuDescriptor::Action::GotoPagePadTriggerThresholds:
         gotoPage(MenuPage::PadTriggerThresholds);
@@ -2028,6 +2043,9 @@ void Menu<TPanelCount, TPanelLedsCount>::performAction(MenuDescriptor::Action ac
         break;
     case MenuDescriptor::Action::SetPadDebounceDelay:
         m_store->setDebounceDelay(value);
+        break;
+    case MenuDescriptor::Action::SetPadHysteresis:
+        m_store->setHysteresis(value);
         break;
     case MenuDescriptor::Action::SetPadTriggerThresholdUpLeft:
     case MenuDescriptor::Action::SetPadTriggerThresholdUp:

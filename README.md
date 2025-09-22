@@ -53,6 +53,7 @@ Few things which you probably want to change more regularly can be changed using
 - Controller emulation mode
 - Trigger thresholds
 - Hold Time
+- Hysteresis
 - Calibration
 - LED brightness, animation style and colors
 - Reset settings to defaults
@@ -60,13 +61,15 @@ Few things which you probably want to change more regularly can be changed using
 
 Those settings are persisted to flash memory if you choose 'Save' when exiting the Menu and will survive power cycles.
 
-Defaults and everything else is compiled statically into the firmware. You can find everything in `include/GlobalConfiguration.h`. This covers default controller emulation mode, i2c pins, ADC configuration, default trigger thresholds, debounce delay, panel mapping, LED colors and brightness.
+Defaults and everything else is compiled statically into the firmware. You can find everything in `include/GlobalConfiguration.h`. This covers default controller emulation mode, i2c pins, ADC configuration, default trigger thresholds, hysteresis, debounce delay, panel mapping, LED colors and brightness.
 
-### Debounce Delay / Hold Time
+### Debounce Delay / Hold Time / Hysteresis
 
 The debounce delay also implicitly serves as the hold time of the input after a panel if triggered. On some platforms inputs won't be registered properly if this time is too short.
-
 If you notice dropped inputs even if the controller signals an input on the LED/Display, try to increase this value.
+
+Since the values read from load cells are not very stable, rapid triggering can happen right at the threshold value. If you encounter this, try to increase the hysteresis offset.
+A panel will trigger if its value exceeds `threshold + hysteresis` and will un-trigger if its value drops below `thresholds - hysteresis` again.
 
 ### PS4 Authentication
 
