@@ -7,7 +7,7 @@ namespace Dancecon::Peripherals {
 
 namespace {
 void update_led(const StatusLed::Config::Color &color, uint8_t brightness) {
-    float brightness_factor = (float)brightness / static_cast<float>(UINT8_MAX);
+    const float brightness_factor = (float)brightness / static_cast<float>(UINT8_MAX);
 
     ws2812_put_pixel(pio1,
                      ws2812_rgb_to_gamma_corrected_u32pixel(static_cast<uint8_t>((float)color.g * brightness_factor),
@@ -18,29 +18,29 @@ void update_led(const StatusLed::Config::Color &color, uint8_t brightness) {
 
 StatusLed::StatusLed(const Config &config) : m_config(config) {
     gpio_init(m_config.led_enable_pin);
-    gpio_set_dir(m_config.led_enable_pin, GPIO_OUT);
-    gpio_put(m_config.led_enable_pin, 1);
+    gpio_set_dir(m_config.led_enable_pin, (bool)GPIO_OUT);
+    gpio_put(m_config.led_enable_pin, true);
 
     ws2812_init(pio1, config.led_pin, m_config.is_rgbw);
 
     update_led(m_config.idle_color, m_config.brightness);
 }
 
-void StatusLed::setPlayer(const usb_player_led_t &player) {
+void StatusLed::setPlayer(const usb_player_led_t &player) const {
     switch (player.type) {
     case USB_PLAYER_LED_ID:
         switch (player.id) {
         case 0x01:
-            update_led({0, 0, 255}, m_config.brightness);
+            update_led({.r = 0, .g = 0, .b = 255}, m_config.brightness);
             break;
         case 0x02:
-            update_led({255, 0, 0}, m_config.brightness);
+            update_led({.r = 255, .g = 0, .b = 0}, m_config.brightness);
             break;
         case 0x03:
-            update_led({255, 0, 255}, m_config.brightness);
+            update_led({.r = 255, .g = 0, .b = 255}, m_config.brightness);
             break;
         case 0x04:
-            update_led({0, 255, 0}, m_config.brightness);
+            update_led({.r = 0, .g = 255, .b = 0}, m_config.brightness);
             break;
         default:
             update_led(m_config.idle_color, m_config.brightness);
@@ -48,7 +48,7 @@ void StatusLed::setPlayer(const usb_player_led_t &player) {
         }
         break;
     case USB_PLAYER_LED_COLOR:
-        update_led({player.red, player.green, player.blue}, m_config.brightness);
+        update_led({.r = player.red, .g = player.green, .b = player.blue}, m_config.brightness);
         break;
     }
 }

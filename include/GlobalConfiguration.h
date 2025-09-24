@@ -1,5 +1,5 @@
-#ifndef _GLOBALCONFIGURATION_H_
-#define _GLOBALCONFIGURATION_H_
+#ifndef GLOBALCONFIGURATION_H_
+#define GLOBALCONFIGURATION_H_
 
 #include "peripherals/Controller.h"
 #include "peripherals/Display.h"
@@ -249,4 +249,4 @@ const Peripherals::StatusLed::Config status_led_config = {
 } // namespace Default
 } // namespace Dancecon::Config
 
-#endif // _GLOBALCONFIGURATION_H_
+#endif // GLOBALCONFIGURATION_H_

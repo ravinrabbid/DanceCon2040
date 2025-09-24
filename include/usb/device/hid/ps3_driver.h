@@ -1,5 +1,5 @@
-#ifndef _USB_DEVICE_HID_PS3_DRIVER_H_
-#define _USB_DEVICE_HID_PS3_DRIVER_H_
+#ifndef USB_DEVICE_HID_PS3_DRIVER_H_
+#define USB_DEVICE_HID_PS3_DRIVER_H_
 
 #include "usb/device_driver.h"
 
@@ -38,10 +38,12 @@ typedef struct __attribute((packed, aligned(1))) {
     uint8_t unknown_0x02_2;
 } hid_ps3_report_t;
 
-extern const usbd_driver_t hid_ds3_device_driver;
-extern const usbd_driver_t hid_ps3_dance_pad_device_driver;
+const usbd_driver_t *get_hid_ds3_device_driver();
+const usbd_driver_t *get_hid_ps3_dance_pad_device_driver();
 
 extern const uint8_t ps3_desc_hid_report[];
+
+const usbd_driver_t *get_hid_ds3_device_driver();
 
 uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen);
@@ -52,4 +54,4 @@ void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
 }
 #endif
 
-#endif // _USB_DEVICE_HID_PS3_DRIVER_H_
+#endif // USB_DEVICE_HID_PS3_DRIVER_H_

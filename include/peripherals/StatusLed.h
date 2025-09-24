@@ -1,10 +1,10 @@
-#ifndef _PERIPHERALS_STATUS_LED_H_
-#define _PERIPHERALS_STATUS_LED_H_
+#ifndef PERIPHERALS_STATUSLED_H_
+#define PERIPHERALS_STATUSLED_H_
 
 #include "usb/device_driver.h"
 
+#include <cstdint>
 #include <optional>
-#include <stdint.h>
 
 namespace Dancecon::Peripherals {
 
@@ -31,9 +31,9 @@ class StatusLed {
   public:
     StatusLed(const Config &config);
 
-    void setPlayer(const usb_player_led_t &player);
+    void setPlayer(const usb_player_led_t &player) const;
 };
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_STATUS_LED_H_
+#endif // PERIPHERALS_STATUSLED_H_

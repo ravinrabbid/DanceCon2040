@@ -3,32 +3,23 @@
 #include "GlobalConfiguration.h"
 #include "bitmaps/MenuScreens.h"
 
-#include "hardware/gpio.h"
 #include "pico/time.h"
 
 #include <list>
 #include <numeric>
 #include <string>
 
+namespace Dancecon::Utils {
+template <>
+const std::map<MenuPage, const MenuDescriptor> Menu<Dancecon::Config::Default::pad_config.PANEL_COUNT,
+                                                    Dancecon::Config::Default::led_config.PANEL_COUNT>::descriptors;
+} // namespace Dancecon::Utils
+
 namespace Dancecon::Peripherals {
 
-Display::Display(const Config &config)
-    : m_config(config), m_state(State::Idle), m_pad_state({}), m_usb_mode(USB_MODE_DEBUG), m_player_id(0) {
-    m_display.external_vcc = false;
-    ssd1306_init(&m_display, 128, 64, m_config.i2c_address, m_config.i2c_block);
-    ssd1306_clear(&m_display);
-}
+namespace {
 
-void Display::setInputState(const Utils::InputState &state) { m_pad_state = state.pad; }
-void Display::setUsbMode(usb_mode_t mode) { m_usb_mode = mode; };
-void Display::setPlayerId(uint8_t player_id) { m_player_id = player_id; };
-
-void Display::setMenuState(const Utils::MenuState &menu_state) { m_menu_state = menu_state; }
-
-void Display::showIdle() { m_state = State::Idle; }
-void Display::showMenu() { m_state = State::Menu; }
-
-static std::string modeToString(usb_mode_t mode) {
+std::string modeToString(const usb_mode_t mode) {
     switch (mode) {
     case USB_MODE_SWITCH_HORIPAD:
         return "Switch Horipad";
@@ -56,7 +47,7 @@ static std::string modeToString(usb_mode_t mode) {
     return "?";
 }
 
-static uint16_t calculateBpm(const Utils::InputState::Pad &pad) {
+uint16_t calculateBpm(const Utils::InputState::Pad &pad) {
     // Somewhat ugly gimmick to calculate the how often the panels
     // are pressed per minute.
     //
@@ -93,7 +84,7 @@ static uint16_t calculateBpm(const Utils::InputState::Pad &pad) {
         };
 
         uint16_t avg() {
-            if (m_buf.size() > 0) {
+            if (!m_buf.empty()) {
                 return std::accumulate(m_buf.begin(), m_buf.end(), 0) / m_buf.size();
             }
             return 0;
@@ -101,8 +92,8 @@ static uint16_t calculateBpm(const Utils::InputState::Pad &pad) {
     };
     static StatBuffer stat_buffer(window_size);
 
-    uint32_t now = to_ms_since_boot(get_absolute_time());
-    uint32_t interval = now - prev_press;
+    const uint32_t now = to_ms_since_boot(get_absolute_time());
+    const uint32_t interval = now - prev_press;
 
     if (interval > reset_after) {
         stat_buffer.clear();
@@ -131,20 +122,37 @@ static uint16_t calculateBpm(const Utils::InputState::Pad &pad) {
     return current_bpm;
 }
 
+} // namespace
+
+Display::Display(const Config &config) : m_config(config) {
+    m_display.external_vcc = false;
+    ssd1306_init(&m_display, 128, 64, m_config.i2c_address, m_config.i2c_block);
+    ssd1306_clear(&m_display);
+}
+
+void Display::setInputState(const Utils::InputState &state) { m_pad_state = state.getPad(); }
+void Display::setUsbMode(const usb_mode_t mode) { m_usb_mode = mode; };
+void Display::setPlayerId(const uint8_t player_id) { m_player_id = player_id; };
+
+void Display::setMenuState(const Utils::MenuState &menu_state) { m_menu_state = menu_state; }
+
+void Display::showIdle() { m_state = State::Idle; }
+void Display::showMenu() { m_state = State::Menu; }
+
 void Display::drawIdleScreen() {
     // Header
-    std::string mode_string = modeToString(m_usb_mode) + " mode";
+    const auto mode_string = modeToString(m_usb_mode) + " mode";
     ssd1306_draw_string(&m_display, 0, 0, 1, mode_string.c_str());
     ssd1306_draw_line(&m_display, 0, 10, 128, 10);
 
     // BPM
-    auto bpm_str = std::to_string(calculateBpm(m_pad_state)) + " bpm";
+    const auto bpm_str = std::to_string(calculateBpm(m_pad_state)) + " bpm";
     ssd1306_draw_string(&m_display, (127 - (bpm_str.length() * 12)) / 2, 20, 2, bpm_str.c_str());
 
     // Player "LEDs"
     if (m_player_id != 0) {
         for (uint8_t i = 0; i < 4; ++i) {
-            if (m_player_id & (1 << i)) {
+            if ((m_player_id & (1 << i)) != 0) {
                 ssd1306_draw_square(&m_display, ((127) - ((4 - i) * 6)) - 1, 2, 4, 4);
             } else {
                 ssd1306_draw_square(&m_display, (127) - ((4 - i) * 6), 3, 2, 2);
@@ -201,7 +209,7 @@ void Display::drawMenuScreen() {
         selection = std::to_string(m_menu_state.selected_value);
         break;
     case Utils::MenuDescriptor::Type::Toggle:
-        selection = m_menu_state.selected_value ? "On" : "Off";
+        selection = m_menu_state.selected_value == 0 ? "Off" : "On";
         break;
     }
     ssd1306_draw_string(&m_display, (127 - (selection.length() * 12)) / 2, 15, 2, selection.c_str());
@@ -211,7 +219,7 @@ void Display::drawMenuScreen() {
     case Utils::MenuDescriptor::Type::Menu:
     case Utils::MenuDescriptor::Type::Selection: {
         auto selection_count = descriptor_it->second.items.size();
-        for (uint8_t i = 0; i < selection_count; ++i) {
+        for (size_t i = 0; i < selection_count; ++i) {
             if (i == m_menu_state.selected_value) {
                 ssd1306_draw_square(&m_display, ((127) - ((selection_count - i) * 6)) - 1, 2, 4, 4);
             } else {
@@ -220,7 +228,6 @@ void Display::drawMenuScreen() {
         }
     } break;
     case Utils::MenuDescriptor::Type::RebootInfo:
-        break;
     case Utils::MenuDescriptor::Type::Value:
     case Utils::MenuDescriptor::Type::Toggle:
         break;

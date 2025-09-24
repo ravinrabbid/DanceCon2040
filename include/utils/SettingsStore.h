@@ -1,11 +1,13 @@
-#ifndef _UTILS_SETTINGSSTORE_H_
-#define _UTILS_SETTINGSSTORE_H_
+#ifndef UTILS_SETTINGSSTORE_H_
+#define UTILS_SETTINGSSTORE_H_
 
 #include "peripherals/Pad.h"
 #include "peripherals/PanelLeds.h"
 #include "usb/device_driver.h"
 
 #include "hardware/flash.h"
+
+#include <array>
 
 namespace Dancecon::Utils {
 
@@ -37,70 +39,70 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class SettingsStore {
         bool led_enable_player_color;
         bool led_enable_hid_lights;
 
-        uint8_t _padding[m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(thresholds_t) - sizeof(uint16_t) -
-                         sizeof(uint16_t) - sizeof(led_colors_t) - sizeof(led_colors_t) - sizeof(uint8_t) -
-                         sizeof(uint8_t) - sizeof(idle_mode_t) - sizeof(active_mode_t) - sizeof(bool) - sizeof(bool)];
+        std::array<uint8_t, m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(thresholds_t) -
+                                sizeof(uint16_t) - sizeof(uint16_t) - sizeof(led_colors_t) - sizeof(led_colors_t) -
+                                sizeof(uint8_t) - sizeof(uint8_t) - sizeof(idle_mode_t) - sizeof(active_mode_t) -
+                                sizeof(bool) - sizeof(bool)>
+            _padding;
     };
     static_assert(sizeof(Storecache) == m_store_size);
 
-    enum class RebootType {
+    enum class RebootType : uint8_t {
         None,
         Normal,
         Bootsel,
     };
 
     Storecache m_store_cache;
-    bool m_dirty;
+    bool m_dirty{true};
+    RebootType m_scheduled_reboot{RebootType::None};
 
-    RebootType m_scheduled_reboot;
-
-  private:
     Storecache read();
 
   public:
     SettingsStore();
 
-    void setUsbMode(const usb_mode_t mode);
-    usb_mode_t getUsbMode();
+    void setUsbMode(usb_mode_t mode);
+    [[nodiscard]] usb_mode_t getUsbMode() const;
 
     void setTriggerThresholds(const thresholds_t &thresholds);
-    thresholds_t getTriggerThresholds();
+    [[nodiscard]] thresholds_t getTriggerThresholds() const;
 
-    void setHysteresis(const uint16_t hysteresis);
-    uint16_t getHysteresis();
+    void setHysteresis(uint16_t hysteresis);
+    [[nodiscard]] uint16_t getHysteresis() const;
 
     void setLedIdleColors(const led_colors_t &colors);
-    led_colors_t getLedIdleColors();
+    [[nodiscard]] led_colors_t getLedIdleColors() const;
 
     void setLedActiveColors(const led_colors_t &colors);
-    led_colors_t getLedActiveColors();
+    [[nodiscard]] led_colors_t getLedActiveColors() const;
 
-    void setLedBrightness(const uint8_t brightness);
-    uint8_t getLedBrightness();
+    void setLedBrightness(uint8_t brightness);
+    [[nodiscard]] uint8_t getLedBrightness() const;
 
-    void setLedAnimationSpeed(const uint8_t speed);
-    uint8_t getLedAnimationSpeed();
+    void setLedAnimationSpeed(uint8_t speed);
+    [[nodiscard]] uint8_t getLedAnimationSpeed() const;
 
-    void setLedIdleMode(const idle_mode_t mode);
-    idle_mode_t getLedIdleMode();
+    void setLedIdleMode(idle_mode_t mode);
+    [[nodiscard]] idle_mode_t getLedIdleMode() const;
 
-    void setLedActiveMode(const active_mode_t mode);
-    active_mode_t getLedActiveMode();
+    void setLedActiveMode(active_mode_t mode);
+    [[nodiscard]] active_mode_t getLedActiveMode() const;
 
-    void setLedEnablePlayerColor(const bool do_enable);
-    bool getLedEnablePlayerColor();
+    void setLedEnablePlayerColor(bool do_enable);
+    [[nodiscard]] bool getLedEnablePlayerColor() const;
 
-    void setLedEnableHidLights(const bool do_enable);
-    bool getLedEnableHidLights();
+    void setLedEnableHidLights(bool do_enable);
+    [[nodiscard]] bool getLedEnableHidLights() const;
 
-    void setDebounceDelay(const uint16_t delay);
-    uint16_t getDebounceDelay();
+    void setDebounceDelay(uint16_t delay);
+    [[nodiscard]] uint16_t getDebounceDelay() const;
 
-    void scheduleReboot(const bool bootsel = false);
+    void scheduleReboot(bool bootsel = false);
 
     void store();
     void reset();
 };
 } // namespace Dancecon::Utils
 
-#endif // _UTILS_SETTINGSSTORE_H_
+#endif // UTILS_SETTINGSSTORE_H_

@@ -318,15 +318,20 @@ void hid_spice2x_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
             }
             break;
         default:
+            break;
         }
     }
 }
 
-const usbd_driver_t hid_spice2x_device_driver = {
-    .name = "Spice2x",
-    .app_driver = &hid_app_driver,
-    .desc_device = &spice2x_desc_device,
-    .desc_cfg = spice2x_desc_cfg,
-    .desc_bos = NULL,
-    .send_report = send_hid_spice2x_report,
-};
+const usbd_driver_t *get_hid_spice2x_device_driver() {
+    static const usbd_driver_t hid_spice2x_device_driver = {
+        .name = "Spice2x",
+        .app_driver = &hid_app_driver,
+        .desc_device = &spice2x_desc_device,
+        .desc_cfg = spice2x_desc_cfg,
+        .desc_bos = NULL,
+        .send_report = send_hid_spice2x_report,
+    };
+
+    return &hid_spice2x_device_driver;
+}

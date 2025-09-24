@@ -1,5 +1,5 @@
-#ifndef _PERIPHERALS_PAD_H_
-#define _PERIPHERALS_PAD_H_
+#ifndef PERIPHERALS_PAD_H_
+#define PERIPHERALS_PAD_H_
 
 #include "utils/InputState.h"
 
@@ -8,9 +8,9 @@
 #include <ads124s0x/Ads124S0x.h>
 
 #include <array>
+#include <cstdint>
 #include <map>
 #include <memory>
-#include <stdint.h>
 #include <variant>
 
 namespace Dancecon::Peripherals {
@@ -23,7 +23,7 @@ template <size_t TPanelCount> class Pad {
     struct TConfig {
         static constexpr auto PANEL_COUNT = TPanelCount;
 
-        struct ThresholdsFourPanel {
+        struct __attribute((packed, aligned(1))) ThresholdsFourPanel {
             uint16_t up;
             uint16_t left;
             uint16_t right;
@@ -31,7 +31,7 @@ template <size_t TPanelCount> class Pad {
 
             bool operator==(const ThresholdsFourPanel &) const = default;
         };
-        struct ThresholdsFivePanel {
+        struct __attribute((packed, aligned(1))) ThresholdsFivePanel {
             uint16_t up_left;
             uint16_t up_right;
             uint16_t center;
@@ -40,7 +40,7 @@ template <size_t TPanelCount> class Pad {
 
             bool operator==(const ThresholdsFivePanel &) const = default;
         };
-        struct ThresholdsSixPanel {
+        struct __attribute((packed, aligned(1))) ThresholdsSixPanel {
             uint16_t up_left;
             uint16_t up;
             uint16_t up_right;
@@ -50,7 +50,7 @@ template <size_t TPanelCount> class Pad {
 
             bool operator==(const ThresholdsSixPanel &) const = default;
         };
-        struct ThresholdsEightPanel {
+        struct __attribute((packed, aligned(1))) ThresholdsEightPanel {
             uint16_t up_left;
             uint16_t up;
             uint16_t up_right;
@@ -62,7 +62,7 @@ template <size_t TPanelCount> class Pad {
 
             bool operator==(const ThresholdsEightPanel &) const = default;
         };
-        struct ThresholdsNinePanel {
+        struct __attribute((packed, aligned(1))) ThresholdsNinePanel {
             uint16_t up_left;
             uint16_t up;
             uint16_t up_right;
@@ -76,24 +76,23 @@ template <size_t TPanelCount> class Pad {
             bool operator==(const ThresholdsNinePanel &) const = default;
         };
 
-        using Thresholds =                              //
-            std::conditional<                           //
-                TConfigPanelCount == 4,                 //
-                ThresholdsFourPanel,                    //
-                typename std::conditional<              //
-                    TConfigPanelCount == 5,             //
-                    ThresholdsFivePanel,                //
-                    typename std::conditional<          //
-                        TConfigPanelCount == 6,         //
-                        ThresholdsSixPanel,             //
-                        typename std::conditional<      //
-                            TConfigPanelCount == 8,     //
-                            ThresholdsEightPanel,       //
-                            typename std::conditional<  //
-                                TConfigPanelCount == 9, //
-                                ThresholdsNinePanel,    //
-                                std::monostate          //
-                                >::type>::type>::type>::type>::type;
+        using Thresholds =                               //
+            std::conditional_t<                          //
+                TConfigPanelCount == 4,                  //
+                ThresholdsFourPanel,                     //
+                typename std::conditional_t<             //
+                    TConfigPanelCount == 5,              //
+                    ThresholdsFivePanel,                 //
+                    typename std::conditional_t<         //
+                        TConfigPanelCount == 6,          //
+                        ThresholdsSixPanel,              //
+                        typename std::conditional_t<     //
+                            TConfigPanelCount == 8,      //
+                            ThresholdsEightPanel,        //
+                            typename std::conditional_t< //
+                                TConfigPanelCount == 9,  //
+                                ThresholdsNinePanel,     //
+                                std::monostate>>>>>;
 
         struct AdcChannelsFourPanel {
             uint8_t up;
@@ -138,24 +137,23 @@ template <size_t TPanelCount> class Pad {
             uint8_t down_right;
         };
 
-        using AdcChannels =                             //
-            std::conditional<                           //
-                TConfigPanelCount == 4,                 //
-                AdcChannelsFourPanel,                   //
-                typename std::conditional<              //
-                    TConfigPanelCount == 5,             //
-                    AdcChannelsFivePanel,               //
-                    typename std::conditional<          //
-                        TConfigPanelCount == 6,         //
-                        AdcChannelsSixPanel,            //
-                        typename std::conditional<      //
-                            TConfigPanelCount == 8,     //
-                            AdcChannelsEightPanel,      //
-                            typename std::conditional<  //
-                                TConfigPanelCount == 9, //
-                                AdcChannelsNinePanel,   //
-                                std::monostate          //
-                                >::type>::type>::type>::type>::type;
+        using AdcChannels =                              //
+            std::conditional_t<                          //
+                TConfigPanelCount == 4,                  //
+                AdcChannelsFourPanel,                    //
+                typename std::conditional_t<             //
+                    TConfigPanelCount == 5,              //
+                    AdcChannelsFivePanel,                //
+                    typename std::conditional_t<         //
+                        TConfigPanelCount == 6,          //
+                        AdcChannelsSixPanel,             //
+                        typename std::conditional_t<     //
+                            TConfigPanelCount == 8,      //
+                            AdcChannelsEightPanel,       //
+                            typename std::conditional_t< //
+                                TConfigPanelCount == 9,  //
+                                AdcChannelsNinePanel,    //
+                                std::monostate>>>>>;
 
         struct InternalAdc {
             uint8_t sample_count;
@@ -190,17 +188,16 @@ template <size_t TPanelCount> class Pad {
         };
 
         using AdcConfig =                                                  //
-            std::conditional<                                              //
+            std::conditional_t<                                            //
                 TConfigPanelCount == 4,                                    //
                 std::variant<ExternalAdc<2>, InternalAdc, GpioAdc>,        //
-                typename std::conditional<                                 //
+                typename std::conditional_t<                               //
                     TConfigPanelCount == 5 || TConfigPanelCount == 6,      //
                     std::variant<ExternalAdc<2>, ExternalAdc<3>, GpioAdc>, //
-                    typename std::conditional<                             //
+                    typename std::conditional_t<                           //
                         TConfigPanelCount == 8 || TConfigPanelCount == 9,  //
                         std::variant<ExternalAdc<3>, GpioAdc>,             //
-                        std::monostate                                     //
-                        >::type>::type>::type;
+                        std::monostate>>>;
 
         Thresholds thresholds;
         uint16_t hysteresis;
@@ -216,18 +213,20 @@ template <size_t TPanelCount> class Pad {
   private:
     class Panel {
       private:
-        uint32_t last_change;
-        bool active;
+        uint32_t m_last_change{0};
+        bool m_active{false};
 
       public:
-        Panel();
+        Panel() = default;
 
-        bool getState() const { return active; };
-        void setState(const bool state, const uint16_t debounce_delay);
+        [[nodiscard]] bool getState() const { return m_active; };
+        void setState(bool state, uint16_t debounce_delay);
     };
 
+    // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions): Class has no members
     class AdcInterface {
       public:
+        virtual ~AdcInterface() = default;
         virtual std::array<uint16_t, TPanelCount> read() = 0;
     };
 
@@ -237,7 +236,7 @@ template <size_t TPanelCount> class Pad {
 
       public:
         GpioAdc(const Config::GpioAdc &config);
-        virtual std::array<uint16_t, TPanelCount> read() final;
+        std::array<uint16_t, TPanelCount> read() final;
     };
 
     class InternalAdc : public AdcInterface {
@@ -246,7 +245,7 @@ template <size_t TPanelCount> class Pad {
 
       public:
         InternalAdc(const Config::InternalAdc &config);
-        virtual std::array<uint16_t, TPanelCount> read() final;
+        std::array<uint16_t, TPanelCount> read() final;
     };
 
     template <size_t TAdcCount> class ExternalAdc : public AdcInterface {
@@ -254,8 +253,8 @@ template <size_t TPanelCount> class Pad {
         std::array<std::unique_ptr<Ads124S0x>, TAdcCount> m_ads124s06;
 
       public:
-        ExternalAdc(const typename Config::ExternalAdc<TAdcCount> &config);
-        virtual std::array<uint16_t, TPanelCount> read() final;
+        ExternalAdc(const Config::template ExternalAdc<TAdcCount> &config);
+        std::array<uint16_t, TPanelCount> read() final;
     };
 
     Config m_config;
@@ -272,11 +271,11 @@ template <size_t TPanelCount> class Pad {
 
     void updateInputState(Utils::InputState &input_state);
 
-    void setDebounceDelay(const uint16_t delay);
+    void setDebounceDelay(uint16_t delay);
     void setThresholds(const Config::Thresholds &thresholds);
-    void setHysteresis(const uint16_t hysteresis);
+    void setHysteresis(uint16_t hysteresis);
 };
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_PAD_H_
+#endif // PERIPHERALS_PAD_H_

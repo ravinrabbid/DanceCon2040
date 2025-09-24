@@ -1,5 +1,5 @@
-#ifndef _TUSB_CONFIG_H_
-#define _TUSB_CONFIG_H_
+#ifndef TUSB_CONFIG_H_
+#define TUSB_CONFIG_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,10 +55,10 @@ extern "C" {
 #define CFG_TUD_CDC_TX_BUFSIZE (TUD_OPT_HIGH_SPEED ? 512 : 64)
 #define CFG_TUD_CDC_EP_BUFSIZE (TUD_OPT_HIGH_SPEED ? 512 : 64)
 
-#define CFG_TUD_HID_EP_BUFSIZE (64)
+#define CFG_TUD_HID_EP_BUFSIZE (64) // NOLINT(cppcoreguidelines-macro-to-enum,modernize-macro-to-enum)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // _TUSB_CONFIG_H_
+#endif // TUSB_CONFIG_H_

@@ -1,5 +1,5 @@
-#ifndef _UTILS_MENU_H_
-#define _UTILS_MENU_H_
+#ifndef UTILS_MENU_H_
+#define UTILS_MENU_H_
 
 #include "utils/InputState.h"
 #include "utils/SettingsStore.h"
@@ -13,7 +13,7 @@
 
 namespace Dancecon::Utils {
 
-enum class MenuPage {
+enum class MenuPage : uint8_t {
     Main,
 
     DeviceMode,
@@ -146,7 +146,7 @@ struct MenuState {
 };
 
 struct MenuDescriptor {
-    enum class Type {
+    enum class Type : uint8_t {
         Menu,
         Selection,
         Value,
@@ -154,7 +154,7 @@ struct MenuDescriptor {
         RebootInfo,
     };
 
-    enum class Action {
+    enum class Action : uint8_t {
         None,
         GotoParent,
 
@@ -390,8 +390,9 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class Menu {
 
   private:
     std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> m_store;
-    bool m_active;
-    std::stack<MenuState> m_state_stack;
+
+    bool m_active{false};
+    std::stack<MenuState> m_state_stack{{{.page = MenuPage::Main, .selected_value = 0, .original_value = 0}}};
 
     calibration_callback_t m_calibration_callback;
 
@@ -401,14 +402,15 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class Menu {
     void performAction(MenuDescriptor::Action action, uint16_t value);
 
   public:
-    Menu(const std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> settings_store,
-         const calibration_callback_t &calibration_callback);
+    Menu(std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> settings_store,
+         calibration_callback_t calibration_callback);
 
     void activate();
     void update(const InputState::Controller &controller_state);
     bool active();
     MenuState getState();
 };
+
 } // namespace Dancecon::Utils
 
-#endif // _UTILS_MENU_H_
+#endif // UTILS_MENU_H_

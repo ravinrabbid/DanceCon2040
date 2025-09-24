@@ -1,5 +1,5 @@
-#ifndef _ADS124S0X_ADS124S0X_H_
-#define _ADS124S0X_ADS124S0X_H_
+#ifndef ADS124S0X_ADS124S0X_H_
+#define ADS124S0X_ADS124S0X_H_
 
 #include "hardware/spi.h"
 
@@ -7,7 +7,7 @@
 
 class Ads124S0x {
   public:
-    enum class Channel {
+    enum class Channel : uint8_t {
         CH0,
         CH1,
         CH2,
@@ -17,18 +17,18 @@ class Ads124S0x {
         CH5,
     };
 
-    enum class ConversionMode {
+    enum class ConversionMode : uint8_t {
         Continuous,
         Single,
     };
 
-    enum class Filter {
+    enum class Filter : uint8_t {
         Sinc3,
         LowLatency,
     };
 
-    enum class Gain {
-        G0,
+    enum class Gain : uint8_t {
+        Off = 0xFF,
         G1 = 0x00,
         G2 = 0x01,
         G4 = 0x02,
@@ -39,7 +39,7 @@ class Ads124S0x {
         G128 = 0x07,
     };
 
-    enum class SampleRate {
+    enum class SampleRate : uint8_t {
         R2_5 = 0x00,
         R5 = 0x01,
         R10 = 0x02,
@@ -56,7 +56,7 @@ class Ads124S0x {
         R4000 = 0x0D, // or 0x0E
     };
 
-    enum class ConversionDelay {
+    enum class ConversionDelay : uint8_t {
         D14 = 0x00,
         D25 = 0x01,
         D64 = 0x02,
@@ -67,14 +67,14 @@ class Ads124S0x {
         D1 = 0x07,
     };
 
-    enum class ReferenceInput {
+    enum class ReferenceInput : uint8_t {
         External0 = 0x00,
         External1 = 0x01,
         Internal = 0x02,
     };
 
   private:
-    enum class Command {
+    enum class Command : uint8_t {
         // Control commands
         NOP = 0x00,
         WAKEUP = 0x02,
@@ -93,7 +93,7 @@ class Ads124S0x {
         WREG = 0x40,
     };
 
-    enum class Register {
+    enum class Register : uint8_t {
         ID = 0x00,
         STATUS = 0x01,
         INPMUX = 0x02,
@@ -114,7 +114,6 @@ class Ads124S0x {
         GPIOCON = 0x11,
     };
 
-  private:
     spi_inst *m_spi;
     uint8_t m_cs_pin;
     uint8_t m_drdy_pin;
@@ -152,4 +151,4 @@ class Ads124S0x {
     template <size_t S> void spiWrite(const std::array<uint8_t, S> &data_out);
 };
 
-#endif // _ADS124S0X_ADS124S0X_H_
+#endif // ADS124S0X_ADS124S0X_H_

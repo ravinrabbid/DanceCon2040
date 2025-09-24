@@ -1,5 +1,5 @@
-#ifndef _USB_DEVICE_VENDOR_XINPUT_DRIVER_H_
-#define _USB_DEVICE_VENDOR_XINPUT_DRIVER_H_
+#ifndef USB_DEVICE_VENDOR_XINPUT_DRIVER_H_
+#define USB_DEVICE_VENDOR_XINPUT_DRIVER_H_
 
 #include "usb/device_driver.h"
 
@@ -25,8 +25,8 @@ typedef struct __attribute((packed, aligned(1))) {
     uint8_t _reserved[6];
 } xinput_report_t;
 
-extern const usbd_driver_t xinput_device_driver;
-extern const usbd_driver_t xinput_dance_pad_device_driver;
+const usbd_driver_t *get_xinput_device_driver();
+const usbd_driver_t *get_xinput_dance_pad_device_driver();
 
 bool xinput_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t const *request);
 
@@ -34,4 +34,4 @@ bool xinput_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_
 }
 #endif
 
-#endif // _USB_DEVICE_VENDOR_XINPUT_DRIVER_H_
+#endif // USB_DEVICE_VENDOR_XINPUT_DRIVER_H_

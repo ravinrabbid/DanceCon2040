@@ -1,11 +1,11 @@
-#ifndef _UTILS_PS4AUTHPROVIDER_H_
-#define _UTILS_PS4AUTHPROVIDER_H_
+#ifndef UTILS_PS4AUTHPROVIDER_H_
+#define UTILS_PS4AUTHPROVIDER_H_
 
 #include "mbedtls/pk.h"
 
 #include <array>
+#include <cstdint>
 #include <optional>
-#include <stdint.h>
 #include <string>
 
 namespace Dancecon::Utils {
@@ -23,12 +23,15 @@ class PS4AuthProvider {
     };
 
   private:
-    bool m_key_valid;
-
-    mbedtls_pk_context m_pk_context;
+    bool m_key_valid{false};
+    mbedtls_pk_context m_pk_context{};
 
   public:
     PS4AuthProvider();
+    PS4AuthProvider(const PS4AuthProvider &) = default;
+    PS4AuthProvider(PS4AuthProvider &&) = default;
+    PS4AuthProvider &operator=(PS4AuthProvider &&) = default;
+    PS4AuthProvider &operator=(const PS4AuthProvider &) = default;
     ~PS4AuthProvider();
 
     std::optional<std::array<uint8_t, SIGNATURE_LENGTH>> sign(const std::array<uint8_t, SIGNATURE_LENGTH> &challenge);
@@ -36,4 +39,4 @@ class PS4AuthProvider {
 
 } // namespace Dancecon::Utils
 
-#endif // _UTILS_PS4AUTHPROVIDER_H_
+#endif // UTILS_PS4AUTHPROVIDER_H_

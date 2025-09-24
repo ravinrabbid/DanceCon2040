@@ -1,5 +1,5 @@
-#ifndef _USB_DEVICE_HID_SWITCH_DRIVER_H_
-#define _USB_DEVICE_HID_SWITCH_DRIVER_H_
+#ifndef USB_DEVICE_HID_SWITCH_DRIVER_H_
+#define USB_DEVICE_HID_SWITCH_DRIVER_H_
 
 #include "usb/device_driver.h"
 
@@ -21,9 +21,9 @@ typedef struct __attribute((packed, aligned(1))) {
     uint8_t vendor;
 } hid_switch_report_t;
 
-extern const usbd_driver_t hid_switch_horipad_device_driver;
-
 extern const uint8_t switch_desc_hid_report[];
+
+const usbd_driver_t *get_hid_switch_horipad_device_driver();
 
 uint16_t hid_switch_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                   uint16_t reqlen);
@@ -34,4 +34,4 @@ void hid_switch_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t 
 }
 #endif
 
-#endif // _USB_DEVICE_HID_SWITCH_DRIVER_H_
+#endif // USB_DEVICE_HID_SWITCH_DRIVER_H_

@@ -1,11 +1,11 @@
-#ifndef _PERIPHERALS_PANEL_LEDS_H_
-#define _PERIPHERALS_PANEL_LEDS_H_
+#ifndef PERIPHERALS_PANELLEDS_H_
+#define PERIPHERALS_PANELLEDS_H_
 
 #include "utils/InputState.h"
 
 #include <array>
+#include <cstdint>
 #include <optional>
-#include <stdint.h>
 #include <variant>
 #include <vector>
 
@@ -19,14 +19,14 @@ template <size_t TPanelCount> class PanelLeds {
     struct TConfig {
         static constexpr auto PANEL_COUNT = TPanelCount;
 
-        enum class IdleMode {
+        enum class IdleMode : uint8_t {
             Off,
             Static,
             Pulse,
             Rainbow,
         };
 
-        enum class ActiveMode {
+        enum class ActiveMode : uint8_t {
             Off,
             Idle,
             Active,
@@ -95,24 +95,23 @@ template <size_t TPanelCount> class PanelLeds {
             bool operator==(const ColorsNinePanel &) const = default;
         };
 
-        using PanelColors =                             //
-            std::conditional<                           //
-                TConfigPanelCount == 4,                 //
-                ColorsFourPanel,                        //
-                typename std::conditional<              //
-                    TConfigPanelCount == 5,             //
-                    ColorsFivePanel,                    //
-                    typename std::conditional<          //
-                        TConfigPanelCount == 6,         //
-                        ColorsSixPanel,                 //
-                        typename std::conditional<      //
-                            TConfigPanelCount == 8,     //
-                            ColorsEightPanel,           //
-                            typename std::conditional<  //
-                                TConfigPanelCount == 9, //
-                                ColorsNinePanel,        //
-                                std::monostate          //
-                                >::type>::type>::type>::type>::type;
+        using PanelColors =                              //
+            std::conditional_t<                          //
+                TConfigPanelCount == 4,                  //
+                ColorsFourPanel,                         //
+                typename std::conditional_t<             //
+                    TConfigPanelCount == 5,              //
+                    ColorsFivePanel,                     //
+                    typename std::conditional_t<         //
+                        TConfigPanelCount == 6,          //
+                        ColorsSixPanel,                  //
+                        typename std::conditional_t<     //
+                            TConfigPanelCount == 8,      //
+                            ColorsEightPanel,            //
+                            typename std::conditional_t< //
+                                TConfigPanelCount == 9,  //
+                                ColorsNinePanel,         //
+                                std::monostate>>>>>;
 
         struct OrderFourPanel {
             uint8_t up;
@@ -157,24 +156,23 @@ template <size_t TPanelCount> class PanelLeds {
             uint8_t down_right;
         };
 
-        using PanelOrder =                              //
-            std::conditional<                           //
-                TConfigPanelCount == 4,                 //
-                OrderFourPanel,                         //
-                typename std::conditional<              //
-                    TConfigPanelCount == 5,             //
-                    OrderFivePanel,                     //
-                    typename std::conditional<          //
-                        TConfigPanelCount == 6,         //
-                        OrderSixPanel,                  //
-                        typename std::conditional<      //
-                            TConfigPanelCount == 8,     //
-                            OrderEightPanel,            //
-                            typename std::conditional<  //
-                                TConfigPanelCount == 9, //
-                                OrderNinePanel,         //
-                                std::monostate          //
-                                >::type>::type>::type>::type>::type;
+        using PanelOrder =                               //
+            std::conditional_t<                          //
+                TConfigPanelCount == 4,                  //
+                OrderFourPanel,                          //
+                typename std::conditional_t<             //
+                    TConfigPanelCount == 5,              //
+                    OrderFivePanel,                      //
+                    typename std::conditional_t<         //
+                        TConfigPanelCount == 6,          //
+                        OrderSixPanel,                   //
+                        typename std::conditional_t<     //
+                            TConfigPanelCount == 8,      //
+                            OrderEightPanel,             //
+                            typename std::conditional_t< //
+                                TConfigPanelCount == 9,  //
+                                OrderNinePanel,          //
+                                std::monostate>>>>>;
 
         PanelColors idle_colors;
         PanelColors active_colors;
@@ -207,7 +205,7 @@ template <size_t TPanelCount> class PanelLeds {
     std::array<typename Config::Color, TPanelCount> m_direct_buffer;
 
     std::optional<typename Config::Color> m_player_color;
-    bool m_direct_mode;
+    bool m_direct_mode{false};
 
     void updateIdle(uint32_t steps);
     void updateActive(uint32_t steps);
@@ -218,14 +216,14 @@ template <size_t TPanelCount> class PanelLeds {
   public:
     PanelLeds(const Config &config);
 
-    void setBrightness(const uint8_t brightness);
+    void setBrightness(uint8_t brightness);
     void setAnimationSpeed(uint8_t speed);
     void setIdleMode(Config::IdleMode mode);
     void setActiveMode(Config::ActiveMode mode);
     void setIdleColors(const Config::PanelColors &color);
     void setActiveColors(const Config::PanelColors &colors);
-    void setEnablePlayerColor(const bool do_enable);
-    void setEnableHidLights(const bool do_enable);
+    void setEnablePlayerColor(bool do_enable);
+    void setEnableHidLights(bool do_enable);
 
     void setInputState(const Utils::InputState &input_state);
     void setPlayerColor(const Config::Color &color);
@@ -236,4 +234,4 @@ template <size_t TPanelCount> class PanelLeds {
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_PANEL_LEDS_H_
+#endif // PERIPHERALS_PANELLEDS_H_

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
+option(USE_CLANG_TIDY "Run clang-tidy during build" OFF)
+
 if((NOT DEFINED ENV{PICO_SDK_PATH}) AND (NOT PICO_SDK_PATH))
   set(PICO_SDK_FETCH_FROM_GIT_TAG "2.1.1")
   set(PICO_SDK_FETCH_FROM_GIT ON)
@@ -13,7 +15,7 @@ include(pico_sdk_import.cmake)
 
 project(DanceCon2040 VERSION 0.39.0)
 
-set(PICO_USE_FASTEST_SUPPORTED_CLOCK 1)
+set(PICO_USE_FASTEST_SUPPORTED_CLOCK ON)
 
 pico_sdk_init()
 
@@ -57,8 +59,23 @@ target_link_libraries(
          ads124s0x
          )
 
-pico_enable_stdio_usb(${PROJECT_NAME} 1)
-pico_enable_stdio_uart(${PROJECT_NAME} 0)
+pico_enable_stdio_usb(${PROJECT_NAME} ON)
+pico_enable_stdio_uart(${PROJECT_NAME} OFF)
 
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(${PROJECT_NAME})
+
+
+if(USE_CLANG_TIDY)
+  find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
+  set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE};--allow-no-checks;--quiet")
+
+  set(_implicit_includes ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES} ${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES})
+  list(REMOVE_DUPLICATES _implicit_includes)
+  foreach(include ${_implicit_includes})
+    list(APPEND CLANG_TIDY_COMMAND "--extra-arg=-isystem${include}")
+  endforeach()
+
+  set_target_properties(${PROJECT_NAME} PROPERTIES C_CLANG_TIDY "${CLANG_TIDY_COMMAND};--extra-arg=--target=${PICO_GCC_TRIPLE}")
+  set_target_properties(${PROJECT_NAME} PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND};--extra-arg=--target=${PICO_GCC_TRIPLE}")
+endif(USE_CLANG_TIDY)

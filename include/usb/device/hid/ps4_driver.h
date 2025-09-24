@@ -1,5 +1,5 @@
-#ifndef _USB_DEVICE_HID_PS4_DRIVER_H_
-#define _USB_DEVICE_HID_PS4_DRIVER_H_
+#ifndef USB_DEVICE_HID_PS4_DRIVER_H_
+#define USB_DEVICE_HID_PS4_DRIVER_H_
 
 #include "usb/device_driver.h"
 
@@ -42,10 +42,10 @@ typedef struct __attribute((packed, aligned(1))) {
     uint8_t _reserved3[3];
 } hid_ps4_report_t;
 
-extern const usbd_driver_t hid_ds4_device_driver;
-extern const usbd_driver_t hid_ps4_compat_device_driver;
-
 extern const uint8_t ps4_desc_hid_report[];
+
+const usbd_driver_t *get_hid_ds4_device_driver();
+const usbd_driver_t *get_hid_ps4_compat_device_driver();
 
 uint16_t hid_ps4_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen);
@@ -56,4 +56,4 @@ void hid_ps4_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
 }
 #endif
 
-#endif // _USB_DEVICE_HID_PS4_DRIVER_H_
+#endif // USB_DEVICE_HID_PS4_DRIVER_H_
