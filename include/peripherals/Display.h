@@ -1,16 +1,15 @@
-#ifndef _PERIPHERALS_DISPLAY_H_
-#define _PERIPHERALS_DISPLAY_H_
+#ifndef PERIPHERALS_DISPLAY_H_
+#define PERIPHERALS_DISPLAY_H_
 
 #include "usb/device_driver.h"
 #include "utils/InputState.h"
 #include "utils/Menu.h"
 
+#include "hardware/i2c.h"
 #include <ssd1306/ssd1306.h>
 
-#include "hardware/i2c.h"
-
+#include <cstdint>
 #include <memory>
-#include <stdint.h>
 
 namespace Dancecon::Peripherals {
 
@@ -22,21 +21,21 @@ class Display {
     };
 
   private:
-    enum class State {
+    enum class State : uint8_t {
         Idle,
         Menu,
     };
 
     Config m_config;
-    State m_state;
+    State m_state{State::Idle};
 
-    Utils::InputState::Pad m_pad_state;
-    usb_mode_t m_usb_mode;
-    uint8_t m_player_id;
+    Utils::InputState::Pad m_pad_state{};
+    usb_mode_t m_usb_mode{USB_MODE_DEBUG};
+    uint8_t m_player_id{0};
 
-    Utils::MenuState m_menu_state;
+    Utils::MenuState m_menu_state{};
 
-    ssd1306_t m_display;
+    ssd1306_t m_display{};
 
     void drawIdleScreen();
     void drawMenuScreen();
@@ -58,4 +57,4 @@ class Display {
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_DISPLAY_H_
+#endif // PERIPHERALS_DISPLAY_H_

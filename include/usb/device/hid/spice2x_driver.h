@@ -1,5 +1,5 @@
-#ifndef _USB_DEVICE_HID_SPICE2X_DRIVER_H_
-#define _USB_DEVICE_HID_SPICE2X_DRIVER_H_
+#ifndef USB_DEVICE_HID_SPICE2X_DRIVER_H_
+#define USB_DEVICE_HID_SPICE2X_DRIVER_H_
 
 #include "usb/device_driver.h"
 
@@ -17,9 +17,9 @@ typedef struct __attribute((packed, aligned(1))) {
     uint16_t pad_buttons;
 } hid_spice2x_report_t;
 
-extern const usbd_driver_t hid_spice2x_device_driver;
-
 extern const uint8_t spice2x_desc_hid_report[];
+
+const usbd_driver_t *get_hid_spice2x_device_driver();
 
 uint16_t hid_spice2x_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                    uint16_t reqlen);
@@ -30,4 +30,4 @@ void hid_spice2x_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
 }
 #endif
 
-#endif // _USB_DEVICE_HID_SPICE2X_DRIVER_H_
+#endif // USB_DEVICE_HID_SPICE2X_DRIVER_H_

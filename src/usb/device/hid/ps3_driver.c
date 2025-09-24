@@ -149,7 +149,7 @@ static const uint8_t ps3_report_0x01[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-static int8_t ps3_report_0xef[] = {
+static uint8_t ps3_report_0xef[] = {
     0xef, 0x04, 0x00, 0x0b, 0x03, 0x01, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0xff,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06,
@@ -188,7 +188,9 @@ uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
     if (report_type == HID_REPORT_TYPE_INPUT) {
         memcpy(buffer, &last_report, sizeof(hid_ps3_report_t));
         return sizeof(hid_ps3_report_t);
-    } else if (report_type == HID_REPORT_TYPE_FEATURE) {
+    }
+
+    if (report_type == HID_REPORT_TYPE_FEATURE) {
         switch (report_id) {
         case 0x01:
             memcpy(buffer, ps3_report_0x01, sizeof(ps3_report_0x01));
@@ -218,6 +220,7 @@ uint16_t hid_ps3_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t
             memcpy(buffer, ps3_report_0xf8, sizeof(ps3_report_0xf8));
             return sizeof(ps3_report_0xf8);
         default:
+            break;
         }
     }
     return 0;
@@ -240,6 +243,8 @@ void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
         case 0xef:
             ps3_report_0xef[6] = buffer[6];
             ps3_report_0xf8[6] = buffer[6];
+            break;
+        default:
             break;
         }
     } break;
@@ -273,26 +278,34 @@ void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
             }
         } break;
         default:
+            break;
         }
     } break;
     default:
+        break;
     }
 }
 
-const usbd_driver_t hid_ds3_device_driver = {
-    .name = "DS3",
-    .app_driver = &hid_app_driver,
-    .desc_device = &ds3_desc_device,
-    .desc_cfg = ps3_desc_cfg,
-    .desc_bos = NULL,
-    .send_report = send_hid_ps3_report,
-};
+const usbd_driver_t *get_hid_ds3_device_driver() {
+    static const usbd_driver_t hid_ds3_device_driver = {
+        .name = "DS3",
+        .app_driver = &hid_app_driver,
+        .desc_device = &ds3_desc_device,
+        .desc_cfg = ps3_desc_cfg,
+        .desc_bos = NULL,
+        .send_report = send_hid_ps3_report,
+    };
+    return &hid_ds3_device_driver;
+}
 
-const usbd_driver_t hid_ps3_dance_pad_device_driver = {
-    .name = "PS3 Dance Pad",
-    .app_driver = &hid_app_driver,
-    .desc_device = &ps3_desc_dance_pad_device,
-    .desc_cfg = ps3_desc_cfg,
-    .desc_bos = NULL,
-    .send_report = send_hid_ps3_report,
-};
+const usbd_driver_t *get_hid_ps3_dance_pad_device_driver() {
+    static const usbd_driver_t hid_ps3_dance_pad_device_driver = {
+        .name = "PS3 Dance Pad",
+        .app_driver = &hid_app_driver,
+        .desc_device = &ps3_desc_dance_pad_device,
+        .desc_cfg = ps3_desc_cfg,
+        .desc_bos = NULL,
+        .send_report = send_hid_ps3_report,
+    };
+    return &hid_ps3_dance_pad_device_driver;
+}

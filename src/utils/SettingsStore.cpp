@@ -12,7 +12,10 @@ namespace Dancecon::Utils {
 template class SettingsStore<Config::Default::pad_config.PANEL_COUNT, Config::Default::led_config.PANEL_COUNT>;
 
 namespace {
-uint8_t read_byte(uint32_t offset) { return *(reinterpret_cast<uint8_t *>(XIP_BASE + offset)); }
+// NOLINTNEXTLINE(clang-diagnostic-unneeded-internal-declaration): https://github.com/llvm/llvm-project/issues/117000
+uint8_t read_byte(uint32_t offset) {
+    return *(reinterpret_cast<uint8_t *>(XIP_BASE + offset)); // NOLINT(performance-no-int-to-ptr)
+}
 
 } // namespace
 
@@ -31,17 +34,15 @@ SettingsStore<TPanelCount, TPanelLedsCount>::SettingsStore()
                      Config::Default::led_config.active_mode,
                      Config::Default::led_config.enable_player_color,
                      Config::Default::led_config.enable_hid_lights,
-                     {}}),
-      m_dirty(true), m_scheduled_reboot(RebootType::None) {
+                     {}}) {
     uint32_t current_page = m_flash_offset + m_flash_size - m_store_size;
     bool found_valid = false;
-    for (uint8_t i = 0; i < m_store_pages; ++i) {
+    for (uint32_t i = 0; i < m_store_pages; ++i) {
         if (read_byte(current_page) == m_magic_byte) {
             found_valid = true;
             break;
-        } else {
-            current_page -= m_store_size;
         }
+        current_page -= m_store_size;
     }
 
     if (found_valid) {
@@ -203,17 +204,16 @@ uint16_t SettingsStore<TPanelCount, TPanelLedsCount>::getDebounceDelay() {
 template <size_t TPanelCount, size_t TPanelLedsCount> void SettingsStore<TPanelCount, TPanelLedsCount>::store() {
     if (m_dirty) {
         multicore_lockout_start_blocking();
-        uint32_t interrupts = save_and_disable_interrupts();
+        const uint32_t interrupts = save_and_disable_interrupts();
 
         uint32_t current_page = m_flash_offset;
         bool do_erase = true;
-        for (uint8_t i = 0; i < m_store_pages; ++i) {
+        for (uint32_t i = 0; i < m_store_pages; ++i) {
             if (read_byte(current_page) == 0xFF) {
                 do_erase = false;
                 break;
-            } else {
-                current_page += m_store_size;
             }
+            current_page += m_store_size;
         }
 
         if (do_erase) {
@@ -244,7 +244,7 @@ template <size_t TPanelCount, size_t TPanelLedsCount> void SettingsStore<TPanelC
 
 template <size_t TPanelCount, size_t TPanelLedsCount> void SettingsStore<TPanelCount, TPanelLedsCount>::reset() {
     multicore_lockout_start_blocking();
-    uint32_t interrupts = save_and_disable_interrupts();
+    const uint32_t interrupts = save_and_disable_interrupts();
 
     flash_range_erase(m_flash_offset, m_flash_size);
 

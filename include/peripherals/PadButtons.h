@@ -1,10 +1,10 @@
-#ifndef _PERIPHERALS_PAD_BUTTONS_H_
-#define _PERIPHERALS_PAD_BUTTONS_H_
+#ifndef PERIPHERALS_PADBUTTONS_H_
+#define PERIPHERALS_PADBUTTONS_H_
 
 #include "utils/InputState.h"
 
+#include <cstdint>
 #include <map>
-#include <stdint.h>
 
 namespace Dancecon::Peripherals {
 
@@ -20,26 +20,26 @@ class PadButtons {
     };
 
   private:
-    enum class Id {
+    enum class Id : uint8_t {
         START,
         SELECT,
     };
 
     class Button {
       private:
-        uint8_t gpio_pin;
-        uint32_t gpio_mask;
+        uint8_t m_gpio_pin;
+        uint32_t m_gpio_mask;
 
-        uint32_t last_change;
-        bool active;
+        uint32_t m_last_change{0};
+        bool m_active{false};
 
       public:
         Button(uint8_t pin);
 
-        uint8_t getGpioPin() const { return gpio_pin; };
-        uint32_t getGpioMask() const { return gpio_mask; };
+        [[nodiscard]] uint8_t getGpioPin() const { return m_gpio_pin; };
+        [[nodiscard]] uint32_t getGpioMask() const { return m_gpio_mask; };
 
-        bool getState() const { return active; };
+        [[nodiscard]] bool getState() const { return m_active; };
         void setState(bool state, uint8_t debounce_delay);
     };
 
@@ -54,4 +54,4 @@ class PadButtons {
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_PAD_BUTTONS_H_
+#endif // PERIPHERALS_PADBUTTONS_H_

@@ -91,7 +91,7 @@ void Ads124S0x::setFilter(Ads124S0x::Filter filter) {
 void Ads124S0x::setGain(Gain gain) {
     const auto current = readRegister(Register::PGA);
 
-    if (gain == Gain::G0) {
+    if (gain == Gain::Off) {
         // Disable PGA
         writeRegister(Register::PGA, current & 0xE0);
     } else {
@@ -138,21 +138,21 @@ void Ads124S0x::setPositiveReferenceBuffer(bool enable) { setBit(Register::REF, 
 void Ads124S0x::setNegativeReferenceBuffer(bool enable) { setBit(Register::REF, 4, !enable); }
 
 void Ads124S0x::sendCommand(Ads124S0x::Command cmd) {
-    std::array<uint8_t, 1> data_out = {static_cast<uint8_t>(cmd)};
+    const std::array<uint8_t, 1> data_out = {static_cast<uint8_t>(cmd)};
 
     spiWrite(data_out);
 }
 
 uint8_t Ads124S0x::readRegister(Ads124S0x::Register reg) {
-    uint8_t cmd = static_cast<uint8_t>(Command::RREG) | static_cast<uint8_t>(reg);
-    std::array<uint8_t, 3> data_out = {cmd, 0x00, 0x00};
+    const uint8_t cmd = static_cast<uint8_t>(Command::RREG) | static_cast<uint8_t>(reg);
+    const std::array<uint8_t, 3> data_out = {cmd, 0x00, 0x00};
 
     return spiReadWrite(data_out)[2];
 }
 
 void Ads124S0x::writeRegister(Ads124S0x::Register reg, uint8_t value) {
-    uint8_t cmd = static_cast<uint8_t>(Command::WREG) | static_cast<uint8_t>(reg);
-    std::array<uint8_t, 3> data_out = {cmd, 0x00, value};
+    const uint8_t cmd = static_cast<uint8_t>(Command::WREG) | static_cast<uint8_t>(reg);
+    const std::array<uint8_t, 3> data_out = {cmd, 0x00, value};
 
     spiWrite(data_out);
 }

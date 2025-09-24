@@ -1,14 +1,14 @@
-#ifndef _PERIPHERALS_CONTROLLER_H_
-#define _PERIPHERALS_CONTROLLER_H_
+#ifndef PERIPHERALS_CONTROLLER_H_
+#define PERIPHERALS_CONTROLLER_H_
 
 #include "utils/InputState.h"
 
 #include "hardware/i2c.h"
 #include <mcp23017/Mcp23017.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
-#include <stdint.h>
 #include <variant>
 
 namespace Dancecon::Peripherals {
@@ -56,7 +56,7 @@ class Controller {
     };
 
   private:
-    enum class Id {
+    enum class Id : uint8_t {
         UP,
         DOWN,
         LEFT,
@@ -75,19 +75,19 @@ class Controller {
 
     class Button {
       private:
-        uint8_t gpio_pin;
-        uint32_t gpio_mask;
+        uint8_t m_gpio_pin;
+        uint32_t m_gpio_mask;
 
-        uint32_t last_change;
-        bool active;
+        uint32_t m_last_change{0};
+        bool m_active{false};
 
       public:
         Button(uint8_t pin);
 
-        uint8_t getGpioPin() const { return gpio_pin; };
-        uint32_t getGpioMask() const { return gpio_mask; };
+        [[nodiscard]] uint8_t getGpioPin() const { return m_gpio_pin; };
+        [[nodiscard]] uint32_t getGpioMask() const { return m_gpio_mask; };
 
-        bool getState() const { return active; };
+        [[nodiscard]] bool getState() const { return m_active; };
         void setState(bool state, uint8_t debounce_delay);
     };
 
@@ -96,15 +96,17 @@ class Controller {
         Id lastHorizontal;
     };
 
+    // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions): Class has no members
     class GpioInterface {
       public:
+        virtual ~GpioInterface() = default;
         virtual uint32_t read() = 0;
     };
 
     class InternalGpio : public GpioInterface {
       public:
         InternalGpio(const std::map<Id, Button> &buttons);
-        virtual uint32_t read() final;
+        uint32_t read() final;
     };
 
     class ExternalGpio : public GpioInterface {
@@ -113,11 +115,11 @@ class Controller {
 
       public:
         ExternalGpio(const Config::ExternalGpio &config);
-        virtual uint32_t read() final;
+        uint32_t read() final;
     };
 
     Config m_config;
-    SocdState m_socd_state;
+    SocdState m_socd_state{.lastVertical = Id::DOWN, .lastHorizontal = Id::RIGHT};
     std::map<Id, Button> m_buttons;
 
     std::unique_ptr<GpioInterface> m_gpio;
@@ -132,4 +134,4 @@ class Controller {
 
 } // namespace Dancecon::Peripherals
 
-#endif // _PERIPHERALS_CONTROLLER_H_
+#endif // PERIPHERALS_CONTROLLER_H_

@@ -11,12 +11,13 @@
 #include "PS4AuthConfiguration.h"
 
 #include "pico/multicore.h"
-#include "pico/stdlib.h"
 #include "pico/util/queue.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 using namespace Dancecon;
+
+namespace {
 
 queue_t control_queue;
 queue_t menu_display_queue;
@@ -27,7 +28,7 @@ queue_t panel_led_queue;
 queue_t auth_challenge_queue;
 queue_t auth_signed_challenge_queue;
 
-enum class ControlCommand {
+enum class ControlCommand : uint8_t {
     SetUsbMode,
     SetPlayerLed,
     SetLedBrightness,
@@ -67,24 +68,24 @@ void core1_task() {
     gpio_pull_up(Config::Default::i2c_config.scl_pin);
     i2c_init(Config::Default::i2c_config.block, Config::Default::i2c_config.speed_hz);
 
-    Peripherals::StatusLed status_led(Config::Default::status_led_config);
+    const Peripherals::StatusLed status_led(Config::Default::status_led_config);
     Peripherals::Controller controller(Config::Default::controller_config);
     Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT> led(Config::Default::led_config);
     Peripherals::Display display(Config::Default::display_config);
 
     Utils::PS4AuthProvider ps4authprovider;
-    std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge;
+    std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge{};
 
-    Utils::InputState input_state;
-    Utils::MenuState menu_display_msg;
-    ControlMessage control_msg;
-    usb_panel_led_t panel_led;
+    Utils::InputState input_state{};
+    Utils::MenuState menu_display_msg{};
+    ControlMessage control_msg{};
+    usb_panel_led_t panel_led{};
 
     while (true) {
         controller.updateInputState(input_state);
 
-        queue_try_add(&controller_input_queue, &input_state.controller);
-        queue_try_remove(&pad_input_queue, &input_state.pad);
+        queue_try_add(&controller_input_queue, &input_state.getController());
+        queue_try_remove(&pad_input_queue, &input_state.getPad());
 
         if (queue_try_remove(&panel_led_queue, &panel_led)) {
             led.update(panel_led);
@@ -103,8 +104,9 @@ void core1_task() {
                     display.setPlayerId(control_msg.data.player_led.id);
                     break;
                 case USB_PLAYER_LED_COLOR:
-                    led.setPlayerColor({control_msg.data.player_led.red, control_msg.data.player_led.green,
-                                        control_msg.data.player_led.blue});
+                    led.setPlayerColor({.r = control_msg.data.player_led.red,
+                                        .g = control_msg.data.player_led.green,
+                                        .b = control_msg.data.player_led.blue});
                     break;
                 }
                 break;
@@ -154,6 +156,8 @@ void core1_task() {
     }
 }
 
+} // namespace
+
 int main() {
     queue_init(&control_queue, sizeof(ControlMessage), 1);
     queue_init(&menu_display_queue, sizeof(Utils::MenuState), 1);
@@ -164,7 +168,7 @@ int main() {
     queue_init(&auth_signed_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
 
     Utils::InputState input_state;
-    std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response;
+    std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response{};
 
     auto settings_store = std::make_shared<
         Utils::SettingsStore<Config::Default::pad_config.PANEL_COUNT, Config::Default::led_config.PANEL_COUNT>>();
@@ -178,7 +182,8 @@ int main() {
 
     usbd_driver_init(mode);
     usbd_driver_set_player_led_cb([](usb_player_led_t player_led) {
-        const auto ctrl_message = ControlMessage{ControlCommand::SetPlayerLed, {.player_led = player_led}};
+        const auto ctrl_message =
+            ControlMessage{.command = ControlCommand::SetPlayerLed, .data = {.player_led = player_led}};
         queue_try_add(&control_queue, &ctrl_message);
     });
     usbd_driver_set_panel_led_cb([](usb_panel_led_t panel_led) { queue_try_add(&panel_led_queue, &panel_led); });
@@ -194,17 +199,21 @@ int main() {
     const auto readSettings = [&]() {
         const auto sendCtrlMessage = [&](const ControlMessage &msg) { queue_add_blocking(&control_queue, &msg); };
 
-        sendCtrlMessage({ControlCommand::SetUsbMode, {.usb_mode = mode}});
-        sendCtrlMessage({ControlCommand::SetLedBrightness, {.led_brightness = settings_store->getLedBrightness()}});
+        sendCtrlMessage({.command = ControlCommand::SetUsbMode, .data = {.usb_mode = mode}});
+        sendCtrlMessage({.command = ControlCommand::SetLedBrightness,
+                         .data = {.led_brightness = settings_store->getLedBrightness()}});
+        sendCtrlMessage({.command = ControlCommand::SetLedAnimationSpeed,
+                         .data = {.led_animation_speed = settings_store->getLedAnimationSpeed()}});
         sendCtrlMessage(
-            {ControlCommand::SetLedAnimationSpeed, {.led_animation_speed = settings_store->getLedAnimationSpeed()}});
-        sendCtrlMessage({ControlCommand::SetLedIdleMode, {.led_idle_mode = settings_store->getLedIdleMode()}});
-        sendCtrlMessage({ControlCommand::SetLedIdleColors, {.led_idle_colors = settings_store->getLedIdleColors()}});
-        sendCtrlMessage({ControlCommand::SetLedActiveMode, {.led_active_mode = settings_store->getLedActiveMode()}});
-        sendCtrlMessage(
-            {ControlCommand::SetLedActiveColors, {.led_active_colors = settings_store->getLedActiveColors()}});
-        sendCtrlMessage({ControlCommand::SetLedEnablePlayerColor,
-                         {.led_enable_player_color = settings_store->getLedEnablePlayerColor()}});
+            {.command = ControlCommand::SetLedIdleMode, .data = {.led_idle_mode = settings_store->getLedIdleMode()}});
+        sendCtrlMessage({.command = ControlCommand::SetLedIdleColors,
+                         .data = {.led_idle_colors = settings_store->getLedIdleColors()}});
+        sendCtrlMessage({.command = ControlCommand::SetLedActiveMode,
+                         .data = {.led_active_mode = settings_store->getLedActiveMode()}});
+        sendCtrlMessage({.command = ControlCommand::SetLedActiveColors,
+                         .data = {.led_active_colors = settings_store->getLedActiveColors()}});
+        sendCtrlMessage({.command = ControlCommand::SetLedEnablePlayerColor,
+                         .data = {.led_enable_player_color = settings_store->getLedEnablePlayerColor()}});
 
         pad.setDebounceDelay(settings_store->getDebounceDelay());
         pad.setThresholds(settings_store->getTriggerThresholds());
@@ -218,19 +227,19 @@ int main() {
     while (true) {
         pad_buttons.updateInputState(input_state);
         pad.updateInputState(input_state);
-        queue_try_remove(&controller_input_queue, &input_state.controller);
+        queue_try_remove(&controller_input_queue, &input_state.getController());
 
-        const auto pad_message = input_state.pad;
+        const auto pad_message = input_state.getPad();
 
         if (menu.active()) {
-            menu.update(input_state.controller);
+            menu.update(input_state.getController());
             if (menu.active()) {
                 const auto display_msg = menu.getState();
                 queue_add_blocking(&menu_display_queue, &display_msg);
             } else {
                 settings_store->store();
 
-                ControlMessage ctrl_message = {ControlCommand::ExitMenu, {}};
+                ControlMessage ctrl_message = {.command = ControlCommand::ExitMenu, .data = {}};
                 queue_add_blocking(&control_queue, &ctrl_message);
             }
 
@@ -240,7 +249,7 @@ int main() {
         } else if (input_state.checkHotkey()) {
             menu.activate();
 
-            ControlMessage ctrl_message{ControlCommand::EnterMenu, {}};
+            ControlMessage ctrl_message{.command = ControlCommand::EnterMenu, .data = {}};
             queue_add_blocking(&control_queue, &ctrl_message);
         }
 

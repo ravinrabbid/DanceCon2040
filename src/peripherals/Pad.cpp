@@ -13,7 +13,7 @@ namespace Dancecon::Peripherals {
 template class Pad<Config::Default::pad_config.PANEL_COUNT>;
 
 template <size_t TPanelCount> Pad<TPanelCount>::GpioAdc::GpioAdc(const Config::GpioAdc &config) : m_config(config) {
-    for (uint8_t pin_idx = 0; pin_idx < TPanelCount; ++pin_idx) {
+    for (size_t pin_idx = 0; pin_idx < TPanelCount; ++pin_idx) {
         gpio_init(m_config.base_pin + pin_idx);
         gpio_set_dir(m_config.base_pin + pin_idx, GPIO_IN);
         gpio_pull_up(m_config.base_pin + pin_idx);
@@ -23,9 +23,9 @@ template <size_t TPanelCount> Pad<TPanelCount>::GpioAdc::GpioAdc(const Config::G
 template <size_t TPanelCount> std::array<uint16_t, TPanelCount> Pad<TPanelCount>::GpioAdc::read() {
     std::array<uint16_t, TPanelCount> result{};
 
-    uint32_t gpio_state = ~gpio_get_all();
-    for (uint8_t pin_idx = 0; pin_idx < TPanelCount; ++pin_idx) {
-        result[pin_idx] = (gpio_state & (1 << (m_config.base_pin + pin_idx))) ? UINT16_MAX : 0;
+    const uint32_t gpio_state = ~gpio_get_all();
+    for (size_t pin_idx = 0; pin_idx < TPanelCount; ++pin_idx) {
+        result.at(pin_idx) = (gpio_state & (1 << (m_config.base_pin + pin_idx))) ? UINT16_MAX : 0;
     }
 
     return result;
@@ -42,26 +42,29 @@ template <> Pad<4>::InternalAdc::InternalAdc(const Config::InternalAdc &config) 
 }
 
 template <> std::array<uint16_t, 4> Pad<4>::InternalAdc::read() {
+    if (m_config.sample_count == 0) {
+        return {};
+    }
+
     // Oversample ADC inputs to get rid of ADC noise
     std::array<uint32_t, 4> values{};
     for (uint8_t sample_number = 0; sample_number < m_config.sample_count; ++sample_number) {
         for (size_t idx = 0; idx < values.size(); ++idx) {
             adc_select_input(idx);
-            values[idx] += adc_read();
+            values.at(idx) += adc_read();
         }
     }
 
     // Take average of all samples
     std::array<uint16_t, 4> result{};
-    std::transform(values.cbegin(), values.cend(), result.begin(),
-                   [&](const auto &sample) { return sample / m_config.sample_count; });
+    std::ranges::transform(values, result.begin(), [&](const auto &sample) { return sample / m_config.sample_count; });
 
     return result;
 }
 
 template <size_t TPanelCount>
 template <size_t TAdcCount>
-Pad<TPanelCount>::ExternalAdc<TAdcCount>::ExternalAdc(const typename Config::ExternalAdc<TAdcCount> &config) {
+Pad<TPanelCount>::ExternalAdc<TAdcCount>::ExternalAdc(const Config::template ExternalAdc<TAdcCount> &config) {
     // Configure SPI
     gpio_set_function(config.spi.miso_pin, GPIO_FUNC_SPI);
     gpio_set_function(config.spi.mosi_pin, GPIO_FUNC_SPI);
@@ -226,18 +229,16 @@ std::array<uint16_t, TPanelCount> Pad<TPanelCount>::ExternalAdc<TAdcCount>::read
     return result;
 }
 
-template <size_t TPanelCount> Pad<TPanelCount>::Panel::Panel() : last_change(0), active(false) {}
-
 template <size_t TPanelCount> void Pad<TPanelCount>::Panel::setState(const bool state, const uint16_t debounce_delay) {
-    if (active == state) {
+    if (m_active == state) {
         return;
     }
 
     // Immediately change the input state, but only allow a change every debounce_delay milliseconds.
-    uint32_t now = to_ms_since_boot(get_absolute_time());
-    if (last_change + debounce_delay <= now) {
-        active = state;
-        last_change = now;
+    const uint32_t now = to_ms_since_boot(get_absolute_time());
+    if (m_last_change + debounce_delay <= now) {
+        m_active = state;
+        m_last_change = now;
     }
 }
 
@@ -251,7 +252,7 @@ Pad<TPanelCount>::Pad(const Config &config) : m_config(config), m_panels({}), m_
                 m_adc = std::make_unique<GpioAdc>(adc_config);
             } else if constexpr (std::is_same_v<T, typename Config::InternalAdc>) {
                 m_adc = std::make_unique<InternalAdc>(adc_config);
-            } else if constexpr (std::is_same_v<T, typename Config::ExternalAdc<adc_config.ADC_COUNT>>) {
+            } else if constexpr (std::is_same_v<T, typename Config::template ExternalAdc<adc_config.ADC_COUNT>>) {
                 m_adc = std::make_unique<ExternalAdc<adc_config.ADC_COUNT>>(adc_config);
             } else {
                 static_assert(false, "Unknown ADC type!");
@@ -296,22 +297,23 @@ template <size_t TPanelCount> void Pad<TPanelCount>::updateInputState(Utils::Inp
         input.triggered = m_panels[channel].getState();
     };
 
+    auto &pad = input_state.getPad();
     if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-        update_input(input_state.pad.up, m_config.adc_channels.up, m_config.thresholds.up);
-        update_input(input_state.pad.left, m_config.adc_channels.left, m_config.thresholds.left);
-        update_input(input_state.pad.right, m_config.adc_channels.right, m_config.thresholds.right);
-        update_input(input_state.pad.down, m_config.adc_channels.down, m_config.thresholds.down);
+        update_input(pad.up, m_config.adc_channels.up, m_config.thresholds.up);
+        update_input(pad.left, m_config.adc_channels.left, m_config.thresholds.left);
+        update_input(pad.right, m_config.adc_channels.right, m_config.thresholds.right);
+        update_input(pad.down, m_config.adc_channels.down, m_config.thresholds.down);
     }
     if constexpr (TPanelCount == 5 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
-        update_input(input_state.pad.up_left, m_config.adc_channels.up_left, m_config.thresholds.up_left);
-        update_input(input_state.pad.up_right, m_config.adc_channels.up_right, m_config.thresholds.up_right);
+        update_input(pad.up_left, m_config.adc_channels.up_left, m_config.thresholds.up_left);
+        update_input(pad.up_right, m_config.adc_channels.up_right, m_config.thresholds.up_right);
     }
     if constexpr (TPanelCount == 8 || TPanelCount == 9) {
-        update_input(input_state.pad.down_left, m_config.adc_channels.down_left, m_config.thresholds.down_left);
-        update_input(input_state.pad.down_right, m_config.adc_channels.down_right, m_config.thresholds.down_right);
+        update_input(pad.down_left, m_config.adc_channels.down_left, m_config.thresholds.down_left);
+        update_input(pad.down_right, m_config.adc_channels.down_right, m_config.thresholds.down_right);
     }
     if constexpr (TPanelCount == 9) {
-        update_input(input_state.pad.center, m_config.adc_channels.center, m_config.thresholds.center);
+        update_input(pad.center, m_config.adc_channels.center, m_config.thresholds.center);
     }
 }
 

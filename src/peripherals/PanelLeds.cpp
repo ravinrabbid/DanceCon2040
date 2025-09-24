@@ -13,21 +13,21 @@ namespace Dancecon::Peripherals {
 template class PanelLeds<Config::Default::led_config.PANEL_COUNT>;
 
 namespace {
-const static uint32_t pulse_step_count = 4096;
-static const uint8_t pulse_dim_percent_min = 40;
-static const uint8_t pulse_dim_percent_max = 100;
+const uint32_t pulse_step_count = 4096;
+const uint8_t pulse_dim_percent_min = 40;
+const uint8_t pulse_dim_percent_max = 100;
 
-const static uint32_t rainbow_step_count = 4096;
+const uint32_t rainbow_step_count = 4096;
 
-const static uint32_t fade_step_count = 2048;
+const uint32_t fade_step_count = 2048;
 
-const static uint32_t blend_step_count = 128;
+const uint32_t blend_step_count = 128;
 
-const static size_t rainbow_length = 40;
+const size_t rainbow_length = 40;
 
 // Use alternating frames to allow for smoother animation
 template <size_t TPanelCount>
-const static std::array<std::array<typename PanelLeds<TPanelCount>::Config::Color, rainbow_length>, 2> rainbow_colors{{
+const std::array<std::array<typename PanelLeds<TPanelCount>::Config::Color, rainbow_length>, 2> rainbow_colors{{
     {{
         {0x5a, 0x3a, 0xc6}, {0x76, 0x36, 0xaa}, {0x91, 0x34, 0x8e}, {0xad, 0x30, 0x72}, {0xca, 0x2e, 0x56},
         {0xe6, 0x2a, 0x3a}, {0xf2, 0x2f, 0x2b}, {0xe6, 0x42, 0x33}, {0xce, 0x5c, 0x46}, {0xb6, 0x74, 0x59},
@@ -50,19 +50,23 @@ const static std::array<std::array<typename PanelLeds<TPanelCount>::Config::Colo
     }},
 }};
 
-struct AnimationStepper {
-    const uint32_t steps_to_advance;
-    uint32_t current_steps;
+class AnimationStepper {
+  private:
+    uint32_t m_steps_to_advance;
+    uint32_t m_current_steps{0};
+
+  public:
+    AnimationStepper(uint32_t steps_to_advance) : m_steps_to_advance(steps_to_advance) {};
 
     uint32_t advance(uint32_t steps) {
-        current_steps += steps;
-        if (current_steps < steps_to_advance) {
+        m_current_steps += steps;
+
+        if (m_current_steps < m_steps_to_advance) {
             return 0;
         }
 
-        const auto advance = current_steps / steps_to_advance;
-
-        current_steps %= steps_to_advance;
+        const auto advance = m_current_steps / m_steps_to_advance;
+        m_current_steps %= m_steps_to_advance;
 
         return advance;
     }
@@ -88,10 +92,12 @@ PanelLeds<TPanelCount>::Config::Color max_color(const typename PanelLeds<TPanelC
     };
 }
 
+// NOLINTNEXTLINE(clang-diagnostic-unneeded-internal-declaration): https://github.com/llvm/llvm-project/issues/117000
 bool is_pad_triggered(const Utils::InputState &input_state) {
-    return input_state.pad.up_left.triggered || input_state.pad.up.triggered || input_state.pad.up_right.triggered ||
-           input_state.pad.left.triggered || input_state.pad.center.triggered || input_state.pad.right.triggered ||
-           input_state.pad.down_left.triggered || input_state.pad.down.triggered || input_state.pad.down_left.triggered;
+    const auto &pad = input_state.getPad();
+    return pad.up_left.triggered || pad.up.triggered || pad.up_right.triggered || pad.left.triggered ||
+           pad.center.triggered || pad.right.triggered || pad.down_left.triggered || pad.down.triggered ||
+           pad.down_right.triggered;
 }
 
 template <size_t TPanelCount>
@@ -147,46 +153,47 @@ template <size_t TPanelCount>
 uint16_t get_active_bitvector(const typename PanelLeds<TPanelCount>::Config::PanelOrder order,
                               const Utils::InputState &input_state) {
     uint16_t result = 0;
+    const auto &pad = input_state.getPad();
 
     using T = std::decay_t<decltype(order)>;
 
     if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderFourPanel>) {
-        result |= (input_state.pad.up.triggered << order.up);
-        result |= (input_state.pad.left.triggered << order.left);
-        result |= (input_state.pad.right.triggered << order.right);
-        result |= (input_state.pad.down.triggered << order.down);
+        result |= (pad.up.triggered << order.up);
+        result |= (pad.left.triggered << order.left);
+        result |= (pad.right.triggered << order.right);
+        result |= (pad.down.triggered << order.down);
     } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderFivePanel>) {
-        result |= (input_state.pad.up_left.triggered << order.up_left);
-        result |= (input_state.pad.up_right.triggered << order.up_right);
-        result |= (input_state.pad.center.triggered << order.center);
-        result |= (input_state.pad.down_left.triggered << order.down_left);
-        result |= (input_state.pad.down_right.triggered << order.down_right);
+        result |= (pad.up_left.triggered << order.up_left);
+        result |= (pad.up_right.triggered << order.up_right);
+        result |= (pad.center.triggered << order.center);
+        result |= (pad.down_left.triggered << order.down_left);
+        result |= (pad.down_right.triggered << order.down_right);
     } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderSixPanel>) {
-        result |= (input_state.pad.up_left.triggered << order.up_left);
-        result |= (input_state.pad.up.triggered << order.up);
-        result |= (input_state.pad.up_right.triggered << order.up_right);
-        result |= (input_state.pad.left.triggered << order.left);
-        result |= (input_state.pad.right.triggered << order.right);
-        result |= (input_state.pad.down.triggered << order.down);
+        result |= (pad.up_left.triggered << order.up_left);
+        result |= (pad.up.triggered << order.up);
+        result |= (pad.up_right.triggered << order.up_right);
+        result |= (pad.left.triggered << order.left);
+        result |= (pad.right.triggered << order.right);
+        result |= (pad.down.triggered << order.down);
     } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderEightPanel>) {
-        result |= (input_state.pad.up_left.triggered << order.up_left);
-        result |= (input_state.pad.up.triggered << order.up);
-        result |= (input_state.pad.up_right.triggered << order.up_right);
-        result |= (input_state.pad.left.triggered << order.left);
-        result |= (input_state.pad.right.triggered << order.right);
-        result |= (input_state.pad.down_left.triggered << order.down_left);
-        result |= (input_state.pad.down.triggered << order.down);
-        result |= (input_state.pad.down_right.triggered << order.down_right);
+        result |= (pad.up_left.triggered << order.up_left);
+        result |= (pad.up.triggered << order.up);
+        result |= (pad.up_right.triggered << order.up_right);
+        result |= (pad.left.triggered << order.left);
+        result |= (pad.right.triggered << order.right);
+        result |= (pad.down_left.triggered << order.down_left);
+        result |= (pad.down.triggered << order.down);
+        result |= (pad.down_right.triggered << order.down_right);
     } else if constexpr (std::is_same_v<T, typename PanelLeds<TPanelCount>::Config::OrderNinePanel>) {
-        result |= (input_state.pad.up_left.triggered << order.up_left);
-        result |= (input_state.pad.up.triggered << order.up);
-        result |= (input_state.pad.up_right.triggered << order.up_right);
-        result |= (input_state.pad.left.triggered << order.left);
-        result |= (input_state.pad.center.triggered << order.center);
-        result |= (input_state.pad.right.triggered << order.right);
-        result |= (input_state.pad.down_left.triggered << order.down_left);
-        result |= (input_state.pad.down.triggered << order.down);
-        result |= (input_state.pad.down_right.triggered << order.down_right);
+        result |= (pad.up_left.triggered << order.up_left);
+        result |= (pad.up.triggered << order.up);
+        result |= (pad.up_right.triggered << order.up_right);
+        result |= (pad.left.triggered << order.left);
+        result |= (pad.center.triggered << order.center);
+        result |= (pad.right.triggered << order.right);
+        result |= (pad.down_left.triggered << order.down_left);
+        result |= (pad.down.triggered << order.down);
+        result |= (pad.down_right.triggered << order.down_right);
     } else {
         static_assert(false, "Unknown Panel count!");
     }
@@ -197,24 +204,22 @@ uint16_t get_active_bitvector(const typename PanelLeds<TPanelCount>::Config::Pan
 } // namespace
 
 template <size_t TPanelCount>
-PanelLeds<TPanelCount>::PanelLeds(const PanelLeds<TPanelCount>::Config &config)
-    : m_config(config), m_input_state({}), m_idle_buffer({}), m_active_buffer({}), m_direct_buffer({}),
-      m_player_color(std::nullopt), m_direct_mode(false) {
+PanelLeds<TPanelCount>::PanelLeds(const PanelLeds<TPanelCount>::Config &config) : m_config(config) {
     m_rendered_frame = std::vector<uint32_t>(TPanelCount * config.leds_per_panel, ws2812_rgb_to_u32pixel(0, 0, 0));
 
     ws2812_init(pio0, config.led_pin, m_config.is_rgbw);
 }
 
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::setBrightness(uint8_t brightness) {
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::setBrightness(const uint8_t brightness) {
     m_config.brightness = brightness;
 }
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::setAnimationSpeed(uint8_t speed) {
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::setAnimationSpeed(const uint8_t speed) {
     m_config.animation_speed = speed;
 };
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::setIdleMode(Config::IdleMode mode) {
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::setIdleMode(const Config::IdleMode mode) {
     m_config.idle_mode = mode;
 };
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::setActiveMode(Config::ActiveMode mode) {
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::setActiveMode(const Config::ActiveMode mode) {
     m_config.active_mode = mode;
 };
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::setIdleColors(const Config::PanelColors &colors) {
@@ -223,10 +228,10 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::setIdleColors(const C
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::setActiveColors(const Config::PanelColors &colors) {
     m_config.active_colors = colors;
 };
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::setEnablePlayerColor(bool do_enable) {
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::setEnablePlayerColor(const bool do_enable) {
     m_config.enable_player_color = do_enable;
 };
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::setEnableHidLights(bool do_enable) {
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::setEnableHidLights(const bool do_enable) {
     m_config.enable_hid_lights = do_enable;
 };
 
@@ -237,14 +242,14 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::setPlayerColor(const 
     m_player_color = color;
 }
 
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateIdle(uint32_t steps) {
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateIdle(const uint32_t steps) {
     // Pulse
-    static AnimationStepper pulse_stepper{pulse_step_count, 0};
+    static AnimationStepper pulse_stepper{pulse_step_count};
     static uint8_t pulse_dim_percent = pulse_dim_percent_max;
     static int8_t pulse_advance_factor = -1;
 
     // Rainbow
-    static AnimationStepper rainbow_stepper{rainbow_step_count, 0};
+    static AnimationStepper rainbow_stepper{rainbow_step_count};
     static size_t rainbow_position = get_rand_32() % rainbow_length;
 
     if (steps <= 0) {
@@ -271,10 +276,10 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateIdle(uint32_t s
 
         if (pulse_advance_factor < 0 && advance >= (uint8_t)(pulse_dim_percent - pulse_dim_percent_min)) {
             pulse_dim_percent = pulse_dim_percent_min;
-            pulse_advance_factor = -pulse_advance_factor;
+            pulse_advance_factor = (int8_t)(-pulse_advance_factor);
         } else if (pulse_advance_factor > 0 && advance + pulse_dim_percent >= pulse_dim_percent_max) {
             pulse_dim_percent = pulse_dim_percent_max;
-            pulse_advance_factor = -pulse_advance_factor;
+            pulse_advance_factor = (int8_t)(-pulse_advance_factor);
         } else {
             pulse_dim_percent = pulse_dim_percent + (pulse_advance_factor * advance);
         }
@@ -296,8 +301,8 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateIdle(uint32_t s
     }
 }
 
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateActive(uint32_t steps) {
-    static AnimationStepper fade_stepper{fade_step_count, 0};
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateActive(const uint32_t steps) {
+    static AnimationStepper fade_stepper{fade_step_count};
     static std::array<uint8_t, TPanelCount> fade_percent = {};
     static std::array<typename Config::Color, TPanelCount> active_colors = {};
 
@@ -349,8 +354,8 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateActive(uint32_t
     }
 }
 
-template <size_t TPanelCount> void PanelLeds<TPanelCount>::render(uint32_t steps) {
-    static AnimationStepper blend_stepper{blend_step_count, 0};
+template <size_t TPanelCount> void PanelLeds<TPanelCount>::render(const uint32_t steps) {
+    static AnimationStepper blend_stepper{blend_step_count};
     static uint8_t blend_percent = 100;
 
     const auto blend_advance = blend_stepper.advance(steps);
@@ -360,8 +365,8 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::render(uint32_t steps
         blend_percent = blend_advance + blend_percent > 100 ? 100 : blend_percent + blend_advance;
     }
 
-    const float brightness_dim_factor = (float)m_config.brightness / 255.;
-    const float blend_dim_factor = (float)blend_percent / 100.;
+    const auto brightness_dim_factor = (float)m_config.brightness / 255.;
+    const auto blend_dim_factor = (float)blend_percent / 100.;
 
     size_t idx = 0;
     for (auto &rendered_segment : m_rendered_frame) {
@@ -456,7 +461,7 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::update(const usb_pane
         static_assert(false, "Unknown Panel count!");
     }
 
-    const float brightness_dim_factor = (float)m_config.brightness / 255.;
+    const auto brightness_dim_factor = (float)m_config.brightness / 255.;
 
     size_t idx = 0;
     for (auto &rendered_segment : m_rendered_frame) {

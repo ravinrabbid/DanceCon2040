@@ -11,6 +11,7 @@ template class Menu<Config::Default::pad_config.PANEL_COUNT, Config::Default::le
 
 namespace {
 
+// NOLINTBEGIN(modernize-use-designated-initializers)
 template <size_t TPanelLedsCount> const MenuDescriptor thresholds_descriptor = {};
 template <>
 const MenuDescriptor thresholds_descriptor<4> = {                         //
@@ -189,6 +190,7 @@ const MenuDescriptor active_colors_descriptor<9> = {                          //
      {"Down", MenuDescriptor::Action::GotoPageLedActiveColorDown},            //
      {"Down Right", MenuDescriptor::Action::GotoPageLedActiveColorDownLeft}}, //
     0};
+// NOLINTEND(modernize-use-designated-initializers)
 
 template <size_t TPanelCount>
 uint16_t getThresholdValue(const MenuPage page,
@@ -405,8 +407,6 @@ void setThresholdValue(const MenuPage page, const uint16_t value,
             break;
         }
     }
-
-    return;
 }
 
 template <size_t TPanelLedsCount>
@@ -544,8 +544,6 @@ void setLedColorValue(const MenuPage page, const uint8_t value,
             break;
         }
     }
-
-    return;
 }
 
 template <size_t TPanelCount>
@@ -602,8 +600,6 @@ void setThresholdValue(const MenuDescriptor::Action action, const uint16_t value
             break;
         }
     }
-
-    return;
 }
 
 template <size_t TPanelLedsCount>
@@ -741,13 +737,12 @@ void setLedColorValue(const MenuDescriptor::Action action, const uint8_t value,
             break;
         }
     }
-
-    return;
 }
 
+// NOLINTNEXTLINE(clang-diagnostic-unneeded-internal-declaration): https://github.com/llvm/llvm-project/issues/117000
 InputState::Controller checkPressed(const InputState::Controller &controller_state) {
     struct ButtonState {
-        enum State {
+        enum State : uint8_t {
             Idle,
             RepeatDelay,
             Repeat,
@@ -763,23 +758,22 @@ InputState::Controller checkPressed(const InputState::Controller &controller_sta
     static const uint32_t fast_repeat_delay = 5000;
     static const uint32_t fast_repeat_interval = 2;
 
-    static ButtonState state_north = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_east = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_south = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_west = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_north = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
+    static ButtonState state_east = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
+    static ButtonState state_south = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
+    static ButtonState state_west = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
 
-    static ButtonState state_up = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_down = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_left = {ButtonState::State::Idle, 0, 0};
-    static ButtonState state_right = {ButtonState::State::Idle, 0, 0};
+    static ButtonState state_up = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
+    static ButtonState state_down = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
+    static ButtonState state_left = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
+    static ButtonState state_right = {.state = ButtonState::State::Idle, .pressed_since = 0, .last_repeat = 0};
 
-    InputState::Controller result{{false, false, false, false},
-                                  {false, false, false, false, false, false, false, false, false, false}};
+    InputState::Controller result{};
 
     auto handle_button = [](ButtonState &button_state, bool input_state) {
         bool result = false;
         if (input_state) {
-            uint32_t now = to_ms_since_boot(get_absolute_time());
+            const uint32_t now = to_ms_since_boot(get_absolute_time());
             switch (button_state.state) {
             case ButtonState::State::Idle:
                 result = true;
@@ -1447,12 +1441,11 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount, TPanelLedsCount
 template <size_t TPanelCount, size_t TPanelLedsCount>
 Menu<TPanelCount, TPanelLedsCount>::Menu(
     const std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> settings_store,
-    const Menu<TPanelCount, TPanelLedsCount>::calibration_callback_t &calibration_callback)
-    : m_store(settings_store), m_active(false), m_state_stack({{MenuPage::Main, 0, 0}}),
-      m_calibration_callback(calibration_callback){};
+    Menu<TPanelCount, TPanelLedsCount>::calibration_callback_t calibration_callback)
+    : m_store(settings_store), m_calibration_callback(std::move(calibration_callback)){};
 
 template <size_t TPanelCount, size_t TPanelLedsCount> void Menu<TPanelCount, TPanelLedsCount>::activate() {
-    m_state_stack = std::stack<MenuState>({{MenuPage::Main, 0, 0}});
+    m_state_stack = std::stack<MenuState>({{.page = MenuPage::Main, .selected_value = 0, .original_value = 0}});
     m_active = true;
 }
 
@@ -1579,14 +1572,15 @@ uint16_t Menu<TPanelCount, TPanelLedsCount>::getCurrentValue(MenuPage page) {
     return 0;
 }
 
-template <size_t TPanelCount, size_t TPanelLedsCount> void Menu<TPanelCount, TPanelLedsCount>::gotoPage(MenuPage page) {
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void Menu<TPanelCount, TPanelLedsCount>::gotoPage(const MenuPage page) {
     const auto current_value = getCurrentValue(page);
 
-    m_state_stack.push({page, current_value, current_value});
+    m_state_stack.push({.page = page, .selected_value = current_value, .original_value = current_value});
 }
 
 template <size_t TPanelCount, size_t TPanelLedsCount>
-void Menu<TPanelCount, TPanelLedsCount>::gotoParent(bool do_restore) {
+void Menu<TPanelCount, TPanelLedsCount>::gotoParent(const bool do_restore) {
     const auto current_state = m_state_stack.top();
 
     if (current_state.page == MenuPage::Main) {
@@ -1737,7 +1731,7 @@ void Menu<TPanelCount, TPanelLedsCount>::gotoParent(bool do_restore) {
 }
 
 template <size_t TPanelCount, size_t TPanelLedsCount>
-void Menu<TPanelCount, TPanelLedsCount>::performAction(MenuDescriptor::Action action, uint16_t value) {
+void Menu<TPanelCount, TPanelLedsCount>::performAction(const MenuDescriptor::Action action, const uint16_t value) {
     switch (action) {
     case MenuDescriptor::Action::None:
         break;
@@ -2152,13 +2146,11 @@ void Menu<TPanelCount, TPanelLedsCount>::performAction(MenuDescriptor::Action ac
         gotoPage(MenuPage::BootselMsg);
         break;
     }
-
-    return;
 }
 
 template <size_t TPanelCount, size_t TPanelLedsCount>
 void Menu<TPanelCount, TPanelLedsCount>::update(const InputState::Controller &controller_state) {
-    InputState::Controller pressed = checkPressed(controller_state);
+    const InputState::Controller pressed = checkPressed(controller_state);
     auto &current_state = m_state_stack.top();
 
     auto descriptor_it = descriptors.find(current_state.page);
@@ -2172,7 +2164,7 @@ void Menu<TPanelCount, TPanelLedsCount>::update(const InputState::Controller &co
     } else if (pressed.dpad.left) {
         switch (descriptor_it->second.type) {
         case MenuDescriptor::Type::Toggle:
-            current_state.selected_value = !current_state.selected_value;
+            current_state.selected_value = (current_state.selected_value == 0 ? 1 : 0);
             performAction(descriptor_it->second.items.at(0).second, current_state.selected_value);
             break;
         case MenuDescriptor::Type::Selection:
@@ -2198,7 +2190,7 @@ void Menu<TPanelCount, TPanelLedsCount>::update(const InputState::Controller &co
     } else if (pressed.dpad.right) {
         switch (descriptor_it->second.type) {
         case MenuDescriptor::Type::Toggle:
-            current_state.selected_value = !current_state.selected_value;
+            current_state.selected_value = (current_state.selected_value == 0 ? 1 : 0);
             performAction(descriptor_it->second.items.at(0).second, current_state.selected_value);
             break;
         case MenuDescriptor::Type::Selection:

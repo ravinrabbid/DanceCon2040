@@ -10,50 +10,52 @@
 #include "class/hid/hid_device.h"
 #include "tusb.h"
 
-uint16_t tud_hid_get_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
+uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t *buffer,
                                uint16_t reqlen) {
     switch (usbd_driver_get_mode()) {
     case USB_MODE_SWITCH_HORIPAD:
-        return hid_switch_get_report_cb(itf, report_id, report_type, buffer, reqlen);
+        return hid_switch_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     case USB_MODE_PS3_DANCE:
     case USB_MODE_DUALSHOCK3:
-        return hid_ps3_get_report_cb(itf, report_id, report_type, buffer, reqlen);
+        return hid_ps3_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     case USB_MODE_DUALSHOCK4:
     case USB_MODE_PS4_COMPAT:
-        return hid_ps4_get_report_cb(itf, report_id, report_type, buffer, reqlen);
+        return hid_ps4_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     case USB_MODE_KEYBOARD_P1:
     case USB_MODE_KEYBOARD_P2:
-        return hid_keyboard_get_report_cb(itf, report_id, report_type, buffer, reqlen);
+        return hid_keyboard_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     case USB_MODE_SPICE2X:
-        return hid_spice2x_get_report_cb(itf, report_id, report_type, buffer, reqlen);
+        return hid_spice2x_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     default:
+        break;
     }
 
     return 0;
 }
 
-void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer,
+void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer,
                            uint16_t bufsize) {
     switch (usbd_driver_get_mode()) {
     case USB_MODE_SWITCH_HORIPAD:
-        hid_switch_set_report_cb(itf, report_id, report_type, buffer, bufsize);
+        hid_switch_set_report_cb(instance, report_id, report_type, buffer, bufsize);
         break;
     case USB_MODE_PS3_DANCE:
     case USB_MODE_DUALSHOCK3:
-        hid_ps3_set_report_cb(itf, report_id, report_type, buffer, bufsize);
+        hid_ps3_set_report_cb(instance, report_id, report_type, buffer, bufsize);
         break;
     case USB_MODE_DUALSHOCK4:
     case USB_MODE_PS4_COMPAT:
-        hid_ps4_set_report_cb(itf, report_id, report_type, buffer, bufsize);
+        hid_ps4_set_report_cb(instance, report_id, report_type, buffer, bufsize);
         break;
     case USB_MODE_KEYBOARD_P1:
     case USB_MODE_KEYBOARD_P2:
-        hid_keyboard_set_report_cb(itf, report_id, report_type, buffer, bufsize);
+        hid_keyboard_set_report_cb(instance, report_id, report_type, buffer, bufsize);
         break;
     case USB_MODE_SPICE2X:
-        hid_spice2x_set_report_cb(itf, report_id, report_type, buffer, bufsize);
+        hid_spice2x_set_report_cb(instance, report_id, report_type, buffer, bufsize);
         break;
     default:
+        break;
     }
 }
 
@@ -64,13 +66,13 @@ bool hid_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t c
     if (stage == CONTROL_STAGE_SETUP && request->bmRequestType == 0xA1 &&
         request->bRequest == HID_REQ_CONTROL_GET_REPORT && request->wValue == 0x0300) {
         return tud_hid_report(0, magic_init_bytes, sizeof(magic_init_bytes));
-    } else {
-        return hidd_control_xfer_cb(rhport, stage, request);
     }
+
+    return hidd_control_xfer_cb(rhport, stage, request);
 }
 
-uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
-    (void)itf;
+uint8_t const *tud_hid_descriptor_report_cb(uint8_t instance) {
+    (void)instance;
 
     switch (usbd_driver_get_mode()) {
     case USB_MODE_SWITCH_HORIPAD:
@@ -87,6 +89,7 @@ uint8_t const *tud_hid_descriptor_report_cb(uint8_t itf) {
     case USB_MODE_SPICE2X:
         return spice2x_desc_hid_report;
     default:
+        break;
     }
 
     return NULL;

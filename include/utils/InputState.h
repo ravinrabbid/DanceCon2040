@@ -1,5 +1,5 @@
-#ifndef _UTILS_INPUTSTATE_H_
-#define _UTILS_INPUTSTATE_H_
+#ifndef UTILS_INPUTSTATE_H_
+#define UTILS_INPUTSTATE_H_
 
 #include "usb/device/hid/keyboard_driver.h"
 #include "usb/device/hid/ps3_driver.h"
@@ -9,7 +9,7 @@
 #include "usb/device/vendor/xinput_driver.h"
 #include "usb/device_driver.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 namespace Dancecon::Utils {
@@ -41,23 +41,21 @@ struct InputState {
         Buttons buttons;
     };
 
-  public:
-    Pad pad;
-    Controller controller;
-
   private:
-    enum class Player {
+    enum class Player : uint8_t {
         One,
         Two,
     };
 
-  private:
-    hid_switch_report_t m_switch_report;
-    hid_ps3_report_t m_ps3_report;
-    hid_ps4_report_t m_ps4_report;
-    hid_nkro_keyboard_report_t m_keyboard_report;
-    xinput_report_t m_xinput_report;
-    hid_spice2x_report_t m_spice2x_report;
+    Pad m_pad{};
+    Controller m_controller{};
+
+    hid_switch_report_t m_switch_report{};
+    hid_ps3_report_t m_ps3_report{};
+    hid_ps4_report_t m_ps4_report{};
+    hid_nkro_keyboard_report_t m_keyboard_report{};
+    xinput_report_t m_xinput_report{};
+    hid_spice2x_report_t m_spice2x_report{};
     std::string m_debug_report;
 
     usb_report_t getSwitchReport();
@@ -69,15 +67,20 @@ struct InputState {
     usb_report_t getDebugReport();
 
   public:
-    InputState();
+    InputState() = default;
+
+    [[nodiscard]] Pad &getPad() { return m_pad; };
+    [[nodiscard]] const Pad &getPad() const { return m_pad; };
+    [[nodiscard]] Controller &getController() { return m_controller; };
+    [[nodiscard]] const Controller &getController() const { return m_controller; };
 
     usb_report_t getReport(usb_mode_t mode);
 
     void releaseAll();
 
-    bool checkHotkey();
+    [[nodiscard]] bool checkHotkey() const;
 };
 
 } // namespace Dancecon::Utils
 
-#endif // _UTILS_INPUTSTATE_H_
+#endif // UTILS_INPUTSTATE_H_
