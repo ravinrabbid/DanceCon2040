@@ -43,6 +43,7 @@ usb_report_t InputState::getReport(const usb_mode_t mode) {
     case USB_MODE_SWITCH_HORIPAD:
         return getSwitchReport();
     case USB_MODE_PS3_DANCE:
+        return getPS3DancePadInputReport();
     case USB_MODE_DUALSHOCK3:
         return getPS3InputReport();
     case USB_MODE_DUALSHOCK4:
@@ -90,6 +91,44 @@ usb_report_t InputState::getSwitchReport() {
     m_switch_report.ry = 0x80;
 
     return {reinterpret_cast<uint8_t *>(&m_switch_report), sizeof(hid_switch_report_t)};
+}
+
+usb_report_t InputState::getPS3DancePadInputReport() {
+    m_ps3_dance_pad_report.buttons1 =
+        0                                                                            //
+        | ((m_controller.buttons.west || m_pad.down_right.triggered) ? (1 << 0) : 0) // Square
+        | ((m_controller.buttons.south || m_pad.up_right.triggered) ? (1 << 1) : 0)  // Cross
+        | ((m_controller.buttons.east || m_pad.up_left.triggered) ? (1 << 2) : 0)    // Circle
+        | ((m_controller.buttons.north || m_pad.down_left.triggered) ? (1 << 3) : 0) // Triangle
+        | (m_controller.buttons.l ? (1 << 4) : 0)                                    // L1
+        | (m_controller.buttons.r ? (1 << 5) : 0);                                   // R1
+
+    m_ps3_dance_pad_report.buttons2 = 0 | (m_controller.buttons.select ? (1 << 0) : 0) // Start
+                                      | (m_controller.buttons.start ? (1 << 1) : 0)    // Select
+                                      | (m_controller.buttons.home ? (1 << 4) : 0);    // Home
+
+    m_ps3_dance_pad_report.hat = getHidHat(m_controller.dpad);
+
+    m_ps3_dance_pad_report.x = 0x80;
+    m_ps3_dance_pad_report.y = 0x80;
+    m_ps3_dance_pad_report.z = 0x80;
+    m_ps3_dance_pad_report.rz = 0x80;
+
+    m_ps3_dance_pad_report.vendor_right = ((m_controller.dpad.right || m_pad.right.triggered) ? 0xFF : 0);
+    m_ps3_dance_pad_report.vendor_left = ((m_controller.dpad.left || m_pad.left.triggered) ? 0xFF : 0);
+    m_ps3_dance_pad_report.vendor_up = ((m_controller.dpad.up || m_pad.up.triggered) ? 0xFF : 0);
+    m_ps3_dance_pad_report.vendor_down = ((m_controller.dpad.down || m_pad.down.triggered) ? 0xFF : 0);
+    m_ps3_dance_pad_report.vendor_north = ((m_controller.buttons.north || m_pad.down_left.triggered) ? 0xFF : 0);
+    m_ps3_dance_pad_report.vendor_east = ((m_controller.buttons.east || m_pad.up_left.triggered) ? 0xFF : 0);
+    m_ps3_dance_pad_report.vendor_south = ((m_controller.buttons.south || m_pad.up_right.triggered) ? 0xFF : 0);
+    m_ps3_dance_pad_report.vendor_west = ((m_controller.buttons.west || m_pad.down_right.triggered) ? 0xFF : 0);
+
+    m_ps3_dance_pad_report.vendor_0x2C = 0x0200;
+    m_ps3_dance_pad_report.vendor_0x2D = 0x0200;
+    m_ps3_dance_pad_report.vendor_0x2E = 0x0200;
+    m_ps3_dance_pad_report.vendor_0x2F = 0x0200;
+
+    return {reinterpret_cast<uint8_t *>(&m_ps3_dance_pad_report), sizeof(hid_ps3_dance_pad_report_t)};
 }
 
 usb_report_t InputState::getPS3InputReport() {

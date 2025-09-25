@@ -23,23 +23,6 @@ const tusb_desc_device_t ds3_desc_device = {
     .bNumConfigurations = 1,
 };
 
-const tusb_desc_device_t ps3_desc_dance_pad_device = {
-    .bLength = sizeof(tusb_desc_device_t),
-    .bDescriptorType = TUSB_DESC_DEVICE,
-    .bcdUSB = 0x0200,
-    .bDeviceClass = TUSB_CLASS_UNSPECIFIED,
-    .bDeviceSubClass = 0x00,
-    .bDeviceProtocol = 0x00,
-    .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
-    .idVendor = 0x1CCF,
-    .idProduct = 0x1010,
-    .bcdDevice = 0x0100,
-    .iManufacturer = USBD_STR_MANUFACTURER,
-    .iProduct = USBD_STR_PRODUCT,
-    .iSerialNumber = USBD_STR_SERIAL,
-    .bNumConfigurations = 1,
-};
-
 enum {
     USBD_ITF_HID,
     USBD_ITF_MAX,
@@ -269,10 +252,7 @@ void hid_ps3_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t rep
                 hid_ps3_ouput_report_t *report = (hid_ps3_ouput_report_t *)buffer;
 
                 usb_player_led_t player_led = {.type = USB_PLAYER_LED_ID, .id = 0};
-                player_led.id = 0 | ((report->leds_bitmap & 0x02) ? (1 << 0) : 0) //
-                                | ((report->leds_bitmap & 0x04) ? (1 << 1) : 0)   //
-                                | ((report->leds_bitmap & 0x08) ? (1 << 2) : 0)   //
-                                | ((report->leds_bitmap & 0x10) ? (1 << 3) : 0);
+                player_led.id = (report->leds_bitmap >> 1) & 0x0F;
 
                 usbd_driver_get_player_led_cb()(player_led);
             }
@@ -296,16 +276,4 @@ const usbd_driver_t *get_hid_ds3_device_driver() {
         .send_report = send_hid_ps3_report,
     };
     return &hid_ds3_device_driver;
-}
-
-const usbd_driver_t *get_hid_ps3_dance_pad_device_driver() {
-    static const usbd_driver_t hid_ps3_dance_pad_device_driver = {
-        .name = "PS3 Dance Pad",
-        .app_driver = &hid_app_driver,
-        .desc_device = &ps3_desc_dance_pad_device,
-        .desc_cfg = ps3_desc_cfg,
-        .desc_bos = NULL,
-        .send_report = send_hid_ps3_report,
-    };
-    return &hid_ps3_dance_pad_device_driver;
 }
