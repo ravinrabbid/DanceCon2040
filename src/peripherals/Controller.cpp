@@ -40,7 +40,7 @@ Controller::ExternalGpio::ExternalGpio(const Config::ExternalGpio &config)
 uint32_t Controller::ExternalGpio::read() { return m_mcp23017.read(); }
 
 void Controller::socdClean(Utils::InputState &input_state) {
-    auto &controller = input_state.getController();
+    auto &controller = input_state.controller;
 
     // Last input has priority
     if (controller.dpad.up && controller.dpad.down) {
@@ -106,7 +106,7 @@ void Controller::updateInputState(Utils::InputState &input_state) {
         button.second.setState((bool)(gpio_state & button.second.getGpioMask()), m_config.debounce_delay_ms);
     }
 
-    auto &controller = input_state.getController();
+    auto &controller = input_state.controller;
     controller.dpad.up = m_buttons.at(Id::UP).getState();
     controller.dpad.down = m_buttons.at(Id::DOWN).getState();
     controller.dpad.left = m_buttons.at(Id::LEFT).getState();

@@ -130,7 +130,7 @@ Display::Display(const Config &config) : m_config(config) {
     ssd1306_clear(&m_display);
 }
 
-void Display::setInputState(const Utils::InputState &state) { m_pad_state = state.getPad(); }
+void Display::setInputState(const Utils::InputState &state) { m_pad_state = state.pad; }
 void Display::setUsbMode(const usb_mode_t mode) { m_usb_mode = mode; };
 void Display::setPlayerId(const uint8_t player_id) { m_player_id = player_id; };
 

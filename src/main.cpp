@@ -3,6 +3,8 @@
 #include "peripherals/PadButtons.h"
 #include "usb/device/hid/ps4_auth.h"
 #include "usb/device_driver.h"
+#include "utils/InputReport.h"
+#include "utils/InputState.h"
 #include "utils/Menu.h"
 #include "utils/PS4AuthProvider.h"
 #include "utils/SettingsStore.h"
@@ -84,8 +86,8 @@ void core1_task() {
     while (true) {
         controller.updateInputState(input_state);
 
-        queue_try_add(&controller_input_queue, &input_state.getController());
-        queue_try_remove(&pad_input_queue, &input_state.getPad());
+        queue_try_add(&controller_input_queue, &input_state.controller);
+        queue_try_remove(&pad_input_queue, &input_state.pad);
 
         if (queue_try_remove(&panel_led_queue, &panel_led)) {
             led.update(panel_led);
@@ -167,7 +169,9 @@ int main() {
     queue_init(&auth_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
     queue_init(&auth_signed_challenge_queue, sizeof(std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH>), 1);
 
-    Utils::InputState input_state;
+    Utils::InputState input_state{};
+    Utils::InputReport input_report;
+
     std::array<uint8_t, Utils::PS4AuthProvider::SIGNATURE_LENGTH> auth_challenge_response{};
 
     auto settings_store = std::make_shared<
@@ -227,12 +231,12 @@ int main() {
     while (true) {
         pad_buttons.updateInputState(input_state);
         pad.updateInputState(input_state);
-        queue_try_remove(&controller_input_queue, &input_state.getController());
+        queue_try_remove(&controller_input_queue, &input_state.controller);
 
-        const auto pad_message = input_state.getPad();
+        const auto pad_message = input_state.pad;
 
         if (menu.active()) {
-            menu.update(input_state.getController());
+            menu.update(input_state.controller);
             if (menu.active()) {
                 const auto display_msg = menu.getState();
                 queue_add_blocking(&menu_display_queue, &display_msg);
@@ -253,7 +257,7 @@ int main() {
             queue_add_blocking(&control_queue, &ctrl_message);
         }
 
-        usbd_driver_send_report(input_state.getReport(mode));
+        usbd_driver_send_report(input_report.getUsbReport(input_state, mode));
         usbd_driver_task();
 
         queue_try_add(&pad_input_queue, &pad_message);

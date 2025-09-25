@@ -1,6 +1,7 @@
 #ifndef PERIPHERALS_PANELLEDS_H_
 #define PERIPHERALS_PANELLEDS_H_
 
+#include "usb/device_driver.h"
 #include "utils/InputState.h"
 
 #include <array>
@@ -196,7 +197,7 @@ template <size_t TPanelCount> class PanelLeds {
 
   private:
     Config m_config;
-    Utils::InputState m_input_state;
+    Utils::InputState m_input_state{};
 
     std::vector<uint32_t> m_rendered_frame;
 

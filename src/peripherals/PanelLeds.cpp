@@ -94,7 +94,7 @@ PanelLeds<TPanelCount>::Config::Color max_color(const typename PanelLeds<TPanelC
 
 // NOLINTNEXTLINE(clang-diagnostic-unneeded-internal-declaration): https://github.com/llvm/llvm-project/issues/117000
 bool is_pad_triggered(const Utils::InputState &input_state) {
-    const auto &pad = input_state.getPad();
+    const auto &pad = input_state.pad;
     return pad.up_left.triggered || pad.up.triggered || pad.up_right.triggered || pad.left.triggered ||
            pad.center.triggered || pad.right.triggered || pad.down_left.triggered || pad.down.triggered ||
            pad.down_right.triggered;
@@ -153,7 +153,7 @@ template <size_t TPanelCount>
 uint16_t get_active_bitvector(const typename PanelLeds<TPanelCount>::Config::PanelOrder order,
                               const Utils::InputState &input_state) {
     uint16_t result = 0;
-    const auto &pad = input_state.getPad();
+    const auto &pad = input_state.pad;
 
     using T = std::decay_t<decltype(order)>;
 
