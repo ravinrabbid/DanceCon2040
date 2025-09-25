@@ -39,7 +39,6 @@ typedef struct __attribute((packed, aligned(1))) {
 } hid_ps3_report_t;
 
 const usbd_driver_t *get_hid_ds3_device_driver();
-const usbd_driver_t *get_hid_ps3_dance_pad_device_driver();
 
 extern const uint8_t ps3_desc_hid_report[];
 

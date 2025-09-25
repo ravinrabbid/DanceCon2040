@@ -1,6 +1,7 @@
 #include "usb/device_driver.h"
 
 #include "usb/device/hid/keyboard_driver.h"
+#include "usb/device/hid/ps3_dance_pad_driver.h"
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
 #include "usb/device/hid/spice2x_driver.h"

@@ -2,6 +2,7 @@
 #define UTILS_INPUTSTATE_H_
 
 #include "usb/device/hid/keyboard_driver.h"
+#include "usb/device/hid/ps3_dance_pad_driver.h"
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
 #include "usb/device/hid/spice2x_driver.h"
@@ -51,6 +52,7 @@ struct InputState {
     Controller m_controller{};
 
     hid_switch_report_t m_switch_report{};
+    hid_ps3_dance_pad_report_t m_ps3_dance_pad_report{};
     hid_ps3_report_t m_ps3_report{};
     hid_ps4_report_t m_ps4_report{};
     hid_nkro_keyboard_report_t m_keyboard_report{};
@@ -59,6 +61,7 @@ struct InputState {
     std::string m_debug_report;
 
     usb_report_t getSwitchReport();
+    usb_report_t getPS3DancePadInputReport();
     usb_report_t getPS3InputReport();
     usb_report_t getPS4InputReport();
     usb_report_t getKeyboardReport(Player player);

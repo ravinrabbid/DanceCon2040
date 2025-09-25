@@ -1,6 +1,7 @@
 #include "usb/device/hid/common.h"
 
 #include "usb/device/hid/keyboard_driver.h"
+#include "usb/device/hid/ps3_dance_pad_driver.h"
 #include "usb/device/hid/ps3_driver.h"
 #include "usb/device/hid/ps4_driver.h"
 #include "usb/device/hid/spice2x_driver.h"
@@ -16,6 +17,7 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
     case USB_MODE_SWITCH_HORIPAD:
         return hid_switch_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     case USB_MODE_PS3_DANCE:
+        return hid_ps3_dance_pad_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     case USB_MODE_DUALSHOCK3:
         return hid_ps3_get_report_cb(instance, report_id, report_type, buffer, reqlen);
     case USB_MODE_DUALSHOCK4:
@@ -40,6 +42,8 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_
         hid_switch_set_report_cb(instance, report_id, report_type, buffer, bufsize);
         break;
     case USB_MODE_PS3_DANCE:
+        hid_ps3_dance_pad_set_report_cb(instance, report_id, report_type, buffer, bufsize);
+        break;
     case USB_MODE_DUALSHOCK3:
         hid_ps3_set_report_cb(instance, report_id, report_type, buffer, bufsize);
         break;
@@ -63,8 +67,9 @@ bool hid_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t c
     // Magic byte sequence to enable PS button on PS3
     static const uint8_t magic_init_bytes[8] = {0x21, 0x26, 0x01, 0x07, 0x00, 0x00, 0x00, 0x00};
 
-    if (stage == CONTROL_STAGE_SETUP && request->bmRequestType == 0xA1 &&
-        request->bRequest == HID_REQ_CONTROL_GET_REPORT && request->wValue == 0x0300) {
+    if (usbd_driver_get_mode() == USB_MODE_DUALSHOCK3 && stage == CONTROL_STAGE_SETUP &&
+        request->bmRequestType == 0xA1 && request->bRequest == HID_REQ_CONTROL_GET_REPORT &&
+        request->wValue == 0x0300) {
         return tud_hid_report(0, magic_init_bytes, sizeof(magic_init_bytes));
     }
 
@@ -78,6 +83,7 @@ uint8_t const *tud_hid_descriptor_report_cb(uint8_t instance) {
     case USB_MODE_SWITCH_HORIPAD:
         return switch_desc_hid_report;
     case USB_MODE_PS3_DANCE:
+        return ps3_dance_pad_desc_hid_report;
     case USB_MODE_DUALSHOCK3:
         return ps3_desc_hid_report;
     case USB_MODE_DUALSHOCK4:
