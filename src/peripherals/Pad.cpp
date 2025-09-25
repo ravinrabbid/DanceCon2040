@@ -297,7 +297,7 @@ template <size_t TPanelCount> void Pad<TPanelCount>::updateInputState(Utils::Inp
         input.triggered = m_panels[channel].getState();
     };
 
-    auto &pad = input_state.getPad();
+    auto &pad = input_state.pad;
     if constexpr (TPanelCount == 4 || TPanelCount == 6 || TPanelCount == 8 || TPanelCount == 9) {
         update_input(pad.up, m_config.adc_channels.up, m_config.thresholds.up);
         update_input(pad.left, m_config.adc_channels.left, m_config.thresholds.left);

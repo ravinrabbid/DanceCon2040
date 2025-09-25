@@ -38,7 +38,7 @@ void PadButtons::updateInputState(Utils::InputState &input_state) {
         button.second.setState((bool)(gpio_state & button.second.getGpioMask()), m_config.debounce_delay_ms);
     }
 
-    auto &pad = input_state.getPad();
+    auto &pad = input_state.pad;
     pad.start = m_buttons.at(Id::START).getState();
     pad.select = m_buttons.at(Id::SELECT).getState();
 }
