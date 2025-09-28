@@ -13,21 +13,13 @@ namespace Dancecon::Peripherals {
 template class PanelLeds<Config::Default::led_config.PANEL_COUNT>;
 
 namespace {
-const uint32_t pulse_step_count = 4096;
-const uint8_t pulse_dim_percent_min = 40;
-const uint8_t pulse_dim_percent_max = 100;
-
-const uint32_t rainbow_step_count = 4096;
-
-const uint32_t fade_step_count = 2048;
-
-const uint32_t blend_step_count = 128;
-
-const size_t rainbow_length = 40;
 
 // Use alternating frames to allow for smoother animation
+const size_t RAINBOW_LENGTH = 40;
+
+// NOLINTBEGIN(modernize-use-designated-initializers)
 template <size_t TPanelCount>
-const std::array<std::array<typename PanelLeds<TPanelCount>::Config::Color, rainbow_length>, 2> rainbow_colors{{
+const std::array<std::array<typename PanelLeds<TPanelCount>::Config::Color, RAINBOW_LENGTH>, 2> rainbow_colors{{
     {{
         {0x5a, 0x3a, 0xc6}, {0x76, 0x36, 0xaa}, {0x91, 0x34, 0x8e}, {0xad, 0x30, 0x72}, {0xca, 0x2e, 0x56},
         {0xe6, 0x2a, 0x3a}, {0xf2, 0x2f, 0x2b}, {0xe6, 0x42, 0x33}, {0xce, 0x5c, 0x46}, {0xb6, 0x74, 0x59},
@@ -49,28 +41,7 @@ const std::array<std::array<typename PanelLeds<TPanelCount>::Config::Color, rain
         {0x64, 0x48, 0xca}, {0x48, 0x45, 0xe0}, {0x2c, 0x42, 0xf6}, {0x2f, 0x3e, 0xf0}, {0x4c, 0x3b, 0xd4},
     }},
 }};
-
-class AnimationStepper {
-  private:
-    uint32_t m_steps_to_advance;
-    uint32_t m_current_steps{0};
-
-  public:
-    AnimationStepper(uint32_t steps_to_advance) : m_steps_to_advance(steps_to_advance) {};
-
-    uint32_t advance(uint32_t steps) {
-        m_current_steps += steps;
-
-        if (m_current_steps < m_steps_to_advance) {
-            return 0;
-        }
-
-        const auto advance = m_current_steps / m_steps_to_advance;
-        m_current_steps %= m_steps_to_advance;
-
-        return advance;
-    }
-};
+// NOLINTEND(modernize-use-designated-initializers)
 
 template <size_t TPanelCount>
 PanelLeds<TPanelCount>::Config::Color dim_color(const typename PanelLeds<TPanelCount>::Config::Color &color,
@@ -93,8 +64,7 @@ PanelLeds<TPanelCount>::Config::Color max_color(const typename PanelLeds<TPanelC
 }
 
 // NOLINTNEXTLINE(clang-diagnostic-unneeded-internal-declaration): https://github.com/llvm/llvm-project/issues/117000
-bool is_pad_triggered(const Utils::InputState &input_state) {
-    const auto &pad = input_state.pad;
+bool is_pad_triggered(const Utils::InputState::Pad &pad) {
     return pad.up_left.triggered || pad.up.triggered || pad.up_right.triggered || pad.left.triggered ||
            pad.center.triggered || pad.right.triggered || pad.down_left.triggered || pad.down.triggered ||
            pad.down_right.triggered;
@@ -151,9 +121,8 @@ void fill_colors(std::array<typename PanelLeds<TPanelCount>::Config::Color, TPan
 
 template <size_t TPanelCount>
 uint16_t get_active_bitvector(const typename PanelLeds<TPanelCount>::Config::PanelOrder order,
-                              const Utils::InputState &input_state) {
+                              const Utils::InputState::Pad &pad) {
     uint16_t result = 0;
-    const auto &pad = input_state.pad;
 
     using T = std::decay_t<decltype(order)>;
 
@@ -204,8 +173,23 @@ uint16_t get_active_bitvector(const typename PanelLeds<TPanelCount>::Config::Pan
 } // namespace
 
 template <size_t TPanelCount>
+uint32_t PanelLeds<TPanelCount>::PanelLeds::AnimationStepper::getFrameCount(uint32_t steps) {
+    m_current_steps += steps;
+    if (m_current_steps < m_steps_until_advance) {
+        return 0;
+    }
+
+    const auto frames = m_current_steps / m_steps_until_advance;
+    m_current_steps %= m_steps_until_advance;
+
+    return frames;
+}
+
+template <size_t TPanelCount>
 PanelLeds<TPanelCount>::PanelLeds(const PanelLeds<TPanelCount>::Config &config) : m_config(config) {
     m_rendered_frame = std::vector<uint32_t>(TPanelCount * config.leds_per_panel, ws2812_rgb_to_u32pixel(0, 0, 0));
+
+    m_rainbow_state.position = get_rand_32() % RAINBOW_LENGTH;
 
     ws2812_init(pio0, config.led_pin, m_config.is_rgbw);
 }
@@ -236,22 +220,13 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::setEnableHidLights(co
 };
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::setInputState(const Utils::InputState &input_state) {
-    m_input_state = input_state;
+    m_pad_state = input_state.pad;
 }
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::setPlayerColor(const PanelLeds::Config::Color &color) {
     m_player_color = color;
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateIdle(const uint32_t steps) {
-    // Pulse
-    static AnimationStepper pulse_stepper{pulse_step_count};
-    static uint8_t pulse_dim_percent = pulse_dim_percent_max;
-    static int8_t pulse_advance_factor = -1;
-
-    // Rainbow
-    static AnimationStepper rainbow_stepper{rainbow_step_count};
-    static size_t rainbow_position = get_rand_32() % rainbow_length;
-
     if (steps <= 0) {
         return;
     }
@@ -266,88 +241,90 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateIdle(const uint
 
     switch (m_config.idle_mode) {
     case Config::IdleMode::Off:
-        m_idle_buffer.fill({0x00, 0x00, 0x00});
+        m_idle_buffer.fill({.r = 0x00, .g = 0x00, .b = 0x00});
         break;
     case Config::IdleMode::Static:
         fill_idle_color();
         break;
     case Config::IdleMode::Pulse: {
-        const auto advance = pulse_stepper.advance(steps);
+        const auto advance = m_pulse_state.stepper.getFrameCount(steps);
 
-        if (pulse_advance_factor < 0 && advance >= (uint8_t)(pulse_dim_percent - pulse_dim_percent_min)) {
-            pulse_dim_percent = pulse_dim_percent_min;
-            pulse_advance_factor = (int8_t)(-pulse_advance_factor);
-        } else if (pulse_advance_factor > 0 && advance + pulse_dim_percent >= pulse_dim_percent_max) {
-            pulse_dim_percent = pulse_dim_percent_max;
-            pulse_advance_factor = (int8_t)(-pulse_advance_factor);
+        if (m_pulse_state.advance_factor < 0 && advance >= (uint8_t)(m_pulse_state.dim_percent - PULSE_DIM_PCT_MIN)) {
+            m_pulse_state.dim_percent = PULSE_DIM_PCT_MIN;
+            m_pulse_state.advance_factor = (int8_t)(-m_pulse_state.advance_factor);
+        } else if (m_pulse_state.advance_factor > 0 && advance + m_pulse_state.dim_percent >= PULSE_DIM_PCT_MAX) {
+            m_pulse_state.dim_percent = PULSE_DIM_PCT_MAX;
+            m_pulse_state.advance_factor = (int8_t)(-m_pulse_state.advance_factor);
         } else {
-            pulse_dim_percent = pulse_dim_percent + (pulse_advance_factor * advance);
+            m_pulse_state.dim_percent += (m_pulse_state.advance_factor * advance);
         }
 
-        fill_idle_color((float)pulse_dim_percent / 100.);
+        fill_idle_color((float)m_pulse_state.dim_percent / 100.F);
     } break;
     case Config::IdleMode::Rainbow: {
-        rainbow_position =
-            (rainbow_position + rainbow_stepper.advance(steps)) % (rainbow_length * rainbow_colors<TPanelCount>.size());
+        m_rainbow_state.position = (m_rainbow_state.position + m_rainbow_state.stepper.getFrameCount(steps)) %
+                                   (RAINBOW_LENGTH * rainbow_colors<TPanelCount>.size());
 
-        const auto frame = rainbow_position % rainbow_colors<TPanelCount>.size();
-        const auto frame_position = rainbow_position / rainbow_colors<TPanelCount>.size();
+        const auto frame = m_rainbow_state.position % rainbow_colors<TPanelCount>.size();
+        const auto frame_position = m_rainbow_state.position / rainbow_colors<TPanelCount>.size();
 
         for (size_t idx = 0; idx < m_idle_buffer.size(); ++idx) {
-            size_t offset = (frame_position + idx) % rainbow_length;
-            m_idle_buffer[idx] = rainbow_colors<TPanelCount>[frame][offset];
+            const size_t offset = (frame_position + idx) % RAINBOW_LENGTH;
+            m_idle_buffer.at(idx) = rainbow_colors<TPanelCount>.at(frame).at(offset);
         }
     } break;
     }
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateActive(const uint32_t steps) {
-    static AnimationStepper fade_stepper{fade_step_count};
-    static std::array<uint8_t, TPanelCount> fade_percent = {};
-    static std::array<typename Config::Color, TPanelCount> active_colors = {};
-
+    const auto active_vector = get_active_bitvector<TPanelCount>(m_config.panel_order, m_pad_state);
+    
+    std::array<typename Config::Color, TPanelCount> active_colors = {};
     fill_colors(active_colors, m_config.active_colors, m_config.panel_order);
-    const auto active_vector = get_active_bitvector<TPanelCount>(m_config.panel_order, m_input_state);
 
     switch (m_config.active_mode) {
     case Config::ActiveMode::Off:
-        m_active_buffer.fill({0x00, 0x00, 0x00});
+        m_active_buffer.fill({.r = 0x00, .g = 0x00, .b = 0x00});
         break;
     case Config::ActiveMode::Idle:
-        std::copy(m_idle_buffer.cbegin(), m_idle_buffer.cend(), m_active_buffer.begin());
+        std::ranges::copy(m_idle_buffer, m_active_buffer.begin());
         break;
     case Config::ActiveMode::Active: {
         for (size_t idx = 0; idx < TPanelCount; ++idx) {
             if (active_vector & ((uint16_t)1 << idx)) {
-                m_active_buffer[idx] = active_colors[idx];
+                m_active_buffer.at(idx) = active_colors.at(idx);
             } else {
-                m_active_buffer[idx] = {0x00, 0x00, 0x00};
+                m_active_buffer.at(idx) = {.r = 0x00, .g = 0x00, .b = 0x00};
             }
         }
     } break;
     case Config::ActiveMode::ActiveFade: {
-        const auto advance = fade_stepper.advance(steps);
+        const auto advance = m_fade_state.stepper.getFrameCount(steps);
 
         for (size_t idx = 0; idx < TPanelCount; ++idx) {
             if (active_vector & ((uint16_t)1 << idx)) {
-                m_active_buffer[idx] = active_colors[idx];
-                fade_percent[idx] = 100;
+                m_active_buffer.at(idx) = active_colors.at(idx);
+                m_fade_state.percent.at(idx) = 100;
             } else {
-                m_active_buffer[idx] = dim_color<TPanelCount>(m_active_buffer[idx], (float)fade_percent[idx] / 100.);
-                fade_percent[idx] = advance > fade_percent[idx] ? 0 : fade_percent[idx] - advance;
+                m_active_buffer.at(idx) =
+                    dim_color<TPanelCount>(m_active_buffer.at(idx), (float)m_fade_state.percent.at(idx) / 100.F);
+                m_fade_state.percent.at(idx) =
+                    advance > m_fade_state.percent.at(idx) ? 0 : m_fade_state.percent.at(idx) - advance;
             }
         }
     } break;
     case Config::ActiveMode::ActiveIdle: {
-        const auto advance = fade_stepper.advance(steps);
+        const auto advance = m_fade_state.stepper.getFrameCount(steps);
 
         for (size_t idx = 0; idx < TPanelCount; ++idx) {
             if (active_vector & ((uint16_t)1 << idx)) {
-                m_active_buffer[idx] = m_idle_buffer[idx];
-                fade_percent[idx] = 100;
+                m_active_buffer.at(idx) = m_idle_buffer.at(idx);
+                m_fade_state.percent.at(idx) = 100;
             } else {
-                m_active_buffer[idx] = dim_color<TPanelCount>(m_active_buffer[idx], (float)fade_percent[idx] / 100.);
-                fade_percent[idx] = advance > fade_percent[idx] ? 0 : fade_percent[idx] - advance;
+                m_active_buffer.at(idx) =
+                    dim_color<TPanelCount>(m_active_buffer.at(idx), (float)m_fade_state.percent.at(idx) / 100.F);
+                m_fade_state.percent.at(idx) =
+                    advance > m_fade_state.percent.at(idx) ? 0 : m_fade_state.percent.at(idx) - advance;
             }
         }
     } break;
@@ -355,28 +332,26 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::updateActive(const ui
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::render(const uint32_t steps) {
-    static AnimationStepper blend_stepper{blend_step_count};
-    static uint8_t blend_percent = 100;
-
-    const auto blend_advance = blend_stepper.advance(steps);
-    if (is_pad_triggered(m_input_state)) {
-        blend_percent = blend_advance > blend_percent ? 0 : blend_percent - blend_advance;
+    const auto blend_advance = m_blend_state.stepper.getFrameCount(steps);
+    if (is_pad_triggered(m_pad_state)) {
+        m_blend_state.percent = blend_advance > m_blend_state.percent ? 0 : m_blend_state.percent - blend_advance;
     } else {
-        blend_percent = blend_advance + blend_percent > 100 ? 100 : blend_percent + blend_advance;
+        m_blend_state.percent =
+            blend_advance + m_blend_state.percent > 100 ? 100 : m_blend_state.percent + blend_advance;
     }
 
-    const auto brightness_dim_factor = (float)m_config.brightness / 255.;
-    const auto blend_dim_factor = (float)blend_percent / 100.;
+    const auto brightness_dim_factor = (float)m_config.brightness / 255.F;
+    const auto blend_dim_factor = (float)m_blend_state.percent / 100.F;
 
     size_t idx = 0;
     for (auto &rendered_segment : m_rendered_frame) {
         auto blended_segment = max_color<TPanelCount>(
-            dim_color<TPanelCount>(m_idle_buffer[idx / m_config.leds_per_panel], blend_dim_factor),
-            m_active_buffer[idx / m_config.leds_per_panel]);
+            dim_color<TPanelCount>(m_idle_buffer.at(idx / m_config.leds_per_panel), blend_dim_factor),
+            m_active_buffer.at(idx / m_config.leds_per_panel));
 
-        rendered_segment =
-            ws2812_rgb_to_u32pixel(blended_segment.r * brightness_dim_factor, blended_segment.g * brightness_dim_factor,
-                                   blended_segment.b * brightness_dim_factor);
+        rendered_segment = ws2812_rgb_to_u32pixel((uint8_t)((float)blended_segment.r * brightness_dim_factor),
+                                                  (uint8_t)((float)blended_segment.g * brightness_dim_factor),
+                                                  (uint8_t)((float)blended_segment.b * brightness_dim_factor));
 
         ++idx;
     }
@@ -387,17 +362,15 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::show() {
 }
 
 template <size_t TPanelCount> void PanelLeds<TPanelCount>::update() {
+    const uint32_t now = to_ms_since_boot(get_absolute_time());
+    const uint32_t elapsed = now - m_previous_frame_time;
+    const uint32_t steps = elapsed * m_config.animation_speed;
+
+    m_previous_frame_time = now;
+
     if (m_direct_mode && m_config.enable_hid_lights) {
         return;
     }
-
-    static uint32_t previous_frame_time = to_ms_since_boot(get_absolute_time());
-
-    const uint32_t now = to_ms_since_boot(get_absolute_time());
-    const uint32_t elapsed = now - previous_frame_time;
-    const uint32_t steps = elapsed * m_config.animation_speed;
-
-    previous_frame_time = now;
 
     updateIdle(steps);
     updateActive(steps);
@@ -413,7 +386,7 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::update(const usb_pane
 
     m_direct_mode = true;
 
-    auto dim_factor = [](const auto value) { return (float)value / 255.; };
+    auto dim_factor = [](const auto value) { return (float)value / 255.F; };
 
     const auto &order = m_config.panel_order;
     const auto &colors = m_config.active_colors;
@@ -461,14 +434,15 @@ template <size_t TPanelCount> void PanelLeds<TPanelCount>::update(const usb_pane
         static_assert(false, "Unknown Panel count!");
     }
 
-    const auto brightness_dim_factor = (float)m_config.brightness / 255.;
+    const auto brightness_dim_factor = (float)m_config.brightness / 255.F;
 
     size_t idx = 0;
     for (auto &rendered_segment : m_rendered_frame) {
-        const auto color = m_direct_buffer[idx / m_config.leds_per_panel];
+        const auto color = m_direct_buffer.at(idx / m_config.leds_per_panel);
 
-        rendered_segment = ws2812_rgb_to_u32pixel(color.r * brightness_dim_factor, color.g * brightness_dim_factor,
-                                                  color.b * brightness_dim_factor);
+        rendered_segment = ws2812_rgb_to_u32pixel((uint8_t)((float)color.r * brightness_dim_factor),
+                                                  (uint8_t)((float)color.g * brightness_dim_factor),
+                                                  (uint8_t)((float)color.b * brightness_dim_factor));
 
         ++idx;
     }

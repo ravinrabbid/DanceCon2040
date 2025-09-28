@@ -389,9 +389,37 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class Menu {
     const static std::map<MenuPage, const MenuDescriptor> descriptors;
 
   private:
-    std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> m_store;
+    class Buttons {
+      public:
+        enum class Id : uint8_t { Up, Down, Left, Right, Confirm, Back };
 
+      private:
+        struct State {
+            enum class Repeat : uint8_t {
+                Idle,
+                RepeatDelay,
+                Repeat,
+                FastRepeat,
+            };
+            Repeat repeat;
+            uint32_t pressed_since;
+            uint32_t last_repeat;
+            bool pressed;
+        };
+
+        std::map<Id, State> m_states;
+
+      public:
+        Buttons();
+
+        void update(const InputState::Controller &state);
+        [[nodiscard]] bool getPressed(Id id) const;
+    };
+
+    std::shared_ptr<SettingsStore<TPanelCount, TPanelLedsCount>> m_store;
+    Buttons m_buttons;
     bool m_active{false};
+
     std::stack<MenuState> m_state_stack{{{.page = MenuPage::Main, .selected_value = 0, .original_value = 0}}};
 
     calibration_callback_t m_calibration_callback;
@@ -399,6 +427,7 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class Menu {
     uint16_t getCurrentValue(MenuPage page);
     void gotoPage(MenuPage page);
     void gotoParent(bool do_restore);
+
     void performAction(MenuDescriptor::Action action, uint16_t value);
 
   public:
@@ -407,8 +436,8 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class Menu {
 
     void activate();
     void update(const InputState::Controller &controller_state);
-    bool active();
-    MenuState getState();
+    [[nodiscard]] bool active() const;
+    [[nodiscard]] MenuState getState() const;
 };
 
 } // namespace Dancecon::Utils
