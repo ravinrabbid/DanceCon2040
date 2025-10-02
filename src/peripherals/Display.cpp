@@ -2,9 +2,11 @@
 
 #include "GlobalConfiguration.h"
 #include "bitmaps/MenuScreens.h"
+#include "utils/Menu.h"
 
 #include "pico/time.h"
 
+#include <format>
 #include <list>
 #include <numeric>
 #include <string>
@@ -43,6 +45,20 @@ std::string modeToString(const usb_mode_t mode) {
         return "Spice2x";
     case USB_MODE_DEBUG:
         return "Debug";
+    }
+    return "?";
+}
+
+std::string weightUnitToString(const Display::WeightUnit unit) {
+    switch (unit) {
+    case Display::WeightUnit::Off:
+        return "";
+    case Display::WeightUnit::Kilogram:
+        return "kg";
+    case Display::WeightUnit::Pound:
+        return "lb";
+    case Display::WeightUnit::Firkin:
+        return "firkin";
     }
     return "?";
 }
@@ -102,6 +118,40 @@ void Display::BpmCounter::update(const Utils::InputState::Pad &pad) {
     m_prev_pad = pad;
 }
 
+float Display::getWeight() const {
+    if (m_config.scale_weight_unit == WeightUnit::Off) {
+        return 0.F;
+    }
+
+    float result = 0.F;
+
+    const auto get_pad_weight = [&](const auto &raw) { return (float)raw / m_config.scale_counts_per_kg; };
+
+    result += get_pad_weight(m_input_state.pad.up_left.raw);
+    result += get_pad_weight(m_input_state.pad.up.raw);
+    result += get_pad_weight(m_input_state.pad.up_right.raw);
+    result += get_pad_weight(m_input_state.pad.left.raw);
+    result += get_pad_weight(m_input_state.pad.center.raw);
+    result += get_pad_weight(m_input_state.pad.right.raw);
+    result += get_pad_weight(m_input_state.pad.down_left.raw);
+    result += get_pad_weight(m_input_state.pad.down.raw);
+    result += get_pad_weight(m_input_state.pad.down_right.raw);
+
+    switch (m_config.scale_weight_unit) {
+    case WeightUnit::Pound:
+        result *= 2.204623;
+        break;
+    case WeightUnit::Firkin:
+        result *= 0.03937;
+        break;
+    case WeightUnit::Kilogram:
+    case WeightUnit::Off:
+        break;
+    }
+
+    return result;
+}
+
 Display::Display(const Config &config) : m_config(config) {
     m_display.external_vcc = false;
     ssd1306_init(&m_display, 128, 64, m_config.i2c_address, m_config.i2c_block);
@@ -114,6 +164,7 @@ void Display::setInputState(const Utils::InputState &state) {
 }
 void Display::setUsbMode(const usb_mode_t mode) { m_usb_mode = mode; };
 void Display::setPlayerId(const uint8_t player_id) { m_player_id = player_id; };
+void Display::setWeightUnit(WeightUnit unit) { m_config.scale_weight_unit = unit; };
 
 void Display::setMenuState(const Utils::MenuState &menu_state) { m_menu_state = menu_state; }
 
@@ -132,6 +183,14 @@ void Display::drawIdleScreen() {
     ssd1306_draw_string(&m_display, 24 - ((bpm_str.length() * 12) / 2), 20, 2, bpm_str.c_str());
     ssd1306_draw_string(&m_display, 24 - ((bpm_label_str.length() * 6) / 2), 38, 1, bpm_label_str.c_str());
 
+    // Weight
+    if (m_config.scale_weight_unit != WeightUnit::Off) {
+        const auto weight = getWeight();
+        const auto weight_str = weight >= 100 ? std::format("{:.0f}", weight) : std::format("{:.1f}", weight);
+        const auto weight_label_str = weightUnitToString(m_config.scale_weight_unit);
+        ssd1306_draw_string(&m_display, 103 - ((weight_str.length() * 12) / 2), 20, 2, weight_str.c_str());
+        ssd1306_draw_string(&m_display, 103 - ((weight_label_str.length() * 6) / 2), 38, 1, weight_label_str.c_str());
+    }
 
     // Pad
     static const uint8_t panel_dim = 10;

@@ -233,6 +233,9 @@ const Peripherals::Controller::Config controller_config = {
 const Peripherals::Display::Config display_config = {
     .i2c_block = i2c_config.block,
     .i2c_address = 0x3C,
+
+    .scale_weight_unit = Peripherals::Display::WeightUnit::Kilogram,
+    .scale_counts_per_kg = 21.9,
 };
 
 const Peripherals::StatusLed::Config status_led_config = {

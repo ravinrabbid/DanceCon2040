@@ -34,6 +34,7 @@ SettingsStore<TPanelCount, TPanelLedsCount>::SettingsStore()
                      .led_active_mode = Config::Default::led_config.active_mode,
                      .led_enable_player_color = Config::Default::led_config.enable_player_color,
                      .led_enable_hid_lights = Config::Default::led_config.enable_hid_lights,
+                     .display_weight_unit = Config::Default::display_config.scale_weight_unit,
                      ._padding = {}}) {
     uint32_t current_page = m_flash_offset + m_flash_size - m_store_size;
     bool found_valid = false;
@@ -200,6 +201,18 @@ void SettingsStore<TPanelCount, TPanelLedsCount>::setDebounceDelay(const uint16_
 template <size_t TPanelCount, size_t TPanelLedsCount>
 uint16_t SettingsStore<TPanelCount, TPanelLedsCount>::getDebounceDelay() const {
     return m_store_cache.debounce_delay;
+}
+
+template <size_t TPanelCount, size_t TPanelLedsCount>
+void SettingsStore<TPanelCount, TPanelLedsCount>::setDisplayWeightUnit(const Peripherals::Display::WeightUnit unit) {
+    if (m_store_cache.display_weight_unit != unit) {
+        m_store_cache.display_weight_unit = unit;
+        m_dirty = true;
+    }
+}
+template <size_t TPanelCount, size_t TPanelLedsCount>
+Peripherals::Display::WeightUnit SettingsStore<TPanelCount, TPanelLedsCount>::getDisplayWeightUnit() const {
+    return m_store_cache.display_weight_unit;
 }
 
 template <size_t TPanelCount, size_t TPanelLedsCount> void SettingsStore<TPanelCount, TPanelLedsCount>::store() {

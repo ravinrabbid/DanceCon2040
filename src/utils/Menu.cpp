@@ -748,6 +748,7 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount, TPanelLedsCount
       "Settings",                                               //
       {{"Mode", MenuDescriptor::Action::GotoPageDeviceMode},    //
        {"Pad", MenuDescriptor::Action::GotoPagePad},            //
+       {"Display", MenuDescriptor::Action::GotoPageDisplay},    //
        {"Led", MenuDescriptor::Action::GotoPageLed},            //
        {"Reset", MenuDescriptor::Action::GotoPageReset},        //
        {"USB Flash", MenuDescriptor::Action::GotoPageBootsel}}, //
@@ -851,6 +852,21 @@ const std::map<MenuPage, const MenuDescriptor> Menu<TPanelCount, TPanelLedsCount
       "Threshold Down Right",                                          //
       {{"", MenuDescriptor::Action::SetPadTriggerThresholdDownRight}}, //
       UINT16_MAX}},
+
+    {MenuPage::Display,                                                    //
+     {MenuDescriptor::Type::Menu,                                          //
+      "Display",                                                           //
+      {{"WeightUnit", MenuDescriptor::Action::GotoPageDisplayWeightUnit}}, //
+      0}},                                                                 //
+
+    {MenuPage::DisplayWeightUnit,                                  //
+     {MenuDescriptor::Type::Selection,                             //
+      "Scale Weight Unit",                                         //
+      {{"Off", MenuDescriptor::Action::SetDisplayWeightUnit},      //
+       {"Kilogram", MenuDescriptor::Action::SetDisplayWeightUnit}, //
+       {"Pounds", MenuDescriptor::Action::SetDisplayWeightUnit},   //
+       {"Firkin", MenuDescriptor::Action::SetDisplayWeightUnit}},  //
+      0}},                                                         //
 
     {MenuPage::Led,                                                          //
      {MenuDescriptor::Type::Menu,                                            //
@@ -1445,6 +1461,8 @@ uint16_t Menu<TPanelCount, TPanelLedsCount>::getCurrentValue(MenuPage page) {
     case MenuPage::PadTriggerThresholdDown:
     case MenuPage::PadTriggerThresholdDownRight:
         return getThresholdValue<TPanelCount>(page, m_store->getTriggerThresholds());
+    case MenuPage::DisplayWeightUnit:
+        return static_cast<uint16_t>(m_store->getDisplayWeightUnit());
     case MenuPage::LedBrightness:
         return m_store->getLedBrightness();
     case MenuPage::LedAnimationSpeed:
@@ -1539,6 +1557,7 @@ uint16_t Menu<TPanelCount, TPanelLedsCount>::getCurrentValue(MenuPage page) {
     case MenuPage::Pad:
     case MenuPage::PadCalibrate:
     case MenuPage::PadTriggerThresholds:
+    case MenuPage::Display:
     case MenuPage::Led:
     case MenuPage::Reset:
     case MenuPage::Bootsel:
@@ -1588,6 +1607,9 @@ void Menu<TPanelCount, TPanelLedsCount>::gotoParent(const bool do_restore) {
             setThresholdValue<TPanelCount>(current_state.page, current_state.original_value, thresholds);
             m_store->setTriggerThresholds(thresholds);
         } break;
+        case MenuPage::DisplayWeightUnit:
+            m_store->setDisplayWeightUnit(static_cast<Peripherals::Display::WeightUnit>(current_state.original_value));
+            break;
         case MenuPage::LedBrightness:
             m_store->setLedBrightness(current_state.original_value);
             break;
@@ -1696,6 +1718,7 @@ void Menu<TPanelCount, TPanelLedsCount>::gotoParent(const bool do_restore) {
         case MenuPage::Pad:
         case MenuPage::PadCalibrate:
         case MenuPage::PadTriggerThresholds:
+        case MenuPage::Display:
         case MenuPage::Led:
         case MenuPage::Reset:
         case MenuPage::Bootsel:
@@ -1768,6 +1791,12 @@ void Menu<TPanelCount, TPanelLedsCount>::performAction(const MenuDescriptor::Act
         break;
     case MenuDescriptor::Action::GotoPagePadTriggerThresholdDownRight:
         gotoPage(MenuPage::PadTriggerThresholdDownRight);
+        break;
+    case MenuDescriptor::Action::GotoPageDisplay:
+        gotoPage(MenuPage::Display);
+        break;
+    case MenuDescriptor::Action::GotoPageDisplayWeightUnit:
+        gotoPage(MenuPage::DisplayWeightUnit);
         break;
     case MenuDescriptor::Action::GotoPageLedBrightness:
         gotoPage(MenuPage::LedBrightness);
@@ -2031,6 +2060,9 @@ void Menu<TPanelCount, TPanelLedsCount>::performAction(const MenuDescriptor::Act
         setThresholdValue<TPanelCount>(action, value, thresholds);
         m_store->setTriggerThresholds(thresholds);
     } break;
+    case MenuDescriptor::Action::SetDisplayWeightUnit:
+        m_store->setDisplayWeightUnit(static_cast<Peripherals::Display::WeightUnit>(value));
+        break;
     case MenuDescriptor::Action::SetLedBrightness:
         m_store->setLedBrightness(value);
         break;

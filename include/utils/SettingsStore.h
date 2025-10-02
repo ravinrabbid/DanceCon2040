@@ -1,6 +1,7 @@
 #ifndef UTILS_SETTINGSSTORE_H_
 #define UTILS_SETTINGSSTORE_H_
 
+#include "peripherals/Display.h"
 #include "peripherals/Pad.h"
 #include "peripherals/PanelLeds.h"
 #include "usb/device_driver.h"
@@ -38,11 +39,12 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class SettingsStore {
         active_mode_t led_active_mode;
         bool led_enable_player_color;
         bool led_enable_hid_lights;
+        Peripherals::Display::WeightUnit display_weight_unit;
 
         std::array<uint8_t, m_store_size - sizeof(uint8_t) - sizeof(usb_mode_t) - sizeof(thresholds_t) -
                                 sizeof(uint16_t) - sizeof(uint16_t) - sizeof(led_colors_t) - sizeof(led_colors_t) -
                                 sizeof(uint8_t) - sizeof(uint8_t) - sizeof(idle_mode_t) - sizeof(active_mode_t) -
-                                sizeof(bool) - sizeof(bool)>
+                                sizeof(bool) - sizeof(bool) - sizeof(Peripherals::Display::WeightUnit)>
             _padding;
     };
     static_assert(sizeof(Storecache) == m_store_size);
@@ -97,6 +99,9 @@ template <size_t TPanelCount, size_t TPanelLedsCount> class SettingsStore {
 
     void setDebounceDelay(uint16_t delay);
     [[nodiscard]] uint16_t getDebounceDelay() const;
+
+    void setDisplayWeightUnit(Peripherals::Display::WeightUnit unit);
+    [[nodiscard]] Peripherals::Display::WeightUnit getDisplayWeightUnit() const;
 
     void scheduleReboot(bool bootsel = false);
 

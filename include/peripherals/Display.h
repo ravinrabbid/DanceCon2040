@@ -3,7 +3,7 @@
 
 #include "usb/device_driver.h"
 #include "utils/InputState.h"
-#include "utils/Menu.h"
+#include "utils/MenuTypes.h"
 
 #include "hardware/i2c.h"
 #include <ssd1306/ssd1306.h>
@@ -16,9 +16,19 @@ namespace Dancecon::Peripherals {
 
 class Display {
   public:
+    enum class WeightUnit : uint8_t {
+        Off,
+        Kilogram,
+        Pound,
+        Firkin,
+    };
+
     struct Config {
         i2c_inst_t *i2c_block;
         uint8_t i2c_address;
+
+        WeightUnit scale_weight_unit;
+        float scale_counts_per_kg;
     };
 
   private:
@@ -75,6 +85,8 @@ class Display {
 
     BpmCounter m_bpm_counter{2000};
 
+    [[nodiscard]] float getWeight() const;
+
     void drawIdleScreen();
     void drawMenuScreen();
 
@@ -84,6 +96,7 @@ class Display {
     void setInputState(const Utils::InputState &state);
     void setUsbMode(usb_mode_t mode);
     void setPlayerId(uint8_t player_id);
+    void setWeightUnit(WeightUnit unit);
 
     void setMenuState(const Utils::MenuState &menu_state);
 

@@ -40,6 +40,7 @@ enum class ControlCommand : uint8_t {
     SetLedActiveMode,
     SetLedActiveColors,
     SetLedEnablePlayerColor,
+    SetDisplayWeightUnit,
     EnterMenu,
     ExitMenu,
 };
@@ -56,6 +57,7 @@ struct ControlMessage {
         Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT>::Config::ActiveMode led_active_mode;
         Peripherals::PanelLeds<Config::Default::led_config.PANEL_COUNT>::Config::PanelColors led_active_colors;
         bool led_enable_player_color;
+        Peripherals::Display::WeightUnit display_weight_unit;
     } data;
 };
 
@@ -132,6 +134,9 @@ void core1_task() {
                 break;
             case ControlCommand::SetLedEnablePlayerColor:
                 led.setEnablePlayerColor(control_msg.data.led_enable_player_color);
+                break;
+            case ControlCommand::SetDisplayWeightUnit:
+                display.setWeightUnit(control_msg.data.display_weight_unit);
                 break;
             case ControlCommand::EnterMenu:
                 display.showMenu();
@@ -217,6 +222,8 @@ int main() {
                          .data = {.led_active_colors = settings_store->getLedActiveColors()}});
         sendCtrlMessage({.command = ControlCommand::SetLedEnablePlayerColor,
                          .data = {.led_enable_player_color = settings_store->getLedEnablePlayerColor()}});
+        sendCtrlMessage({.command = ControlCommand::SetDisplayWeightUnit,
+                         .data = {.display_weight_unit = settings_store->getDisplayWeightUnit()}});
 
         pad.setDebounceDelay(settings_store->getDebounceDelay());
         pad.setThresholds(settings_store->getTriggerThresholds());
