@@ -67,6 +67,7 @@ class Display {
     usb_mode_t m_usb_mode{USB_MODE_DEBUG};
     uint8_t m_player_id{0};
 
+    Utils::InputState m_input_state{};
     Utils::MenuState m_menu_state{};
 
     ssd1306_t m_display{};

@@ -108,7 +108,10 @@ Display::Display(const Config &config) : m_config(config) {
     ssd1306_clear(&m_display);
 }
 
-void Display::setInputState(const Utils::InputState &state) { m_bpm_counter.update(state.pad); }
+void Display::setInputState(const Utils::InputState &state) {
+    m_input_state = state;
+    m_bpm_counter.update(state.pad);
+}
 void Display::setUsbMode(const usb_mode_t mode) { m_usb_mode = mode; };
 void Display::setPlayerId(const uint8_t player_id) { m_player_id = player_id; };
 
@@ -123,9 +126,33 @@ void Display::drawIdleScreen() {
     ssd1306_draw_string(&m_display, 0, 0, 1, mode_string.c_str());
     ssd1306_draw_line(&m_display, 0, 10, 128, 10);
 
-    // BPM
-    const auto bpm_str = std::to_string(m_bpm_counter.getBpm()) + " bpm";
-    ssd1306_draw_string(&m_display, (127 - (bpm_str.length() * 12)) / 2, 20, 2, bpm_str.c_str());
+    // SPM
+    const auto bpm_str = std::to_string(m_bpm_counter.getBpm());
+    const auto bpm_label_str = std::string("steps/m");
+    ssd1306_draw_string(&m_display, 24 - ((bpm_str.length() * 12) / 2), 20, 2, bpm_str.c_str());
+    ssd1306_draw_string(&m_display, 24 - ((bpm_label_str.length() * 6) / 2), 38, 1, bpm_label_str.c_str());
+
+
+    // Pad
+    static const uint8_t panel_dim = 10;
+    const auto draw_pad = [&](const auto pos_x, const auto pos_y, const auto triggered) {
+        if (triggered) {
+            ssd1306_draw_square(&m_display, pos_x - (panel_dim / 2), pos_y - (panel_dim / 2), panel_dim, panel_dim);
+        } else {
+            ssd1306_draw_empty_square(&m_display, pos_x - (panel_dim / 2), pos_y - (panel_dim / 2), panel_dim - 1,
+                                      panel_dim - 1);
+        }
+    };
+
+    draw_pad((127 / 2) - panel_dim, (64 / 2) - panel_dim, m_input_state.pad.up_left.triggered);
+    draw_pad((127 / 2), (64 / 2) - panel_dim, m_input_state.pad.up.triggered);
+    draw_pad((127 / 2) + panel_dim, (64 / 2) - panel_dim, m_input_state.pad.up_right.triggered);
+    draw_pad((127 / 2) - panel_dim, (64 / 2), m_input_state.pad.left.triggered);
+    draw_pad((127 / 2), (64 / 2), m_input_state.pad.center.triggered);
+    draw_pad((127 / 2) + panel_dim, (64 / 2), m_input_state.pad.right.triggered);
+    draw_pad((127 / 2) - panel_dim, (64 / 2) + panel_dim, m_input_state.pad.down_left.triggered);
+    draw_pad((127 / 2), (64 / 2) + panel_dim, m_input_state.pad.down.triggered);
+    draw_pad((127 / 2) + panel_dim, (64 / 2) + panel_dim, m_input_state.pad.down_right.triggered);
 
     // Player "LEDs"
     if (m_player_id != 0) {
