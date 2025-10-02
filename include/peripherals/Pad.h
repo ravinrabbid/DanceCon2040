@@ -9,6 +9,7 @@
 
 #include <array>
 #include <cstdint>
+#include <deque>
 #include <map>
 #include <memory>
 #include <variant>
@@ -155,9 +156,7 @@ template <size_t TPanelCount> class Pad {
                                 AdcChannelsNinePanel,    //
                                 std::monostate>>>>>;
 
-        struct InternalAdc {
-            uint8_t sample_count;
-        };
+        struct InternalAdc {};
 
         struct GpioAdc {
             uint8_t base_pin;
@@ -202,6 +201,8 @@ template <size_t TPanelCount> class Pad {
         Thresholds thresholds;
         uint16_t hysteresis;
         uint16_t debounce_delay_ms;
+
+        uint8_t oversample;
 
         AdcChannels adc_channels;
         AdcConfig adc_config;
@@ -263,6 +264,7 @@ template <size_t TPanelCount> class Pad {
     std::array<Panel, TPanelCount> m_panels;
 
     std::array<uint16_t, TPanelCount> m_panel_offsets;
+    std::array<std::deque<uint16_t>, TPanelCount> m_read_buffers;
 
   public:
     Pad(const Config &config);

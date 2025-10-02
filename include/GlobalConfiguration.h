@@ -43,9 +43,10 @@ const Peripherals::Pad<4>::Config pad_config = {
             // .down_left = 50,
             // .down_right = 50,
         },
-
-    .hysteresis = 8,
+    .hysteresis = 10,
     .debounce_delay_ms = 10,
+
+    .oversample = 10,
 
     .adc_channels =
         {
@@ -68,10 +69,7 @@ const Peripherals::Pad<4>::Config pad_config = {
     //     Peripherals::Pad<pad_config.PANEL_COUNT>::Config::GpioAdc{
     //         .base_pin = 28,
     //     },
-    // .adc_config =
-    //     Peripherals::Pad<pad_config.PANEL_COUNT>::Config::InternalAdc{
-    //         .sample_count = 10,
-    //     }
+    // .adc_config = Peripherals::Pad<pad_config.PANEL_COUNT>::Config::InternalAdc{},
     .adc_config =
         Peripherals::Pad<pad_config.PANEL_COUNT>::Config::ExternalAdc<2>{
             .spi =
@@ -84,7 +82,7 @@ const Peripherals::Pad<4>::Config pad_config = {
                 },
 
             .sample_rate = Ads124S0x::SampleRate::R4000,
-            .gain = Ads124S0x::Gain::G128,
+            .gain = Ads124S0x::Gain::G64,
             .filter = Ads124S0x::Filter::LowLatency,
 
             .adcs = {{

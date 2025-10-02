@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <numeric>
 
 namespace Dancecon::Peripherals {
 
@@ -42,24 +43,14 @@ template <> Pad<4>::InternalAdc::InternalAdc(const Config::InternalAdc &config) 
 }
 
 template <> std::array<uint16_t, 4> Pad<4>::InternalAdc::read() {
-    if (m_config.sample_count == 0) {
-        return {};
+    std::array<uint16_t, 4> values{};
+
+    for (size_t idx = 0; idx < values.size(); ++idx) {
+        adc_select_input(idx);
+        values.at(idx) = adc_read();
     }
 
-    // Oversample ADC inputs to get rid of ADC noise
-    std::array<uint32_t, 4> values{};
-    for (uint8_t sample_number = 0; sample_number < m_config.sample_count; ++sample_number) {
-        for (size_t idx = 0; idx < values.size(); ++idx) {
-            adc_select_input(idx);
-            values.at(idx) += adc_read();
-        }
-    }
-
-    // Take average of all samples
-    std::array<uint16_t, 4> result{};
-    std::ranges::transform(values, result.begin(), [&](const auto &sample) { return sample / m_config.sample_count; });
-
-    return result;
+    return values;
 }
 
 template <size_t TPanelCount>
@@ -266,6 +257,11 @@ template <size_t TPanelCount> void Pad<TPanelCount>::calibrate() {
 
     std::array<uint32_t, TPanelCount> samples = {};
 
+    // Flush ADC
+    for (size_t i = 10; i < sample_count; ++i) {
+        m_adc->read();
+    }
+
     for (size_t i = 0; i < sample_count; ++i) {
         const auto adc_values = m_adc->read();
 
@@ -278,11 +274,31 @@ template <size_t TPanelCount> void Pad<TPanelCount>::calibrate() {
 }
 
 template <size_t TPanelCount> void Pad<TPanelCount>::updateInputState(Utils::InputState &input_state) {
-    const auto adc_values = m_adc->read();
+    std::array<uint16_t, TPanelCount> avarage_values = {};
+
+    if (m_config.oversample <= 1) {
+        avarage_values = m_adc->read();
+    } else {
+        const auto adc_values = m_adc->read();
+
+        for (size_t idx = 0; const auto &value : adc_values) {
+            auto &buffer = m_read_buffers.at(idx);
+
+            if (buffer.size() >= m_config.oversample) {
+                buffer.pop_front();
+            }
+
+            buffer.push_back(value);
+
+            avarage_values.at(idx) = std::accumulate(buffer.begin(), buffer.end(), 0) / buffer.size();
+
+            ++idx;
+        }
+    }
 
     auto update_input = [&](auto &input, const auto &channel, const auto &threshold) {
         const auto value =
-            adc_values[channel] > m_panel_offsets[channel] ? adc_values[channel] - m_panel_offsets[channel] : 0;
+            avarage_values[channel] > m_panel_offsets[channel] ? avarage_values[channel] - m_panel_offsets[channel] : 0;
         input.raw = value;
 
         if (m_panels[channel].getState()) {
